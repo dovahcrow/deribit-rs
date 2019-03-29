@@ -1,15 +1,15 @@
-use crate::models::{JSONRPCSubscriptionResponse, SubscriptionData};
+use crate::models::{SubscriptionData, SubscriptionMessage};
 use futures::channel::mpsc;
 use futures::Stream;
 use futures::{task::Waker, Poll};
 use std::pin::Pin;
 
 pub struct DeribitSubscriptionClient {
-    rx: mpsc::Receiver<JSONRPCSubscriptionResponse>,
+    rx: mpsc::Receiver<SubscriptionMessage>,
 }
 
 impl DeribitSubscriptionClient {
-    pub(crate) fn new(rx: mpsc::Receiver<JSONRPCSubscriptionResponse>) -> DeribitSubscriptionClient {
+    pub(crate) fn new(rx: mpsc::Receiver<SubscriptionMessage>) -> DeribitSubscriptionClient {
         DeribitSubscriptionClient { rx }
     }
 }

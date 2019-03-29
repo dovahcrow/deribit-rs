@@ -1,7 +1,8 @@
-mod public;
+mod subscription;
+mod support;
 
-use crate::errors::{DeribitError, Result};
-use crate::models::{JSONRPCRequest, JSONRPCResponse, WSMessage};
+use crate::errors::Result;
+use crate::models::{JSONRPCRequest, JSONRPCResponse};
 use crate::WSStream;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::Compat01As03Sink;
@@ -35,7 +36,7 @@ impl DeribitAPIClient {
     pub async fn request<'a, R, Q>(&'a mut self, method: &'a str, params: Option<Q>) -> Result<R>
     where
         R: DeserializeOwned,
-        Q: Serialize+'a,
+        Q: Serialize + 'a,
     {
         let (waiter_tx, waiter_rx) = oneshot::channel();
         let req = JSONRPCRequest {
@@ -46,12 +47,12 @@ impl DeribitAPIClient {
         self.id += 1;
 
         let payload = to_string(&req)?;
-        debug!("Request payload: {}", payload);
+        debug!("[Deribit] Request: {}", payload);
         await!(self.wstx.send(Message::Text(payload)))?;
         await!(self.waiter_tx.send((req.id, waiter_tx)))?;
 
         let resp = await!(waiter_rx)??;
-Ok(from_value(resp.result)?)
-
+        debug!("[Deribit] Response: {:?}", resp);
+        Ok(from_value(resp.result)?)
     }
 }

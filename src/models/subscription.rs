@@ -1,2 +1,11 @@
-mod book_instrument_name_interval;
-pub use book_instrument_name_interval::{BookInstrumentNameIntervalRequest, BookInstrumentNameIntervalResponse,OrderBookDelta};
+pub mod channel;
+
+use serde_derive::{Deserialize, Serialize};
+
+#[derive(Serialize, Debug, Clone)]
+pub struct SubscribeRequest {
+    pub channels: Vec<String>,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct SubscribeResponse(Vec<String>);

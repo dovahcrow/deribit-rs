@@ -2,7 +2,7 @@
 
 use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
-use crate::models::{JSONRPCResponse, JSONRPCSubscriptionResponse, WSMessage};
+use crate::models::{JSONRPCResponse, SubscriptionMessage, WSMessage};
 use crate::subscription_client::DeribitSubscriptionClient;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
@@ -58,7 +58,7 @@ impl Deribit {
         let (wstx, wsrx) = ws.split();
         let (stx, srx) = mpsc::channel(0);
         let (waiter_tx, waiter_rx) = mpsc::channel(0);
-        let back = Self::background(wsrx.compat().err_into(), waiter_rx, stx).map_err(|_| ());
+        let back = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|_| ());
         let back = back.boxed();
 
         tokio::spawn(Compat::new(back));
@@ -66,10 +66,10 @@ impl Deribit {
         Ok((DeribitAPIClient::new(wstx.sink_compat(), waiter_tx), DeribitSubscriptionClient::new(srx)))
     }
 
-    pub async fn background(
+    pub async fn servo(
         ws: impl Stream<Item = Result<Message>> + Unpin,
         waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
-        mut stx: mpsc::Sender<JSONRPCSubscriptionResponse>,
+        mut stx: mpsc::Sender<SubscriptionMessage>,
     ) -> Result<()> {
         let waiter_rx = waiter_rx.map(Ok).map_ok(IncomingMessage::WaiterMessage);
         let ws = ws.map_ok(IncomingMessage::WSMessage);
@@ -77,7 +77,7 @@ impl Deribit {
 
         let mut stream = ws.select(waiter_rx);
         while let Some(maybe_msg) = await!(stream.next()) {
-            debug!("WS message: {:?}", maybe_msg);
+            debug!("[Servo] Message: {:?}", maybe_msg);
             match maybe_msg? {
                 IncomingMessage::WSMessage(Message::Text(msg)) => {
                     let resp: WSMessage = match from_str(&msg) {

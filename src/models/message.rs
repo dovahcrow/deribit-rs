@@ -1,4 +1,4 @@
-use super::subscription::BookInstrumentNameIntervalResponse;
+use super::subscription::channel::BookInstrumentNameIntervalResponse;
 use crate::errors::DeribitError;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
@@ -7,7 +7,7 @@ use serde_json::Value;
 #[serde(untagged)]
 pub enum WSMessage {
     Invoke(JSONRPCResponse),
-    Subscription(JSONRPCSubscriptionResponse),
+    Subscription(SubscriptionMessage),
     Error(JSONRPCError),
 }
 
@@ -32,7 +32,7 @@ pub struct JSONRPCResponse {
 }
 
 #[derive(Deserialize, Clone, Debug)]
-pub struct JSONRPCSubscriptionResponse {
+pub struct SubscriptionMessage {
     pub jsonrpc: String,
     pub method: String,
     pub params: SubscriptionParams,
@@ -42,6 +42,12 @@ pub struct JSONRPCSubscriptionResponse {
 pub struct SubscriptionParams {
     pub channel: String,
     pub data: SubscriptionData,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(untagged)]
+pub enum SubscriptionData {
+    BookInstrumentNameInterval(BookInstrumentNameIntervalResponse),
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -69,12 +75,6 @@ impl JSONRPCError {
 pub struct ErrorDetail {
     pub code: i64,
     pub message: String,
-}
-
-#[derive(Deserialize, Debug, Clone)]
-#[serde(untagged)]
-pub enum SubscriptionData {
-    BookInstrumentNameInterval(BookInstrumentNameIntervalResponse),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
