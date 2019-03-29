@@ -3,14 +3,14 @@
 
 use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
-use crate::models::{SubscriptionMessage, WSMessage};
+use crate::models::{JSONRPCResponse, SubscriptionMessage, WSMessage};
 use crate::subscription_client::DeribitSubscriptionClient;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
 use futures01::Stream as Stream01;
 use log::{debug, error, info};
-use serde_json::{from_str, Value};
+use serde_json::{from_str};
 use std::collections::HashMap;
 use tokio::net::TcpStream;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
@@ -24,8 +24,8 @@ mod subscription_client;
 
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
-const WS_URL: &'static str = "wss://www.deribit.com/ws/api/v2";
-const WS_URL_TESTNET: &'static str = "wss://test.deribit.com/ws/api/v2";
+pub const WS_URL: &'static str = "wss://www.deribit.com/ws/api/v2";
+pub const WS_URL_TESTNET: &'static str = "wss://test.deribit.com/ws/api/v2";
 
 #[derive(Default)]
 pub struct Deribit {
@@ -59,11 +59,11 @@ impl Deribit {
 
     pub async fn servo(
         ws: impl Stream<Item = Result<Message>> + Unpin,
-        mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<Value>>)>,
+        mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
         mut stx: mpsc::Sender<SubscriptionMessage>,
     ) -> Result<()> {
         let mut ws = ws.fuse();
-        let mut waiters: HashMap<i64, oneshot::Sender<Result<Value>>> = HashMap::new();
+        let mut waiters: HashMap<i64, oneshot::Sender<Result<JSONRPCResponse>>> = HashMap::new();
 
         loop {
             select! {

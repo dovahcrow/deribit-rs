@@ -7,7 +7,7 @@ pub struct UserPortfolioCurrencyRequest {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct UserPortfolioCurrencyResponse {
+pub struct UserPortfolioCurrencyMessage {
     pub available_funds: f64,
     pub available_withdrawal_funds: f64,
     pub balance: f64,

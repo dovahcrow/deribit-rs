@@ -1,6 +1,6 @@
-use super::subscription::channel::BookInstrumentNameIntervalResponse;
-use super::subscription::channel::UserPortfolioCurrencyResponse;
-use super::subscription::channel::UserTradesInstrumentNameIntervalResponse;
+use super::subscription::channel::BookInstrumentNameIntervalMessage;
+use super::subscription::channel::UserPortfolioCurrencyMessage;
+use super::subscription::channel::UserTradesInstrumentNameIntervalMessage;
 use crate::errors::{DeribitError, Result};
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
@@ -22,27 +22,27 @@ pub struct JSONRPCRequest<Q> {
 
 #[derive(Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct JSONRPCResponse {
+pub struct JSONRPCResponse<R = Value> {
     pub jsonrpc: String,
     pub id: i64,
     pub testnet: bool,
     pub error: Option<ErrorDetail>,
-    pub result: Option<Value>,
+    pub result: Option<R>,
     pub us_in: i64,
     pub us_out: i64,
     pub us_diff: i64,
 }
 
 impl JSONRPCResponse {
-    pub fn to_result(self) -> Result<Value> {
+    pub fn to_result(self) -> Result<JSONRPCResponse> {
         if let Some(err) = self.error {
             Err(DeribitError::RemoteError {
                 code: err.code,
                 message: err.message,
             }
             .into())
-        } else if let Some(result) = self.result {
-            Ok(result)
+        } else if let Some(_) = self.result {
+            Ok(self)
         } else {
             unreachable!()
         }
@@ -50,24 +50,24 @@ impl JSONRPCResponse {
 }
 
 #[derive(Deserialize, Clone, Debug)]
-pub struct SubscriptionMessage {
+pub struct SubscriptionMessage<D = SubscriptionData> {
     pub jsonrpc: String,
     pub method: String,
-    pub params: SubscriptionParams,
+    pub params: SubscriptionParams<D>,
 }
 
 #[derive(Deserialize, Clone, Debug)]
-pub struct SubscriptionParams {
+pub struct SubscriptionParams<D = SubscriptionData> {
     pub channel: String,
-    pub data: SubscriptionData,
+    pub data: D,
 }
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum SubscriptionData {
-    BookInstrumentNameInterval(BookInstrumentNameIntervalResponse),
-    UserPortfolioCurrency(UserPortfolioCurrencyResponse),
-    UserTradesInstrumentNameInterval(Vec<UserTradesInstrumentNameIntervalResponse>),
+    BookInstrumentNameInterval(BookInstrumentNameIntervalMessage),
+    UserPortfolioCurrency(UserPortfolioCurrencyMessage),
+    UserTradesInstrumentNameInterval(Vec<UserTradesInstrumentNameIntervalMessage>),
 }
 
 #[derive(Deserialize, Clone, Debug)]

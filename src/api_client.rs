@@ -1,9 +1,11 @@
+mod account;
 mod authentication;
 mod subscription;
 mod support;
+mod trading;
 
 use crate::errors::Result;
-use crate::models::{JSONRPCRequest};
+use crate::models::{JSONRPCRequest, JSONRPCResponse};
 use crate::WSStream;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::Compat01As03Sink;
@@ -12,20 +14,20 @@ use futures01::stream::SplitSink as SplitSink01;
 use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use serde_json::{from_value, to_string, Value};
+use serde_json::{from_value, to_string};
 use tungstenite::Message;
 
 type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
 
 pub struct DeribitAPIClient {
     wstx: SplitWSCompatStream,
-    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<Value>>)>,
+    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
 
     id: i64,
 }
 
 impl DeribitAPIClient {
-    pub(crate) fn new(wstx: SplitWSCompatStream, waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<Value>>)>) -> DeribitAPIClient {
+    pub(crate) fn new(wstx: SplitWSCompatStream, waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>) -> DeribitAPIClient {
         DeribitAPIClient {
             wstx: wstx,
             waiter_tx: waiter_tx,
@@ -34,9 +36,8 @@ impl DeribitAPIClient {
         }
     }
 
-    pub async fn request<'a, R, Q>(&'a mut self, method: &'a str, params: Option<Q>) -> Result<R>
+    pub async fn request_raw<'a, Q>(&'a mut self, method: &'a str, params: Option<Q>) -> Result<JSONRPCResponse>
     where
-        R: DeserializeOwned,
         Q: Serialize + 'a,
     {
         let (waiter_tx, waiter_rx) = oneshot::channel();
@@ -54,6 +55,15 @@ impl DeribitAPIClient {
 
         let resp = await!(waiter_rx)??;
         debug!("[Deribit] Response: {:?}", resp);
-        Ok(from_value(resp)?)
+        Ok(resp)
+    }
+
+    pub async fn request<'a, R, Q>(&'a mut self, method: &'a str, params: Option<Q>) -> Result<R>
+    where
+        R: DeserializeOwned,
+        Q: Serialize + 'a,
+    {
+        let resp = await!(self.request_raw(method, params))?;
+        Ok(from_value(resp.result.unwrap())?)
     }
 }

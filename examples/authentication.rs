@@ -1,7 +1,7 @@
 #![feature(async_await, futures_api, await_macro)]
 
 use deribit::errors::Result;
-use deribit::models::{AuthRequest, SubscribeRequest};
+use deribit::models::{AuthRequest, Currency, GetPositionsRequest, SubscribeRequest};
 use deribit::Deribit;
 use dotenv::dotenv;
 use env_logger::init;
@@ -27,7 +27,12 @@ fn main() -> Result<()> {
         let req = AuthRequest::credential_auth(&key, &secret);
 
         let _ = await!(client.public_auth(&req))?;
-
+        let req = GetPositionsRequest {
+            currency: Currency::BTC,
+            ..Default::default()
+        };
+        let positions = await!(client.private_get_positions(&req))?;
+        println!("{:?}", positions);
         let req = SubscribeRequest {
             channels: vec![
                 "user.portfolio.BTC".into(),
