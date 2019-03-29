@@ -28,9 +28,9 @@ pub struct JSONRPCResponse<R = Value> {
     pub testnet: bool,
     pub error: Option<ErrorDetail>,
     pub result: Option<R>,
-    pub us_in: i64,
-    pub us_out: i64,
-    pub us_diff: i64,
+    pub us_in: u128,
+    pub us_out: u128,
+    pub us_diff: u128,
 }
 
 impl JSONRPCResponse {
