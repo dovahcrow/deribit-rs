@@ -18,7 +18,7 @@ fn main() {
             channels: vec!["book.BTC-PERPETUAL.raw".into()],
         };
 
-        let _ = await!(client.subscribe(&req)).unwrap();
+        let _ = await!(client.public_subscribe(&req)).unwrap();
 
         info!("Successfully subscribed to book.BTC-PERPETUAL.raw") ;
 

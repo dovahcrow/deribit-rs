@@ -1,4 +1,4 @@
-use super::subscription::channel::BookInstrumentNameIntervalResponse;
+use super::subscription::channel::{BookInstrumentNameIntervalResponse, UserPortfolioCurrencyResponse};
 use crate::errors::DeribitError;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
@@ -48,6 +48,7 @@ pub struct SubscriptionParams {
 #[serde(untagged)]
 pub enum SubscriptionData {
     BookInstrumentNameInterval(BookInstrumentNameIntervalResponse),
+    UserPortfolioCurrency(UserPortfolioCurrencyResponse),
 }
 
 #[derive(Deserialize, Clone, Debug)]

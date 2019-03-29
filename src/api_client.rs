@@ -1,3 +1,4 @@
+mod authentication;
 mod subscription;
 mod support;
 

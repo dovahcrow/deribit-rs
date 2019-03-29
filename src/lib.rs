@@ -34,7 +34,6 @@ enum IncomingMessage {
 
 #[derive(Default)]
 pub struct Deribit {
-    credential: Option<(String, String)>,
     testnet: bool,
 }
 
@@ -43,11 +42,8 @@ impl Deribit {
         Default::default()
     }
 
-    pub fn with_credential(key: String, secret: String) -> Deribit {
-        Deribit {
-            credential: Some((key, secret)),
-            ..Default::default()
-        }
+    pub fn new_testnet() -> Deribit {
+        Deribit { testnet: true }
     }
 
     pub async fn connect(self) -> Result<(DeribitAPIClient, DeribitSubscriptionClient)> {

@@ -9,7 +9,7 @@ use futures::FutureExt;
 use tokio::runtime::Runtime;
 
 #[test]
-fn hello() -> Result<()> {
+fn public_hello() -> Result<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
@@ -21,7 +21,7 @@ fn hello() -> Result<()> {
             client_version: "0.0.1".into(),
         };
 
-        let _ = await!(client.hello(&req))?;
+        let _ = await!(client.public_hello(&req))?;
 
         Ok::<_, Error>(())
     };
@@ -32,14 +32,14 @@ fn hello() -> Result<()> {
 }
 
 #[test]
-fn get_time() -> Result<()> {
+fn public_get_time() -> Result<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
     let fut = async {
         let (mut client, _) = await!(drb.connect())?;
 
-        let _ = await!(client.get_time())?;
+        let _ = await!(client.public_get_time())?;
 
         Ok::<_, Error>(())
     };
@@ -50,7 +50,7 @@ fn get_time() -> Result<()> {
 }
 
 #[test]
-fn test() -> Result<()> {
+fn public_test() -> Result<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
@@ -59,7 +59,7 @@ fn test() -> Result<()> {
         let req = TestRequest {
             expected_result: Some("exception".into()),
         };
-        Ok::<_, Error>(await!(client.test(&req))?)
+        Ok::<_, Error>(await!(client.public_test(&req))?)
     };
 
     let fut = Compat::new(fut.boxed());
