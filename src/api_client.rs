@@ -36,9 +36,10 @@ impl DeribitAPIClient {
         }
     }
 
-    pub async fn request_raw<'a, Q>(&'a mut self, method: &'a str, params: Option<Q>) -> Result<JSONRPCResponse>
+    pub async fn request_raw<'a, Q, R>(&'a mut self, method: &'a str, params: Option<Q>) -> Result<JSONRPCResponse<R>>
     where
         Q: Serialize + 'a,
+        R: DeserializeOwned,
     {
         let (waiter_tx, waiter_rx) = oneshot::channel();
         let req = JSONRPCRequest {
@@ -54,7 +55,19 @@ impl DeribitAPIClient {
         await!(self.waiter_tx.send((req.id, waiter_tx)))?;
 
         let resp = await!(waiter_rx)??;
-        debug!("[Deribit] Response: {:?}", resp);
+        let result = from_value(resp.result.unwrap())?;
+
+        let resp = JSONRPCResponse {
+            jsonrpc: resp.jsonrpc,
+            id: resp.id,
+            testnet: resp.testnet,
+            error: None,
+            result: Some(result),
+            us_in: resp.us_in,
+            us_out: resp.us_out,
+            us_diff: resp.us_diff,
+        };
+        // debug!("[Deribit] Response: {:?}", resp);
         Ok(resp)
     }
 
@@ -64,6 +77,6 @@ impl DeribitAPIClient {
         Q: Serialize + 'a,
     {
         let resp = await!(self.request_raw(method, params))?;
-        Ok(from_value(resp.result.unwrap())?)
+        Ok(resp.result.unwrap())
     }
 }
