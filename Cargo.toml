@@ -1,0 +1,26 @@
+[package]
+name = "deribit"
+version = "0.1.0"
+authors = ["Weiyüen Wu <doomsplayer@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+futures01 = { version = "0.1", package = "futures"}
+futures-preview = { version = "0.3.0-alpha.13", features = ["compat"]}
+tokio = "0.1"
+tungstenite = "0.6"
+tokio-tungstenite = "0.6"
+url = "1"
+
+serde = "1"
+serde_json = "1"
+serde_derive = "1"
+failure = "0.1"
+
+log = "0.4"
+
+[dev-dependencies]
+env_logger = "0.6"
+
+[patch.crates-io]
+futures-preview = { git = "https://github.com/rust-lang-nursery/futures-rs"}
