@@ -18,7 +18,7 @@ use tungstenite::Message;
 use url::Url;
 
 mod api_client;
-mod errors;
+pub mod errors;
 pub mod models;
 mod subscription_client;
 
