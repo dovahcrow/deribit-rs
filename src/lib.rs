@@ -2,9 +2,8 @@
 
 use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
-use crate::models::{JSONRPCErrorResponse, JSONRPCInvokeResponse, JSONRPCResponse, JSONRPCSubscriptionResponse};
+use crate::models::{JSONRPCResponse, JSONRPCSubscriptionResponse, WSMessage};
 use crate::subscription_client::DeribitSubscriptionClient;
-use failure::Error;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
@@ -30,7 +29,7 @@ const WS_URL_TESTNET: &'static str = "wss://test.deribit.com/ws/api/v2";
 #[derive(Debug)]
 enum IncomingMessage {
     WSMessage(Message),
-    WaiterMessage((i64, oneshot::Sender<JSONRPCResponse>)),
+    WaiterMessage((i64, oneshot::Sender<Result<JSONRPCResponse>>)),
 }
 
 #[derive(Default)]
@@ -69,19 +68,19 @@ impl Deribit {
 
     pub async fn background(
         ws: impl Stream<Item = Result<Message>> + Unpin,
-        waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<JSONRPCResponse>)>,
-        mut stx: mpsc::Sender<JSONRPCResponse>,
+        waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+        mut stx: mpsc::Sender<JSONRPCSubscriptionResponse>,
     ) -> Result<()> {
         let waiter_rx = waiter_rx.map(Ok).map_ok(IncomingMessage::WaiterMessage);
         let ws = ws.map_ok(IncomingMessage::WSMessage);
-        let mut waiters: HashMap<i64, oneshot::Sender<JSONRPCResponse>> = HashMap::new();
+        let mut waiters: HashMap<i64, oneshot::Sender<Result<JSONRPCResponse>>> = HashMap::new();
 
         let mut stream = ws.select(waiter_rx);
         while let Some(maybe_msg) = await!(stream.next()) {
             debug!("WS message: {:?}", maybe_msg);
             match maybe_msg? {
                 IncomingMessage::WSMessage(Message::Text(msg)) => {
-                    let resp: JSONRPCResponse = match from_str(&msg) {
+                    let resp: WSMessage = match from_str(&msg) {
                         Ok(msg) => msg,
                         Err(e) => {
                             error!("Cannot decode rpc message {:?}", e);
@@ -90,15 +89,9 @@ impl Deribit {
                     };
 
                     match resp {
-                        msg @ JSONRPCResponse::Invoke(_) | msg @ JSONRPCResponse::Error(_) => {
-                            let id = match msg {
-                                JSONRPCResponse::Invoke(ref msg) => msg.id,
-                                JSONRPCResponse::Error(ref msg) => msg.id,
-                                _ => unreachable!(),
-                            };
-                            waiters.remove(&id).unwrap().send(msg).unwrap()
-                        }
-                        msg @ JSONRPCResponse::Subscription(_) => await!(stx.send(msg))?,
+                        WSMessage::Invoke(msg) => waiters.remove(&msg.id).unwrap().send(Ok(msg)).unwrap(),
+                        WSMessage::Error(msg) => waiters.remove(&msg.id).unwrap().send(Err(msg.localize().into())).unwrap(),
+                        WSMessage::Subscription(event) => await!(stx.send(event))?,
                     };
                 }
                 IncomingMessage::WSMessage(Message::Ping(_)) => {

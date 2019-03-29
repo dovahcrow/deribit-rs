@@ -1,5 +1,15 @@
+use super::subscription::BookInstrumentNameIntervalResponse;
+use crate::errors::DeribitError;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
+
+#[derive(Deserialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum WSMessage {
+    Invoke(JSONRPCResponse),
+    Subscription(JSONRPCSubscriptionResponse),
+    Error(JSONRPCError),
+}
 
 #[derive(Serialize, Clone, Debug)]
 pub struct JSONRPCRequest<Q> {
@@ -11,7 +21,7 @@ pub struct JSONRPCRequest<Q> {
 
 #[derive(Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct JSONRPCInvokeResponse {
+pub struct JSONRPCResponse {
     pub jsonrpc: String,
     pub id: i64,
     pub testnet: bool,
@@ -29,8 +39,14 @@ pub struct JSONRPCSubscriptionResponse {
 }
 
 #[derive(Deserialize, Clone, Debug)]
+pub struct SubscriptionParams {
+    pub channel: String,
+    pub data: SubscriptionData,
+}
+
+#[derive(Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct JSONRPCErrorResponse {
+pub struct JSONRPCError {
     pub jsonrpc: String,
     pub id: i64,
     pub testnet: bool,
@@ -40,12 +56,13 @@ pub struct JSONRPCErrorResponse {
     pub us_diff: i64,
 }
 
-#[derive(Deserialize, Clone, Debug)]
-#[serde(untagged)]
-pub enum JSONRPCResponse {
-    Invoke(JSONRPCInvokeResponse),
-    Subscription(JSONRPCSubscriptionResponse),
-    Error(JSONRPCErrorResponse),
+impl JSONRPCError {
+    pub fn localize(self) -> DeribitError {
+        DeribitError::RemoteError {
+            code: self.error.code,
+            message: self.error.message,
+        }
+    }
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -54,10 +71,10 @@ pub struct ErrorDetail {
     pub message: String,
 }
 
-#[derive(Deserialize, Clone, Debug)]
-pub struct SubscriptionParams {
-    channel: String,
-    data: Value,
+#[derive(Deserialize, Debug, Clone)]
+#[serde(untagged)]
+pub enum SubscriptionData {
+    BookInstrumentNameInterval(BookInstrumentNameIntervalResponse),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
