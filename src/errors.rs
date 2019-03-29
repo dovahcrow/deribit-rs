@@ -8,15 +8,5 @@ pub enum DeribitError {
     #[fail(display = "Dummy error")]
     Dummy,
     #[fail(display = "Deribit remote error {{code: {}, message: {}}}", code, message)]
-    RemoteError {
-        code: i64,
-        message: String,
-    }
+    RemoteError { code: i64, message: String },
 }
-
-// #[derive(Deserialize, Serialize, Debug, Clone)]
-// #[serde(untagged)]
-// pub enum BitMEXResponse<T> {
-//     Success(T),
-//     Error { error: BitMEXResponseError },
-// }

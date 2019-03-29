@@ -29,7 +29,11 @@ fn main() -> Result<()> {
         let _ = await!(client.public_auth(&req))?;
 
         let req = SubscribeRequest {
-            channels: vec!["user.portfolio.BTC".into()],
+            channels: vec![
+                "user.portfolio.BTC".into(),
+                "user.trades.BTC-PERPETUAL.raw".into(),
+                "user.trades.BTC-28JUN19-3000-P.raw".into(),
+            ],
         };
 
         let result = await!(client.private_subscribe(&req))?;

@@ -1,14 +1,15 @@
-use super::subscription::channel::{BookInstrumentNameIntervalResponse, UserPortfolioCurrencyResponse};
-use crate::errors::DeribitError;
+use super::subscription::channel::BookInstrumentNameIntervalResponse;
+use super::subscription::channel::UserPortfolioCurrencyResponse;
+use super::subscription::channel::UserTradesInstrumentNameIntervalResponse;
+use crate::errors::{DeribitError, Result};
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[derive(Deserialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum WSMessage {
-    Invoke(JSONRPCResponse),
+    RPC(JSONRPCResponse),
     Subscription(SubscriptionMessage),
-    Error(JSONRPCError),
 }
 
 #[derive(Serialize, Clone, Debug)]
@@ -25,10 +26,27 @@ pub struct JSONRPCResponse {
     pub jsonrpc: String,
     pub id: i64,
     pub testnet: bool,
-    pub result: Value,
+    pub error: Option<ErrorDetail>,
+    pub result: Option<Value>,
     pub us_in: i64,
     pub us_out: i64,
     pub us_diff: i64,
+}
+
+impl JSONRPCResponse {
+    pub fn to_result(self) -> Result<Value> {
+        if let Some(err) = self.error {
+            Err(DeribitError::RemoteError {
+                code: err.code,
+                message: err.message,
+            }
+            .into())
+        } else if let Some(result) = self.result {
+            Ok(result)
+        } else {
+            unreachable!()
+        }
+    }
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -49,27 +67,7 @@ pub struct SubscriptionParams {
 pub enum SubscriptionData {
     BookInstrumentNameInterval(BookInstrumentNameIntervalResponse),
     UserPortfolioCurrency(UserPortfolioCurrencyResponse),
-}
-
-#[derive(Deserialize, Clone, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct JSONRPCError {
-    pub jsonrpc: String,
-    pub id: i64,
-    pub testnet: bool,
-    pub error: ErrorDetail,
-    pub us_in: i64,
-    pub us_out: i64,
-    pub us_diff: i64,
-}
-
-impl JSONRPCError {
-    pub fn localize(self) -> DeribitError {
-        DeribitError::RemoteError {
-            code: self.error.code,
-            message: self.error.message,
-        }
-    }
+    UserTradesInstrumentNameInterval(Vec<UserTradesInstrumentNameIntervalResponse>),
 }
 
 #[derive(Deserialize, Clone, Debug)]

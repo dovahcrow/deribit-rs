@@ -1,15 +1,16 @@
 #![feature(futures_api, async_await, await_macro)]
+#![recursion_limit = "256"]
 
 use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
-use crate::models::{JSONRPCResponse, SubscriptionMessage, WSMessage};
+use crate::models::{SubscriptionMessage, WSMessage};
 use crate::subscription_client::DeribitSubscriptionClient;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
-use futures::{FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
+use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
 use futures01::Stream as Stream01;
 use log::{debug, error, info};
-use serde_json::from_str;
+use serde_json::{from_str, Value};
 use std::collections::HashMap;
 use tokio::net::TcpStream;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
@@ -25,12 +26,6 @@ type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
 const WS_URL: &'static str = "wss://www.deribit.com/ws/api/v2";
 const WS_URL_TESTNET: &'static str = "wss://test.deribit.com/ws/api/v2";
-
-#[derive(Debug)]
-enum IncomingMessage {
-    WSMessage(Message),
-    WaiterMessage((i64, oneshot::Sender<Result<JSONRPCResponse>>)),
-}
 
 #[derive(Default)]
 pub struct Deribit {
@@ -64,46 +59,51 @@ impl Deribit {
 
     pub async fn servo(
         ws: impl Stream<Item = Result<Message>> + Unpin,
-        waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+        mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<Value>>)>,
         mut stx: mpsc::Sender<SubscriptionMessage>,
     ) -> Result<()> {
-        let waiter_rx = waiter_rx.map(Ok).map_ok(IncomingMessage::WaiterMessage);
-        let ws = ws.map_ok(IncomingMessage::WSMessage);
-        let mut waiters: HashMap<i64, oneshot::Sender<Result<JSONRPCResponse>>> = HashMap::new();
+        let mut ws = ws.fuse();
+        let mut waiters: HashMap<i64, oneshot::Sender<Result<Value>>> = HashMap::new();
 
-        let mut stream = ws.select(waiter_rx);
-        while let Some(maybe_msg) = await!(stream.next()) {
-            debug!("[Servo] Message: {:?}", maybe_msg);
-            match maybe_msg? {
-                IncomingMessage::WSMessage(Message::Text(msg)) => {
-                    let resp: WSMessage = match from_str(&msg) {
-                        Ok(msg) => msg,
-                        Err(e) => {
-                            error!("Cannot decode rpc message {:?}", e);
-                            Err(e)?
+        loop {
+            select! {
+                msg = ws.next() => {
+                    debug!("[Servo] Message: {:?}", msg);
+                    match msg.unwrap()? {
+                        Message::Text(msg) => {
+                            let resp: WSMessage = match from_str(&msg) {
+                                Ok(msg) => msg,
+                                Err(e) => {
+                                    error!("Cannot decode rpc message {:?}", e);
+                                    Err(e)?
+                                }
+                            };
+
+                            match resp {
+                                WSMessage::RPC(msg) => waiters.remove(&msg.id).unwrap().send(msg.to_result()).unwrap(),
+                                WSMessage::Subscription(event) => await!(stx.send(event))?,
+                            };
                         }
-                    };
+                        Message::Ping(_) => {
+                            println!("Received Ping");
+                        }
+                        Message::Pong(_) => {
+                            println!("Received Ping");
+                        }
+                        Message::Binary(_) => {
+                            println!("Received Binary");
+                        }
+                    }
+                }
 
-                    match resp {
-                        WSMessage::Invoke(msg) => waiters.remove(&msg.id).unwrap().send(Ok(msg)).unwrap(),
-                        WSMessage::Error(msg) => waiters.remove(&msg.id).unwrap().send(Err(msg.localize().into())).unwrap(),
-                        WSMessage::Subscription(event) => await!(stx.send(event))?,
-                    };
+                waiter = waiter_rx.next() => {
+                    if let Some((id, waiter)) = waiter {
+                        waiters.insert(id, waiter);
+                    } else {
+                        error!("[Servo] Waiter is none");
+                    }
                 }
-                IncomingMessage::WSMessage(Message::Ping(_)) => {
-                    println!("Received Ping");
-                }
-                IncomingMessage::WSMessage(Message::Pong(_)) => {
-                    println!("Received Ping");
-                }
-                IncomingMessage::WSMessage(Message::Binary(_)) => {
-                    println!("Received Binary");
-                }
-                IncomingMessage::WaiterMessage((id, waiter)) => {
-                    waiters.insert(id, waiter);
-                }
-            }
+            };
         }
-        Ok(())
     }
 }

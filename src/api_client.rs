@@ -3,7 +3,7 @@ mod subscription;
 mod support;
 
 use crate::errors::Result;
-use crate::models::{JSONRPCRequest, JSONRPCResponse};
+use crate::models::{JSONRPCRequest};
 use crate::WSStream;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::Compat01As03Sink;
@@ -12,20 +12,20 @@ use futures01::stream::SplitSink as SplitSink01;
 use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use serde_json::{from_value, to_string};
+use serde_json::{from_value, to_string, Value};
 use tungstenite::Message;
 
 type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
 
 pub struct DeribitAPIClient {
     wstx: SplitWSCompatStream,
-    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<Value>>)>,
 
     id: i64,
 }
 
 impl DeribitAPIClient {
-    pub(crate) fn new(wstx: SplitWSCompatStream, waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>) -> DeribitAPIClient {
+    pub(crate) fn new(wstx: SplitWSCompatStream, waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<Value>>)>) -> DeribitAPIClient {
         DeribitAPIClient {
             wstx: wstx,
             waiter_tx: waiter_tx,
@@ -54,6 +54,6 @@ impl DeribitAPIClient {
 
         let resp = await!(waiter_rx)??;
         debug!("[Deribit] Response: {:?}", resp);
-        Ok(from_value(resp.result)?)
+        Ok(from_value(resp)?)
     }
 }
