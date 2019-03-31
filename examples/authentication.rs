@@ -26,12 +26,12 @@ fn main() -> Result<()> {
         let (mut client, mut subscription) = await!(drb.connect())?;
         let req = AuthRequest::credential_auth(&key, &secret);
 
-        let _ = await!(client.public_auth(&req))?;
+        let _ = await!(client.public_auth(req))?;
         let req = GetPositionsRequest {
             currency: Currency::BTC,
             ..Default::default()
         };
-        let positions = await!(client.private_get_positions(&req))?;
+        let positions = await!(client.private_get_positions(req))?;
         println!("{:?}", positions);
         let req = SubscribeRequest {
             channels: vec![
@@ -41,7 +41,7 @@ fn main() -> Result<()> {
             ],
         };
 
-        let result = await!(client.private_subscribe(&req))?;
+        let result = await!(client.private_subscribe(req))?;
         println!("Subscription result: {:?}", result);
 
         while let Some(sub) = await!(subscription.next()) {

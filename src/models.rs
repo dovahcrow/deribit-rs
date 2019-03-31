@@ -1,22 +1,36 @@
 mod account;
 mod authentication;
 mod message;
+mod session_management;
 mod subscription;
 mod support;
 mod trading;
 
+use serde_derive::{Deserialize, Serialize};
+use std::fmt::{Display, Error as FmtError, Formatter};
+use std::result::Result as StdResult;
+
 pub use account::{GetPositionsRequest, GetPositionsResponse};
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
-pub use message::{JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage, WSMessage};
-use serde_derive::{Deserialize, Serialize};
-pub use subscription::channel::{Delta, BookInstrumentNameIntervalMessage, BookInstrumentNameIntervalRequest, OrderBookDelta};
-pub use subscription::channel::{UserPortfolioCurrencyMessage, UserPortfolioCurrencyRequest};
-pub use subscription::channel::{UserTradesInstrumentNameIntervalMessage, UserTradesInstrumentNameIntervalRequest};
+pub use message::{
+    HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
+    WSMessage,
+};
+pub use session_management::{HeartbeatParams, HeartbeatType, SetHeartbeatRequest};
+pub use subscription::channel::{
+    BookInstrumentNameIntervalData, BookInstrumentNameIntervalRequest, Delta, OrderBookDelta,
+};
+pub use subscription::channel::{UserPortfolioCurrencyData, UserPortfolioCurrencyRequest};
+pub use subscription::channel::{
+    UserTradesInstrumentNameIntervalData, UserTradesInstrumentNameIntervalRequest,
+};
 pub use subscription::{SubscribeRequest, SubscribeResponse};
 pub use support::{GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse};
-pub use trading::{BuyRequest, BuyResponse, Order, SellRequest, SellResponse, Trade, TradeRequest, TradeResponse, CancelResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,CancelOrderType};
-use std::fmt::{Formatter, Error as FmtError, Display};
-use std::result::Result as StdResult;
+pub use trading::{
+    BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
+    CancelOrderType, CancelResponse, Order, SellRequest, SellResponse, Trade, TradeRequest,
+    TradeResponse,
+};
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Currency {
@@ -54,9 +68,9 @@ impl Display for Direction {
 impl Direction {
     pub fn sign(self) -> i64 {
         match self {
-            Direction::Buy => {1}
-            Direction::Sell => {-1}
-            Direction::Zero => 0
+            Direction::Buy => 1,
+            Direction::Sell => -1,
+            Direction::Zero => 0,
         }
     }
 }
@@ -127,10 +141,31 @@ pub enum AdvanceOption {
     ImplV,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Either<L, R> {
     Left(L),
     Right(R),
+}
+
+impl<L, R> Either<L, R> {
+    pub fn map_left<F, U>(self, f: F) -> Either<U, R>
+    where
+        F: FnOnce(L) -> U,
+    {
+        match self {
+            Either::Left(l) => Either::Left(f(l)),
+            Either::Right(r) => Either::Right(r),
+        }
+    }
+
+    pub fn map_right<F, U>(self, f: F) -> Either<L, U>
+    where
+        F: FnOnce(R) -> U,
+    {
+        match self {
+            Either::Right(r) => Either::Right(f(r)),
+            Either::Left(l) => Either::Left(l),
+        }
+    }
 }

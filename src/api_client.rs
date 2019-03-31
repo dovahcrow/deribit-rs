@@ -1,10 +1,11 @@
 mod account;
 mod authentication;
+mod session_management;
 mod subscription;
 mod support;
 mod trading;
 
-use crate::errors::{Result, DeribitError};
+use crate::errors::{DeribitError, Result};
 use crate::models::{JSONRPCRequest, JSONRPCResponse};
 use crate::WSStream;
 use futures::channel::{mpsc, oneshot};

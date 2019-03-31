@@ -11,14 +11,14 @@ pub struct BookInstrumentNameIntervalRequest {
 pub enum Delta {
     New,
     Change,
-    Delete
+    Delete,
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct OrderBookDelta(pub Delta, pub f64, pub f64);
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct BookInstrumentNameIntervalMessage {
+pub struct BookInstrumentNameIntervalData {
     pub asks: Vec<OrderBookDelta>,
     pub bids: Vec<OrderBookDelta>,
     pub change_id: i64,

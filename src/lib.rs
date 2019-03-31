@@ -3,7 +3,7 @@
 
 pub use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
-use crate::models::{JSONRPCResponse, SubscriptionMessage, WSMessage};
+use crate::models::{Either, HeartbeatMessage, JSONRPCResponse, SubscriptionMessage, WSMessage};
 pub use crate::subscription_client::DeribitSubscriptionClient;
 use derive_builder::Builder;
 use futures::channel::{mpsc, oneshot};
@@ -13,9 +13,9 @@ use futures01::Stream as Stream01;
 use log::{error, info, trace};
 use serde_json::from_str;
 use std::collections::HashMap;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use tokio::net::TcpStream;
-use tokio::timer::{Interval, Timeout};
+use tokio::timer::Timeout;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
@@ -63,20 +63,16 @@ impl Deribit {
     pub async fn servo(
         ws: impl Stream<Item = Result<Message>> + Unpin,
         mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
-        mut stx: mpsc::Sender<SubscriptionMessage>,
+        mut stx: mpsc::Sender<Either<SubscriptionMessage, HeartbeatMessage>>,
     ) -> Result<()> {
         let mut ws = ws.fuse();
         let mut waiters: HashMap<i64, oneshot::Sender<Result<JSONRPCResponse>>> = HashMap::new();
 
-        let mut heartbeat = Interval::new_interval(Duration::from_secs(1))
-            .compat()
-            .fuse();
-        let mut last_message_at = Instant::now();
         loop {
             select! {
                 msg = ws.next() => {
                     trace!("[Servo] Message: {:?}", msg);
-                    last_message_at = Instant::now();
+
                     match msg.unwrap()? {
                         Message::Text(msg) => {
                             let resp: WSMessage = match from_str(&msg) {
@@ -90,7 +86,12 @@ impl Deribit {
                             match resp {
                                 WSMessage::RPC(msg) => waiters.remove(&msg.id).unwrap().send(msg.to_result()).unwrap(),
                                 WSMessage::Subscription(event) => {
-                                    let fut = Compat::new(stx.send(event));
+                                    let fut = Compat::new(stx.send(Either::Left(event)));
+                                    let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
+                                    await!(fut)?
+                                },
+                                 WSMessage::Heartbeat(event) => {
+                                    let fut = Compat::new(stx.send(Either::Right(event)));
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
                                     await!(fut)?
                                 },
@@ -113,12 +114,6 @@ impl Deribit {
                         waiters.insert(id, waiter);
                     } else {
                         error!("[Servo] API Client dropped");
-                    }
-                }
-
-                _ = heartbeat.next() => {
-                    if Instant::now() - last_message_at > Duration::from_secs(5) {
-                        error!("Heartbeat not implemented");
                     }
                 }
             };

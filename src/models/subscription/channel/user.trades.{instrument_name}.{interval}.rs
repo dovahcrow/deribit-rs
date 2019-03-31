@@ -8,7 +8,7 @@ pub struct UserTradesInstrumentNameIntervalRequest {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct UserTradesInstrumentNameIntervalMessage {
+pub struct UserTradesInstrumentNameIntervalData {
     pub amount: f64,
     pub direction: Direction,
     pub fee: f64,

@@ -7,7 +7,7 @@ pub struct UserPortfolioCurrencyRequest {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct UserPortfolioCurrencyMessage {
+pub struct UserPortfolioCurrencyData {
     pub available_funds: f64,
     pub available_withdrawal_funds: f64,
     pub balance: f64,
@@ -28,7 +28,7 @@ pub struct UserPortfolioCurrencyMessage {
     pub options_theta: f64,
     pub options_vega: f64,
     pub portfolio_margining_enabled: bool,
-    pub projected_initial_margin: Option<f64>,     //for portfolio margining users
+    pub projected_initial_margin: Option<f64>, //for portfolio margining users
     pub projected_maintenance_margin: Option<f64>, //for portfolio margining users
     pub session_funding: f64,
     pub session_rpl: f64,
