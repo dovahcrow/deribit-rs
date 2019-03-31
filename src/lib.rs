@@ -1,5 +1,5 @@
 #![feature(futures_api, async_await, await_macro)]
-#![recursion_limit = "256"]
+#![recursion_limit = "512"]
 
 pub use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
@@ -9,15 +9,15 @@ use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
 use futures01::Stream as Stream01;
-use log::{debug, error, info};
-use serde_json::{from_str};
+use log::{error, info, trace};
+use serde_json::from_str;
 use std::collections::HashMap;
+use std::time::{Duration, Instant};
 use tokio::net::TcpStream;
+use tokio::timer::{Interval, Timeout};
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
-use tokio::timer::Timeout;
-use std::time::Duration;
 
 mod api_client;
 pub mod errors;
@@ -58,7 +58,10 @@ impl Deribit {
 
         tokio::spawn(Compat::new(back));
 
-        Ok((DeribitAPIClient::new(wstx.sink_compat(), waiter_tx), DeribitSubscriptionClient::new(srx)))
+        Ok((
+            DeribitAPIClient::new(wstx.sink_compat(), waiter_tx),
+            DeribitSubscriptionClient::new(srx),
+        ))
     }
 
     pub async fn servo(
@@ -69,10 +72,15 @@ impl Deribit {
         let mut ws = ws.fuse();
         let mut waiters: HashMap<i64, oneshot::Sender<Result<JSONRPCResponse>>> = HashMap::new();
 
+        let mut heartbeat = Interval::new_interval(Duration::from_secs(1))
+            .compat()
+            .fuse();
+        let mut last_message_at = Instant::now();
         loop {
             select! {
                 msg = ws.next() => {
-                    debug!("[Servo] Message: {:?}", msg);
+                    trace!("[Servo] Message: {:?}", msg);
+                    last_message_at = Instant::now();
                     match msg.unwrap()? {
                         Message::Text(msg) => {
                             let resp: WSMessage = match from_str(&msg) {
@@ -109,6 +117,12 @@ impl Deribit {
                         waiters.insert(id, waiter);
                     } else {
                         error!("[Servo] API Client dropped");
+                    }
+                }
+
+                _ = heartbeat.next() => {
+                    if last_message_at - Instant::now() > Duration::from_secs(5) {
+                        error!("Heartbeat not implemented");
                     }
                 }
             };
