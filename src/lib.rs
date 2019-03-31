@@ -117,7 +117,7 @@ impl Deribit {
                 }
 
                 _ = heartbeat.next() => {
-                    if last_message_at - Instant::now() > Duration::from_secs(5) {
+                    if Instant::now() - last_message_at > Duration::from_secs(5) {
                         error!("Heartbeat not implemented");
                     }
                 }
