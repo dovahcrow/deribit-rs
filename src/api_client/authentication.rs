@@ -3,7 +3,7 @@ use crate::errors::Result;
 use crate::models::{AuthRequest, AuthResponse};
 
 impl DeribitAPIClient {
-    pub async fn public_auth<'a>(&'a mut self, req: &'a AuthRequest) -> Result<AuthResponse> {
+    pub async fn public_auth(&mut self, req: AuthRequest) -> Result<AuthResponse> {
         Ok(await!(self.request("public/auth", Some(req)))?)
     }
 }

@@ -25,7 +25,7 @@ pub struct UserTradesInstrumentNameIntervalMessage {
     pub self_trade: bool,
     pub state: OrderState,
     pub tick_direction: i64,
-    pub timestamp: u128,
+    pub timestamp: u64,
     pub trade_id: String,
     pub trade_seq: i64,
 }

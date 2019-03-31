@@ -4,7 +4,7 @@ mod subscription;
 mod support;
 mod trading;
 
-use crate::errors::Result;
+use crate::errors::{Result, DeribitError};
 use crate::models::{JSONRPCRequest, JSONRPCResponse};
 use crate::WSStream;
 use futures::channel::{mpsc, oneshot};
@@ -17,6 +17,45 @@ use serde::Serialize;
 use serde_json::{from_value, to_string};
 use tungstenite::Message;
 
+// pub struct DeribitAPICallResult<R> {
+//     rx: oneshot::Receiver<Result<JSONRPCResponse>>,
+//     _marker: PhantomData<R>
+// }
+// impl<R> DeribitAPICallResult<R> {
+//     pub fn new(rx: oneshot::Receiver<Result<JSONRPCResponse>>) -> Self {
+//         DeribitAPICallResult{
+//             rx: rx,
+//             _marker: PhantomData
+//         }
+//     }
+// }
+
+// impl<R> Future for DeribitAPICallResult<R> where R: DeserializeOwned {
+//     type Output = Result<R>;
+//     fn poll(self: Pin<&mut Self>, waker: &Waker) -> Poll<Self::Output> {
+//         match self.rx.poll(waker) {
+//             Poll::Ready(resp) => {
+//                 resp.and_then(|v| {
+//                     v.map(|resp| {
+//                         let result = from_value(resp.result.unwrap()).unwrap();
+//                         JSONRPCResponse {
+//                                     jsonrpc: resp.jsonrpc,
+//                                     id: resp.id,
+//                                     testnet: resp.testnet,
+//                                     error: None,
+//                                     result: Some(result),
+//                                     us_in: resp.us_in,
+//                                     us_out: resp.us_out,
+//                                     us_diff: resp.us_diff,
+//                                 }
+//                     })
+//                 })
+//             }
+//             Poll::Pending => Poll::Pending
+//         }
+//     }
+// }
+
 type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
 
 pub struct DeribitAPIClient {
@@ -27,7 +66,10 @@ pub struct DeribitAPIClient {
 }
 
 impl DeribitAPIClient {
-    pub(crate) fn new(wstx: SplitWSCompatStream, waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>) -> DeribitAPIClient {
+    pub(crate) fn new(
+        wstx: SplitWSCompatStream,
+        waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+    ) -> DeribitAPIClient {
         DeribitAPIClient {
             wstx: wstx,
             waiter_tx: waiter_tx,
@@ -36,7 +78,11 @@ impl DeribitAPIClient {
         }
     }
 
-    pub async fn request_raw<'a, Q, R>(&'a mut self, method: &'a str, params: Option<Q>) -> Result<JSONRPCResponse<R>>
+    pub async fn request_raw<'a, Q, R>(
+        &'a mut self,
+        method: &'a str,
+        params: Option<Q>,
+    ) -> Result<JSONRPCResponse<R>>
     where
         Q: Serialize + 'a,
         R: DeserializeOwned,
@@ -53,10 +99,8 @@ impl DeribitAPIClient {
         debug!("[Deribit] Request: {}", payload);
         await!(self.wstx.send(Message::Text(payload)))?;
         await!(self.waiter_tx.send((req.id, waiter_tx)))?;
-
-        let resp = await!(waiter_rx)??;
-        let result = from_value(resp.result.unwrap())?;
-
+        let resp = await!(waiter_rx).map_err(|_| DeribitError::ServoExited)??;
+        let result = from_value(resp.result.unwrap()).unwrap();
         let resp = JSONRPCResponse {
             jsonrpc: resp.jsonrpc,
             id: resp.id,
@@ -67,7 +111,6 @@ impl DeribitAPIClient {
             us_out: resp.us_out,
             us_diff: resp.us_diff,
         };
-        // debug!("[Deribit] Response: {:?}", resp);
         Ok(resp)
     }
 

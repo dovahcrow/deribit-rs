@@ -1,4 +1,4 @@
-use crate::models::{AdvanceOption, Currency, Direction, OrderState, OrderType, Role, TimeInForce, Trigger};
+use crate::models::{AssetKind, AdvanceOption, Currency, Direction, OrderState, OrderType, Role, TimeInForce, Trigger, Either};
 use serde_derive::{Deserialize, Serialize};
 
 pub type BuyRequest = TradeRequest;
@@ -9,14 +9,20 @@ pub struct TradeRequest {
     pub instrument_name: String,
     pub amount: f64,
     pub r#type: OrderType,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub price: Option<f64>,
     pub time_in_force: TimeInForce,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max_show: Option<f64>,
     pub post_only: bool,
     pub reduce_only: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub stop_price: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub trigger: Option<Trigger>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advanced: Option<AdvanceOption>,
 }
 
@@ -28,6 +34,23 @@ impl TradeRequest {
             r#type: OrderType::Market,
             label: None,
             price: None,
+            time_in_force: TimeInForce::GoodTilCancelled,
+            max_show: None,
+            post_only: false,
+            reduce_only: false,
+            stop_price: None,
+            trigger: None,
+            advanced: None,
+        }
+    }
+
+    pub fn limit(instrument_name: &str, amount: f64, price: f64) -> TradeRequest {
+        TradeRequest {
+            instrument_name: instrument_name.into(),
+            amount: amount,
+            r#type: OrderType::Limit,
+            label: None,
+            price: Some(price),
             time_in_force: TimeInForce::GoodTilCancelled,
             max_show: None,
             post_only: false,
@@ -75,7 +98,7 @@ pub struct Order {
     pub time_in_force: TimeInForce,
     pub reduce_only: bool,
     pub profit_loss: f64,
-    pub price: String,
+    pub price: Either<String, f64>,
     pub post_only: bool,
     pub order_type: OrderType,
     pub order_state: OrderState,
@@ -92,4 +115,31 @@ pub struct Order {
     pub average_price: f64,
     pub api: bool,
     pub amount: f64,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+#[serde(rename_all = "snake_case")]
+pub enum CancelOrderType {
+    All,
+    Limit,
+    Stop
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct CancelAllByInstrumentRequest {
+    pub instrument_name: String,
+    pub r#type: CancelOrderType
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+pub struct CancelAllByCurrencyRequest {
+    pub currency: Currency,
+    pub kind: AssetKind,
+    pub r#type: CancelOrderType
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+#[serde(rename_all = "snake_case")]
+pub enum CancelResponse {
+    Ok
 }

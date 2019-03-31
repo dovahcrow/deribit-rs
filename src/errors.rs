@@ -9,4 +9,6 @@ pub enum DeribitError {
     Dummy,
     #[fail(display = "Deribit remote error {{code: {}, message: {}}}", code, message)]
     RemoteError { code: i64, message: String },
+    #[fail(display = "The background servo pulling message exited")]
+    ServoExited
 }

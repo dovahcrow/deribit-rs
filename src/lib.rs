@@ -1,10 +1,10 @@
 #![feature(futures_api, async_await, await_macro)]
 #![recursion_limit = "256"]
 
-use crate::api_client::DeribitAPIClient;
+pub use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
 use crate::models::{JSONRPCResponse, SubscriptionMessage, WSMessage};
-use crate::subscription_client::DeribitSubscriptionClient;
+pub use crate::subscription_client::DeribitSubscriptionClient;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
@@ -16,6 +16,8 @@ use tokio::net::TcpStream;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
+use tokio::timer::Timeout;
+use std::time::Duration;
 
 mod api_client;
 pub mod errors;
@@ -47,9 +49,11 @@ impl Deribit {
         let (ws, _) = await!(connect_async(Url::parse(ws_url)?).compat())?;
 
         let (wstx, wsrx) = ws.split();
-        let (stx, srx) = mpsc::channel(0);
-        let (waiter_tx, waiter_rx) = mpsc::channel(0);
-        let back = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|_| ());
+        let (stx, srx) = mpsc::channel(100);
+        let (waiter_tx, waiter_rx) = mpsc::channel(10);
+        let back = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|e| {
+            error!("[Servo] Exiting because of '{}'", e);
+        });
         let back = back.boxed();
 
         tokio::spawn(Compat::new(back));
@@ -81,7 +85,11 @@ impl Deribit {
 
                             match resp {
                                 WSMessage::RPC(msg) => waiters.remove(&msg.id).unwrap().send(msg.to_result()).unwrap(),
-                                WSMessage::Subscription(event) => await!(stx.send(event))?,
+                                WSMessage::Subscription(event) => {
+                                    let fut = Compat::new(stx.send(event));
+                                    let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
+                                    await!(fut)?
+                                },
                             };
                         }
                         Message::Ping(_) => {
@@ -100,7 +108,7 @@ impl Deribit {
                     if let Some((id, waiter)) = waiter {
                         waiters.insert(id, waiter);
                     } else {
-                        error!("[Servo] Waiter is none");
+                        error!("[Servo] API Client dropped");
                     }
                 }
             };

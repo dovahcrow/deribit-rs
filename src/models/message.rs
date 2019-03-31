@@ -76,13 +76,6 @@ pub struct ErrorDetail {
     pub message: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-enum Either<L, R> {
-    Left(L),
-    Right(R),
-}
-
 // {
 //     "jsonrpc": "2.0",
 //     "id": 5239,

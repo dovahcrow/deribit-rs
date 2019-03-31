@@ -6,8 +6,16 @@ pub struct BookInstrumentNameIntervalRequest {
     pub interval: String,
 }
 
+#[derive(Deserialize, Debug, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
+pub enum Delta {
+    New,
+    Change,
+    Delete
+}
+
 #[derive(Deserialize, Debug, Clone)]
-pub struct OrderBookDelta(pub String, pub f64, pub f64);
+pub struct OrderBookDelta(pub Delta, pub f64, pub f64);
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct BookInstrumentNameIntervalMessage {
@@ -16,5 +24,5 @@ pub struct BookInstrumentNameIntervalMessage {
     pub change_id: i64,
     pub instrument_name: String,
     pub prev_change_id: Option<i64>,
-    pub timestamp: u128,
+    pub timestamp: u64,
 }

@@ -26,12 +26,12 @@ fn main() -> Result<()> {
         let (mut client, _) = await!(drb.connect())?;
         let req = AuthRequest::credential_auth(&key, &secret);
 
-        let _ = await!(client.public_auth(&req))?;
+        let _ = await!(client.public_auth(req))?;
         let req = BuyRequest::market("BTC-PERPETUAL", 10f64);
-        let resp = await!(client.private_buy(&req))?;
+        let resp = await!(client.private_buy(req))?;
         println!("{:?}", resp);
         let req = SellRequest::market("BTC-PERPETUAL", 10f64);
-        let resp = await!(client.private_sell(&req))?;
+        let resp = await!(client.private_sell(req))?;
         println!("{:?}", resp);
 
         Ok::<_, Error>(())
