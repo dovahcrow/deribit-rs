@@ -5,6 +5,7 @@ pub use crate::api_client::DeribitAPIClient;
 use crate::errors::Result;
 use crate::models::{JSONRPCResponse, SubscriptionMessage, WSMessage};
 pub use crate::subscription_client::DeribitSubscriptionClient;
+use derive_builder::Builder;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
@@ -29,27 +30,22 @@ type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 pub const WS_URL: &'static str = "wss://www.deribit.com/ws/api/v2";
 pub const WS_URL_TESTNET: &'static str = "wss://test.deribit.com/ws/api/v2";
 
-#[derive(Default)]
+#[derive(Default, Builder, Debug)]
+#[builder(setter(into))]
 pub struct Deribit {
+    #[builder(default)]
     testnet: bool,
+    sub_chan_size: usize,
 }
 
 impl Deribit {
-    pub fn new() -> Deribit {
-        Default::default()
-    }
-
-    pub fn new_testnet() -> Deribit {
-        Deribit { testnet: true }
-    }
-
     pub async fn connect(self) -> Result<(DeribitAPIClient, DeribitSubscriptionClient)> {
         let ws_url = if self.testnet { WS_URL_TESTNET } else { WS_URL };
         info!("Connecting");
         let (ws, _) = await!(connect_async(Url::parse(ws_url)?).compat())?;
 
         let (wstx, wsrx) = ws.split();
-        let (stx, srx) = mpsc::channel(100);
+        let (stx, srx) = mpsc::channel(100000);
         let (waiter_tx, waiter_rx) = mpsc::channel(10);
         let back = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|e| {
             error!("[Servo] Exiting because of '{}'", e);
