@@ -16,7 +16,9 @@ pub use message::{
     HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
     WSMessage,
 };
-pub use session_management::{HeartbeatParams, HeartbeatType, SetHeartbeatRequest};
+pub use session_management::{
+    HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,
+};
 pub use subscription::channel::{
     BookInstrumentNameIntervalData, BookInstrumentNameIntervalRequest, Delta, OrderBookDelta,
 };

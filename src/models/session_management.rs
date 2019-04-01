@@ -16,3 +16,9 @@ pub struct HeartbeatParams {
 pub struct SetHeartbeatRequest {
     pub interval: u64,
 }
+
+#[derive(Deserialize, Debug, Clone, Copy)]
+#[serde(rename_all = "snake_case")]
+pub enum SetHeartbeatResponse {
+    Ok,
+}

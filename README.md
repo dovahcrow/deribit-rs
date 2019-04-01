@@ -21,7 +21,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [x] /public/auth
     - [ ] /private/logout
 - Session Management
-    - [ ] /public/set_heartbeat
+    - [x] /public/set_heartbeat
     - [ ] /public/disable_heartbeat
     - [ ] /private/enable_cancel_on_disconnect
     - [ ] /private/disable_cancel_on_disconnect
@@ -30,14 +30,36 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [x] /public/hello
     - [x] /public/test
 - Subscription Management
-    - [ ] /public/subscribe
+    - [x] /public/subscribe
     - [ ] /public/unsubscribe
-    - [ ] /private/subscribe
+    - [x] /private/subscribe
     - [ ] /private/unsubscribe
 - Account Management
     - Not implemented
 - Trading
-    - Not implemented
+    - [x] /private/buy
+    - [x] /private/sell
+    - [ ] /private/edit
+    - [ ] /private/cancel
+    - [x] /private/cancel_all
+    - [x] /private/cancel_all_by_currency
+    - [x] /private/cancel_all_by_instrument
+    - [ ] /private/close_position
+    - [ ] /private/get_margins
+    - [ ] /private/get_open_orders_by_currency
+    - [ ] /private/get_open_orders_by_instrument
+    - [ ] /private/get_order_history_by_currency
+    - [ ] /private/get_order_history_by_instrument
+    - [ ] /private/get_order_margin_by_ids
+    - [ ] /private/get_order_state
+    - [ ] /private/get_user_trades_by_currency
+    - [ ] /private/get_user_trades_by_currency_and_time
+    - [ ] /private/get_user_trades_by_instrument
+    - [ ] /private/get_user_trades_by_instrument_and_time
+    - [ ] /private/get_user_trades_by_order
+    - [ ] /private/get_settlement_history_by_instrument
+    - [ ] /private/get_settlement_history_by_currency
+
 - Market Data
     - Not implemented
 - Wallet
