@@ -1,11 +1,5 @@
 use crate::models::{Currency, Direction, OrderState, OrderType, Role};
-use serde_derive::{Deserialize, Serialize};
-
-#[derive(Serialize, Debug, Clone)]
-pub struct UserTradesInstrumentNameIntervalRequest {
-    pub instrument_name: String,
-    pub interval: String,
-}
+use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct UserTradesInstrumentNameIntervalData {

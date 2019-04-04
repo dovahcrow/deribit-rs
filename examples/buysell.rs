@@ -2,7 +2,7 @@
 
 use deribit::errors::Result;
 use deribit::models::{AuthRequest, BuyRequest, SellRequest};
-use deribit::Deribit;
+use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
 use failure::Error;
@@ -18,7 +18,7 @@ fn main() -> Result<()> {
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
 
-    let drb = Deribit::new_testnet();
+    let drb = DeribitBuilder::default().build().unwrap();
 
     let mut rt = Runtime::new()?;
 

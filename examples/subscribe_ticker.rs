@@ -15,12 +15,12 @@ fn main() {
         let (mut client, mut subscription) = await!(drb.connect()).unwrap();
 
         let req = SubscribeRequest {
-            channels: vec!["book.BTC-PERPETUAL.raw".into()],
+            channels: vec!["ticker.BTC-28JUN19.100ms".into()],
         };
 
         let _ = await!(client.public_subscribe(req)).unwrap();
 
-        info!("Successfully subscribed to book.BTC-PERPETUAL.raw");
+        info!("Successfully subscribed to tickers.BTC-PERPETUAL.raw");
 
         while let Some(sub) = await!(subscription.next()) {
             info!("{:?}", sub);

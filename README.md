@@ -74,7 +74,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] markprice.options.{index_name}
     - [ ] perpetual.{instrument_name}.{interval}
     - [ ] quote.{instrument_name}
-    - [ ] ticker.{instrument_name}.{interval}
+    - [x] ticker.{instrument_name}.{interval}
     - [ ] trades.{instrument_name}.{interval}
     - [ ] user.orders.{instrument_name}.{interval}
     - [ ] user.orders.{kind}.{currency}.{interval}

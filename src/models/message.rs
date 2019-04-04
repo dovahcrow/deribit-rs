@@ -1,5 +1,6 @@
 use super::session_management::HeartbeatParams;
 use super::subscription::channel::BookInstrumentNameIntervalData;
+use super::subscription::channel::TickerInstrumentNameIntervalData;
 use super::subscription::channel::UserPortfolioCurrencyData;
 use super::subscription::channel::UserTradesInstrumentNameIntervalData;
 use crate::errors::{DeribitError, Result};
@@ -95,6 +96,7 @@ pub enum SubscriptionData {
     BookInstrumentNameInterval(BookInstrumentNameIntervalData),
     UserPortfolioCurrency(UserPortfolioCurrencyData),
     UserTradesInstrumentNameInterval(Vec<UserTradesInstrumentNameIntervalData>),
+    TickerInstrumentNameInterval(TickerInstrumentNameIntervalData),
 }
 
 #[derive(Deserialize, Clone, Debug)]

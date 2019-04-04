@@ -21,7 +21,7 @@ fn public_hello() -> Result<()> {
             client_version: "0.0.1".into(),
         };
 
-        let _ = await!(client.public_hello(&req))?;
+        let _ = await!(client.public_hello(req))?;
 
         Ok::<_, Error>(())
     };
@@ -59,7 +59,7 @@ fn public_test() -> Result<()> {
         let req = TestRequest {
             expected_result: Some("exception".into()),
         };
-        Ok::<_, Error>(await!(client.public_test(&req))?)
+        Ok::<_, Error>(await!(client.public_test(req))?)
     };
 
     let fut = Compat::new(fut.boxed());

@@ -35,10 +35,15 @@ pub const WS_URL_TESTNET: &'static str = "wss://test.deribit.com/ws/api/v2";
 pub struct Deribit {
     #[builder(default)]
     testnet: bool,
+    #[builder(default = "10")]
     sub_chan_size: usize,
 }
 
 impl Deribit {
+    pub fn new() -> Deribit {
+        DeribitBuilder::default().build().unwrap()
+    }
+
     pub async fn connect(self) -> Result<(DeribitAPIClient, DeribitSubscriptionClient)> {
         let ws_url = if self.testnet { WS_URL_TESTNET } else { WS_URL };
         info!("Connecting");
@@ -84,7 +89,9 @@ impl Deribit {
                             };
 
                             match resp {
-                                WSMessage::RPC(msg) => waiters.remove(&msg.id).unwrap().send(msg.to_result()).unwrap(),
+                                WSMessage::RPC(msg) => {
+                                    waiters.remove(&msg.id).unwrap().send(msg.to_result()).unwrap();
+                                }
                                 WSMessage::Subscription(event) => {
                                     let fut = Compat::new(stx.send(Either::Left(event)));
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();

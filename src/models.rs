@@ -6,26 +6,21 @@ mod subscription;
 mod support;
 mod trading;
 
-use serde_derive::{Deserialize, Serialize};
-use std::fmt::{Display, Error as FmtError, Formatter};
-use std::result::Result as StdResult;
-
 pub use account::{GetPositionsRequest, GetPositionsResponse};
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
 pub use message::{
     HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
     WSMessage,
 };
+use serde_derive::{Deserialize, Serialize};
 pub use session_management::{
     HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,
 };
-pub use subscription::channel::{
-    BookInstrumentNameIntervalData, BookInstrumentNameIntervalRequest, Delta, OrderBookDelta,
-};
-pub use subscription::channel::{UserPortfolioCurrencyData, UserPortfolioCurrencyRequest};
-pub use subscription::channel::{
-    UserTradesInstrumentNameIntervalData, UserTradesInstrumentNameIntervalRequest,
-};
+use std::fmt::{Display, Error as FmtError, Formatter};
+use std::result::Result as StdResult;
+pub use subscription::channel::UserPortfolioCurrencyData;
+pub use subscription::channel::UserTradesInstrumentNameIntervalData;
+pub use subscription::channel::{BookInstrumentNameIntervalData, Delta, OrderBookDelta};
 pub use subscription::{SubscribeRequest, SubscribeResponse};
 pub use support::{GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse};
 pub use trading::{

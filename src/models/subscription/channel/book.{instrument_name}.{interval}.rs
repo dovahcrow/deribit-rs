@@ -1,10 +1,4 @@
-use serde_derive::{Deserialize, Serialize};
-
-#[derive(Serialize, Debug, Clone)]
-pub struct BookInstrumentNameIntervalRequest {
-    pub instrument_name: String,
-    pub interval: String,
-}
+use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
