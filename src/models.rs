@@ -166,3 +166,12 @@ impl<L, R> Either<L, R> {
         }
     }
 }
+
+impl<T> Either<T, T> {
+    pub fn unwrap(self) -> T {
+        match self {
+            Either::Left(l) => l,
+            Either::Right(r) => r,
+        }
+    }
+}
