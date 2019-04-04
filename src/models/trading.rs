@@ -1,4 +1,7 @@
-use crate::models::{AssetKind, AdvanceOption, Currency, Direction, OrderState, OrderType, Role, TimeInForce, Trigger, Either};
+use crate::models::{
+    AdvanceOption, AssetKind, Currency, Direction, Either, OrderState, OrderType, Role,
+    TimeInForce, Trigger,
+};
 use serde_derive::{Deserialize, Serialize};
 
 pub type BuyRequest = TradeRequest;
@@ -67,8 +70,8 @@ pub type SellResponse = TradeResponse;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct TradeResponse {
-    trades: Vec<Trade>,
-    order: Order,
+    pub trades: Vec<Trade>,
+    pub order: Order,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -122,24 +125,24 @@ pub struct Order {
 pub enum CancelOrderType {
     All,
     Limit,
-    Stop
+    Stop,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CancelAllByInstrumentRequest {
     pub instrument_name: String,
-    pub r#type: CancelOrderType
+    pub r#type: CancelOrderType,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 pub struct CancelAllByCurrencyRequest {
     pub currency: Currency,
     pub kind: AssetKind,
-    pub r#type: CancelOrderType
+    pub r#type: CancelOrderType,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
 pub enum CancelResponse {
-    Ok
+    Ok,
 }
