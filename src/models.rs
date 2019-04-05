@@ -6,8 +6,10 @@ mod subscription;
 mod support;
 mod trading;
 
+use crate::errors::{DeribitError, Result};
 pub use account::{GetPositionsRequest, GetPositionsResponse};
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
+use failure::Error;
 pub use message::{
     HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
     WSMessage,
@@ -29,7 +31,7 @@ pub use trading::{
     TradeResponse,
 };
 
-#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Currency {
     BTC,
     ETH,
@@ -38,6 +40,23 @@ pub enum Currency {
 impl Default for Currency {
     fn default() -> Currency {
         Currency::BTC
+    }
+}
+
+impl std::fmt::Display for Currency {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(fmt, "{:?}", self)
+    }
+}
+
+impl std::str::FromStr for Currency {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<Currency> {
+        match s {
+            "BTC" => Ok(Currency::BTC),
+            "ETH" => Ok(Currency::ETH),
+            s => Err(DeribitError::UnknownCurrency(s.to_string()).into()),
+        }
     }
 }
 
