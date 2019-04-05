@@ -10,6 +10,7 @@ use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
 use futures01::Stream as Stream01;
+use log::warn;
 use log::{error, info, trace};
 use serde_json::from_str;
 use std::collections::HashMap;
@@ -90,7 +91,10 @@ impl Deribit {
 
                             match resp {
                                 WSMessage::RPC(msg) => {
-                                    waiters.remove(&msg.id).unwrap().send(msg.to_result()).unwrap();
+                                    let id = msg.id;
+                                    if let Err(_) = waiters.remove(&msg.id).unwrap().send(msg.to_result()) {
+                                        warn!("The client for {} is dropped", id);
+                                    }
                                 }
                                 WSMessage::Subscription(event) => {
                                     let fut = Compat::new(stx.send(Either::Left(event)));
