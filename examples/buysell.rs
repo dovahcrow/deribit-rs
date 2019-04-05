@@ -29,10 +29,10 @@ fn main() -> Result<()> {
         let _ = await!(client.public_auth(req))?;
         let req = BuyRequest::market("BTC-PERPETUAL", 10f64);
         let resp = await!(client.private_buy(req))?;
-        println!("{:?}", resp);
+        println!("{:?}", await!(resp)?);
         let req = SellRequest::market("BTC-PERPETUAL", 10f64);
         let resp = await!(client.private_sell(req))?;
-        println!("{:?}", resp);
+        println!("{:?}", await!(resp)?);
 
         Ok::<_, Error>(())
     };

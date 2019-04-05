@@ -21,7 +21,7 @@ fn public_hello() -> Result<()> {
             client_version: "0.0.1".into(),
         };
 
-        let _ = await!(client.public_hello(req))?;
+        let _ = await!(await!(client.public_hello(req))?)?;
 
         Ok::<_, Error>(())
     };
@@ -39,7 +39,7 @@ fn public_get_time() -> Result<()> {
     let fut = async {
         let (mut client, _) = await!(drb.connect())?;
 
-        let _ = await!(client.public_get_time())?;
+        let _ = await!(await!(client.public_get_time())?);
 
         Ok::<_, Error>(())
     };
@@ -59,7 +59,7 @@ fn public_test() -> Result<()> {
         let req = TestRequest {
             expected_result: Some("exception".into()),
         };
-        Ok::<_, Error>(await!(client.public_test(req))?)
+        Ok::<_, Error>(await!(await!(client.public_test(req))?)?)
     };
 
     let fut = Compat::new(fut.boxed());

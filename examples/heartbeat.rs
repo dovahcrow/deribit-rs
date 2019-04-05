@@ -27,7 +27,7 @@ fn main() -> Result<()> {
         let req = SetHeartbeatRequest { interval: 10 };
 
         let resp = await!(client.public_set_heartbeat(req))?;
-        println!("Hearbet response {:?}", resp);
+        println!("Hearbet response {:?}", await!(resp)?);
 
         while let Some(sub) = await!(subscription.next()) {
             match sub {

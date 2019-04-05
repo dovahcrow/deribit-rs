@@ -32,7 +32,7 @@ fn main() -> Result<()> {
             ..Default::default()
         };
         let positions = await!(client.private_get_positions(req))?;
-        println!("{:?}", positions);
+        println!("{:?}", await!(positions)?);
         let req = SubscribeRequest {
             channels: vec![
                 "user.portfolio.BTC".into(),
@@ -42,7 +42,7 @@ fn main() -> Result<()> {
         };
 
         let result = await!(client.private_subscribe(req))?;
-        println!("Subscription result: {:?}", result);
+        println!("Subscription result: {:?}", await!(result)?);
 
         while let Some(sub) = await!(subscription.next()) {
             println!("{:?}", sub);

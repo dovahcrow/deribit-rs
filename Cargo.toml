@@ -18,6 +18,7 @@ serde_derive = "1"
 failure = "0.1"
 log = "0.4"
 derive_builder = "0.7"
+pin-utils = "0.1.0-alpha.3"
 
 [dev-dependencies]
 env_logger = "0.6"
