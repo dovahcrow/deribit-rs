@@ -6,19 +6,14 @@ use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
 use failure::Error;
-use futures::compat::Compat;
-use futures::{FutureExt, StreamExt};
+use futures::{FutureExt, StreamExt, TryFutureExt};
 use tokio::runtime::Runtime;
 
 fn main() -> Result<()> {
-    init();
     dotenv().unwrap();
+    init();
 
-    let drb = DeribitBuilder::default()
-        .testnet(true)
-        .sub_chan_size(10usize)
-        .build()
-        .unwrap();
+    let drb = DeribitBuilder::default().testnet(true).build().unwrap();
 
     let mut rt = Runtime::new()?;
 
@@ -26,7 +21,7 @@ fn main() -> Result<()> {
         let (mut client, mut subscription) = await!(drb.connect())?;
         let req = SetHeartbeatRequest { interval: 10 };
 
-        let resp = await!(client.public_set_heartbeat(req))?;
+        let resp = await!(client.call(req))?;
         println!("Hearbet response {:?}", await!(resp)?);
 
         while let Some(sub) = await!(subscription.next()) {
@@ -34,7 +29,7 @@ fn main() -> Result<()> {
                 Either::Right(l) => match l.params.r#type {
                     HeartbeatType::TestRequest => {
                         println!("Test Requested");
-                        await!(client.public_test(TestRequest::default()))?;
+                        await!(client.call(TestRequest::default()))?;
                     }
                     _ => println!("Heartbeat"),
                 },
@@ -45,7 +40,7 @@ fn main() -> Result<()> {
         Ok::<_, Error>(())
     };
 
-    let fut = Compat::new(fut.boxed());
+    let fut = fut.boxed().compat();
     let r = rt.block_on(fut);
     println!("{:?}", r);
     Ok(())

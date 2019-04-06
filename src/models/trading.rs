@@ -1,11 +1,45 @@
 use crate::models::{
-    AdvanceOption, AssetKind, Currency, Direction, Either, OrderState, OrderType, Role,
-    TimeInForce, Trigger,
+    AdvanceOption, AssetKind, Currency, Direction, Either, EmptyRequest, OrderState, OrderType,
+    Request, Role, TimeInForce, Trigger,
 };
 use serde_derive::{Deserialize, Serialize};
 
-pub type BuyRequest = TradeRequest;
-pub type SellRequest = TradeRequest;
+#[derive(Serialize, Debug, Clone)]
+pub struct BuyRequest(TradeRequest);
+#[derive(Deserialize, Debug, Clone)]
+pub struct BuyResponse(TradeResponse);
+
+impl BuyRequest {
+    pub fn market(instrument_name: &str, amount: f64) -> BuyRequest {
+        BuyRequest(TradeRequest::market(instrument_name, amount))
+    }
+    pub fn limit(instrument_name: &str, amount: f64, price: f64) -> BuyRequest {
+        BuyRequest(TradeRequest::limit(instrument_name, amount, price))
+    }
+}
+
+impl Request for BuyRequest {
+    const METHOD: &'static str = "private/buy";
+    type Response = BuyResponse;
+}
+
+#[derive(Serialize, Debug, Clone)]
+pub struct SellRequest(TradeRequest);
+#[derive(Deserialize, Debug, Clone)]
+pub struct SellResponse(TradeResponse);
+impl SellRequest {
+    pub fn market(instrument_name: &str, amount: f64) -> SellRequest {
+        SellRequest(TradeRequest::market(instrument_name, amount))
+    }
+    pub fn limit(instrument_name: &str, amount: f64, price: f64) -> SellRequest {
+        SellRequest(TradeRequest::limit(instrument_name, amount, price))
+    }
+}
+
+impl Request for SellRequest {
+    const METHOD: &'static str = "private/sell";
+    type Response = SellResponse;
+}
 
 #[derive(Serialize, Debug, Clone)]
 pub struct TradeRequest {
@@ -64,9 +98,6 @@ impl TradeRequest {
         }
     }
 }
-
-pub type BuyResponse = TradeResponse;
-pub type SellResponse = TradeResponse;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct TradeResponse {
@@ -128,17 +159,42 @@ pub enum CancelOrderType {
     Stop,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
+pub struct CancelAllRequest;
+
+impl Request for CancelAllRequest {
+    const METHOD: &'static str = "private/cancel_all";
+    type Response = CancelResponse;
+}
+
+impl EmptyRequest for CancelAllRequest {
+    #[inline]
+    fn empty(&self) -> bool {
+        true
+    }
+}
+
+#[derive(Serialize, Debug, Clone)]
 pub struct CancelAllByInstrumentRequest {
     pub instrument_name: String,
     pub r#type: CancelOrderType,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+impl Request for CancelAllByInstrumentRequest {
+    const METHOD: &'static str = "private/cancel_all_by_instrument";
+    type Response = CancelResponse;
+}
+
+#[derive(Serialize, Debug, Clone, Copy)]
 pub struct CancelAllByCurrencyRequest {
     pub currency: Currency,
     pub kind: AssetKind,
     pub r#type: CancelOrderType,
+}
+
+impl Request for CancelAllByCurrencyRequest {
+    const METHOD: &'static str = "private/cancel_all_by_currency";
+    type Response = CancelResponse;
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]

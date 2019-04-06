@@ -6,19 +6,18 @@ use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
 use failure::Error;
-use futures::compat::Compat;
-use futures::FutureExt;
+use futures::{FutureExt, TryFutureExt};
 use std::env::var;
 use tokio::runtime::Runtime;
 
 fn main() -> Result<()> {
-    init();
     dotenv().unwrap();
+    init();
 
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
 
-    let drb = DeribitBuilder::default().build().unwrap();
+    let drb = DeribitBuilder::default().testnet(true).build().unwrap();
 
     let mut rt = Runtime::new()?;
 
@@ -26,18 +25,18 @@ fn main() -> Result<()> {
         let (mut client, _) = await!(drb.connect())?;
         let req = AuthRequest::credential_auth(&key, &secret);
 
-        let _ = await!(client.public_auth(req))?;
+        let _ = await!(client.call(req))?;
         let req = BuyRequest::market("BTC-PERPETUAL", 10f64);
-        let resp = await!(client.private_buy(req))?;
+        let resp = await!(client.call(req))?;
         println!("{:?}", await!(resp)?);
         let req = SellRequest::market("BTC-PERPETUAL", 10f64);
-        let resp = await!(client.private_sell(req))?;
+        let resp = await!(client.call(req))?;
         println!("{:?}", await!(resp)?);
 
         Ok::<_, Error>(())
     };
 
-    let fut = Compat::new(fut.boxed());
+    let fut = fut.boxed().compat();
     let r = rt.block_on(fut);
     println!("{:?}", r);
     Ok(())

@@ -1,10 +1,16 @@
-#![feature(futures_api, async_await, await_macro)]
+#![feature(futures_api, async_await, await_macro, specialization)]
 #![recursion_limit = "512"]
 
-pub use crate::api_client::DeribitAPIClient;
+mod api_client;
+pub mod errors;
+pub mod models;
+mod subscription_client;
+
+pub use crate::api_client::{DeribitAPICallResult, DeribitAPIClient};
+pub use crate::subscription_client::DeribitSubscriptionClient;
+
 use crate::errors::Result;
 use crate::models::{Either, HeartbeatMessage, JSONRPCResponse, SubscriptionMessage, WSMessage};
-pub use crate::subscription_client::DeribitSubscriptionClient;
 use derive_builder::Builder;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
@@ -20,11 +26,6 @@ use tokio::timer::Timeout;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
-
-mod api_client;
-pub mod errors;
-pub mod models;
-mod subscription_client;
 
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
@@ -124,7 +125,7 @@ impl Deribit {
                     if let Some((id, waiter)) = waiter {
                         waiters.insert(id, waiter);
                     } else {
-                        error!("[Servo] API Client dropped");
+                        warn!("[Servo] API Client dropped");
                     }
                 }
             };

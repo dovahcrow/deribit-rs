@@ -1,19 +1,18 @@
 #![feature(async_await, futures_api, await_macro)]
 
 use deribit::errors::Result;
-use deribit::models::{AuthRequest, Currency, GetPositionsRequest, SubscribeRequest};
+use deribit::models::{AuthRequest, Currency, GetPositionsRequest, PrivateSubscribeRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
 use failure::Error;
-use futures::compat::Compat;
-use futures::{FutureExt, StreamExt};
+use futures::{FutureExt, StreamExt, TryFutureExt};
 use std::env::var;
 use tokio::runtime::Runtime;
 
 fn main() -> Result<()> {
-    init();
     dotenv().unwrap();
+    init();
 
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
@@ -26,14 +25,14 @@ fn main() -> Result<()> {
         let (mut client, mut subscription) = await!(drb.connect())?;
         let req = AuthRequest::credential_auth(&key, &secret);
 
-        let _ = await!(client.public_auth(req))?;
+        let _ = await!(client.call(req))?;
         let req = GetPositionsRequest {
             currency: Currency::BTC,
             ..Default::default()
         };
-        let positions = await!(client.private_get_positions(req))?;
+        let positions = await!(client.call(req))?;
         println!("{:?}", await!(positions)?);
-        let req = SubscribeRequest {
+        let req = PrivateSubscribeRequest {
             channels: vec![
                 "user.portfolio.BTC".into(),
                 "user.trades.BTC-PERPETUAL.raw".into(),
@@ -41,7 +40,7 @@ fn main() -> Result<()> {
             ],
         };
 
-        let result = await!(client.private_subscribe(req))?;
+        let result = await!(client.call(req))?;
         println!("Subscription result: {:?}", await!(result)?);
 
         while let Some(sub) = await!(subscription.next()) {
@@ -51,7 +50,7 @@ fn main() -> Result<()> {
         Ok::<_, Error>(())
     };
 
-    let fut = Compat::new(fut.boxed());
+    let fut = fut.boxed().compat();
     let r = rt.block_on(fut);
     println!("{:?}", r);
     Ok(())

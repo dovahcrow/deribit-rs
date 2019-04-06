@@ -1,12 +1,12 @@
-mod account;
-mod authentication;
-mod session_management;
-mod subscription;
-mod support;
-mod trading;
+// mod account;
+// mod authentication;
+// mod session_management;
+// mod subscription;
+// mod support;
+// mod trading;
 
 use crate::errors::Result;
-use crate::models::{JSONRPCRequest, JSONRPCResponse};
+use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::Compat01As03Sink;
@@ -22,13 +22,66 @@ use std::marker::PhantomData;
 use std::pin::Pin;
 use tungstenite::Message;
 
+type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
+
+pub struct DeribitAPIClient {
+    wstx: SplitWSCompatStream,
+    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+
+    id: i64,
+}
+
+impl DeribitAPIClient {
+    pub(crate) fn new(
+        wstx: SplitWSCompatStream,
+        waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+    ) -> DeribitAPIClient {
+        DeribitAPIClient {
+            wstx: wstx,
+            waiter_tx: waiter_tx,
+
+            id: 0,
+        }
+    }
+
+    pub async fn call_raw<'a, R>(
+        &'a mut self,
+        request: R,
+    ) -> Result<DeribitAPICallRawResult<R::Response>>
+    where
+        R: Request + Serialize + 'a,
+    {
+        let (waiter_tx, waiter_rx) = oneshot::channel();
+        let req = JSONRPCRequest {
+            id: self.id,
+            method: R::METHOD.into(),
+            params: request,
+        };
+        self.id += 1;
+
+        let payload = to_string(&req)?;
+        debug!("[Deribit] Request: {}", payload);
+        await!(self.wstx.send(Message::Text(payload)))?;
+        await!(self.waiter_tx.send((req.id, waiter_tx)))?;
+        Ok(DeribitAPICallRawResult::new(waiter_rx))
+    }
+
+    pub async fn call<'a, R>(&'a mut self, request: R) -> Result<DeribitAPICallResult<R::Response>>
+    where
+        R: Request + Serialize + 'a,
+    {
+        let resp: DeribitAPICallRawResult<R::Response> = await!(self.call_raw(request))?;
+        Ok(DeribitAPICallResult::new(resp))
+    }
+}
+
 pub struct DeribitAPICallRawResult<R> {
     rx: oneshot::Receiver<Result<JSONRPCResponse>>,
     _ty: PhantomData<R>,
 }
 
 impl<R> DeribitAPICallRawResult<R> {
-    pub fn new(rx: oneshot::Receiver<Result<JSONRPCResponse>>) -> Self {
+    pub(crate) fn new(rx: oneshot::Receiver<Result<JSONRPCResponse>>) -> Self {
         DeribitAPICallRawResult {
             rx: rx,
             _ty: PhantomData,
@@ -65,7 +118,7 @@ pub struct DeribitAPICallResult<R> {
 }
 
 impl<R> DeribitAPICallResult<R> {
-    pub fn new(inner: DeribitAPICallRawResult<R>) -> Self {
+    pub(crate) fn new(inner: DeribitAPICallRawResult<R>) -> Self {
         DeribitAPICallResult { inner: inner }
     }
     unsafe_pinned!(inner: DeribitAPICallRawResult<R>);
@@ -81,65 +134,5 @@ where
             let resp = result?;
             Ok(resp.result.unwrap())
         })
-    }
-}
-
-type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
-
-pub struct DeribitAPIClient {
-    wstx: SplitWSCompatStream,
-    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
-
-    id: i64,
-}
-
-impl DeribitAPIClient {
-    pub(crate) fn new(
-        wstx: SplitWSCompatStream,
-        waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
-    ) -> DeribitAPIClient {
-        DeribitAPIClient {
-            wstx: wstx,
-            waiter_tx: waiter_tx,
-
-            id: 0,
-        }
-    }
-
-    pub async fn request_raw<'a, Q, R>(
-        &'a mut self,
-        method: &'a str,
-        params: Option<Q>,
-    ) -> Result<DeribitAPICallRawResult<R>>
-    where
-        Q: Serialize + 'a,
-        R: DeserializeOwned,
-    {
-        let (waiter_tx, waiter_rx) = oneshot::channel();
-        let req = JSONRPCRequest {
-            id: self.id,
-            method: method.into(),
-            params: params,
-        };
-        self.id += 1;
-
-        let payload = to_string(&req)?;
-        debug!("[Deribit] Request: {}", payload);
-        await!(self.wstx.send(Message::Text(payload)))?;
-        await!(self.waiter_tx.send((req.id, waiter_tx)))?;
-        Ok(DeribitAPICallRawResult::new(waiter_rx))
-    }
-
-    pub async fn request<'a, R, Q>(
-        &'a mut self,
-        method: &'a str,
-        params: Option<Q>,
-    ) -> Result<DeribitAPICallResult<R>>
-    where
-        R: DeserializeOwned,
-        Q: Serialize + 'a,
-    {
-        let resp: DeribitAPICallRawResult<R> = await!(self.request_raw(method, params))?;
-        Ok(DeribitAPICallResult::new(resp))
     }
 }

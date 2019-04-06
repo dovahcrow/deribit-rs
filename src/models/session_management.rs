@@ -1,3 +1,4 @@
+use crate::models::Request;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug, Clone)]
@@ -21,4 +22,9 @@ pub struct SetHeartbeatRequest {
 #[serde(rename_all = "snake_case")]
 pub enum SetHeartbeatResponse {
     Ok,
+}
+
+impl Request for SetHeartbeatRequest {
+    const METHOD: &'static str = "public/set_heartbeat";
+    type Response = SetHeartbeatResponse;
 }

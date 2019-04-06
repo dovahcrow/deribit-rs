@@ -1,4 +1,4 @@
-use crate::models::{AssetKind, Currency, Direction};
+use crate::models::{AssetKind, Currency, Direction, Request};
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Debug, Clone, Default)]
@@ -29,4 +29,9 @@ pub struct GetPositionsResponse {
     pub size: f64,
     pub size_currency: Option<f64>,
     pub total_profit_loss: f64,
+}
+
+impl Request for GetPositionsRequest {
+    const METHOD: &'static str = "private/get_positions";
+    type Response = Vec<GetPositionsResponse>;
 }

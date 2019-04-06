@@ -1,3 +1,4 @@
+use crate::models::Request;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Debug, Clone)]
@@ -87,4 +88,9 @@ pub struct AuthResponse {
     scope: String,
     state: Option<String>,
     token_type: String,
+}
+
+impl Request for AuthRequest {
+    const METHOD: &'static str = "public/auth";
+    type Response = AuthResponse;
 }

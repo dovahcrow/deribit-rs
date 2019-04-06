@@ -7,29 +7,50 @@ mod support;
 mod trading;
 
 use crate::errors::{DeribitError, Result};
+use failure::Error;
+use serde_derive::{Deserialize, Serialize};
+use std::fmt::{Display, Error as FmtError, Formatter};
+use std::result::Result as StdResult;
+
 pub use account::{GetPositionsRequest, GetPositionsResponse};
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
-use failure::Error;
-pub use message::{
-    HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
-    WSMessage,
-};
-use serde_derive::{Deserialize, Serialize};
 pub use session_management::{
     HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,
 };
-use std::fmt::{Display, Error as FmtError, Formatter};
-use std::result::Result as StdResult;
-pub use subscription::channel::UserPortfolioCurrencyData;
-pub use subscription::channel::UserTradesInstrumentNameIntervalData;
-pub use subscription::channel::{BookInstrumentNameIntervalData, Delta, OrderBookDelta};
-pub use subscription::{SubscribeRequest, SubscribeResponse};
-pub use support::{GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse};
+pub use support::{
+    GetTimeRequest, GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse,
+};
 pub use trading::{
     BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
     CancelOrderType, CancelResponse, Order, SellRequest, SellResponse, Trade, TradeRequest,
     TradeResponse,
 };
+
+pub use message::{
+    HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
+    WSMessage,
+};
+
+pub use subscription::channel::UserPortfolioCurrencyData;
+pub use subscription::channel::UserTradesInstrumentNameIntervalData;
+pub use subscription::channel::{BookInstrumentNameIntervalData, Delta, OrderBookDelta};
+pub use subscription::{PrivateSubscribeRequest, PublicSubscribeRequest, SubscribeResponse};
+
+pub trait Request {
+    const METHOD: &'static str;
+    type Response;
+}
+
+trait EmptyRequest {
+    fn empty(&self) -> bool;
+}
+
+impl<R: Request> EmptyRequest for R {
+    #[inline]
+    default fn empty(&self) -> bool {
+        false
+    }
+}
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Currency {

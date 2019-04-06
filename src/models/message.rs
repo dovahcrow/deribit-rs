@@ -4,6 +4,7 @@ use super::subscription::channel::TickerInstrumentNameIntervalData;
 use super::subscription::channel::UserPortfolioCurrencyData;
 use super::subscription::channel::UserTradesInstrumentNameIntervalData;
 use crate::errors::{DeribitError, Result};
+use crate::models::Request;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -16,11 +17,11 @@ pub enum WSMessage {
 }
 
 #[derive(Serialize, Clone, Debug)]
-pub struct JSONRPCRequest<Q> {
+pub struct JSONRPCRequest<Q: Request> {
     pub id: i64,
     pub method: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub params: Option<Q>,
+    #[serde(skip_serializing_if = "crate::models::EmptyRequest::empty")]
+    pub params: Q,
 }
 
 #[derive(Deserialize, Clone, Debug)]
