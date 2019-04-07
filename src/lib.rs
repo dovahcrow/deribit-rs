@@ -38,7 +38,7 @@ pub struct Deribit {
     #[builder(default)]
     testnet: bool,
     #[builder(default = "10")]
-    sub_chan_size: usize,
+    subscription_buffer_size: usize,
 }
 
 impl Deribit {
@@ -52,14 +52,13 @@ impl Deribit {
         let (ws, _) = await!(connect_async(Url::parse(ws_url)?).compat())?;
 
         let (wstx, wsrx) = ws.split();
-        let (stx, srx) = mpsc::channel(100000);
+        let (stx, srx) = mpsc::channel(self.subscription_buffer_size);
         let (waiter_tx, waiter_rx) = mpsc::channel(10);
-        let back = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|e| {
+        let background = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|e| {
             error!("[Servo] Exiting because of '{}'", e);
         });
-        let back = back.boxed();
 
-        tokio::spawn(Compat::new(back));
+        tokio::spawn(background.boxed().compat());
 
         Ok((
             DeribitAPIClient::new(wstx.sink_compat(), waiter_tx),
@@ -93,8 +92,8 @@ impl Deribit {
                             match resp {
                                 WSMessage::RPC(msg) => {
                                     let id = msg.id;
-                                    if let Err(_) = waiters.remove(&msg.id).unwrap().send(msg.to_result()) {
-                                        warn!("The client for {} is dropped", id);
+                                    if let Err(msg) = waiters.remove(&msg.id).unwrap().send(msg.to_result()) {
+                                        info!("The client for request {} is dropped, response is {:?}", id, msg);
                                     }
                                 }
                                 WSMessage::Subscription(event) => {
