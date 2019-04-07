@@ -14,7 +14,7 @@ pub struct PrivateSubscribeRequest {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct SubscribeResponse(Vec<String>);
+pub struct SubscribeResponse(pub Vec<String>);
 
 impl Request for PublicSubscribeRequest {
     const METHOD: &'static str = "public/subscribe";

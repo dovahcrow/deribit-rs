@@ -19,9 +19,8 @@ fn main() -> Result<()> {
 
     let fut = async move {
         let (mut client, mut subscription) = await!(drb.connect())?;
-        let req = SetHeartbeatRequest { interval: 10 };
 
-        let resp = await!(client.call(req))?;
+        let resp = await!(client.call(SetHeartbeatRequest::with_interval(10)))?;
         println!("Hearbet response {:?}", await!(resp)?);
 
         while let Some(sub) = await!(subscription.next()) {
