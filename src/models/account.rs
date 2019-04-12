@@ -38,8 +38,8 @@ impl Request for GetPositionsRequest {
 
 #[derive(Serialize, Debug, Clone, Default)]
 pub struct GetAccountSummaryRequest {
-    currency: Currency,
-    extended: bool,
+    pub currency: Currency,
+    pub extended: bool,
 }
 impl GetAccountSummaryRequest {
     pub fn abridged(currency: Currency) -> Self {
@@ -58,44 +58,44 @@ impl GetAccountSummaryRequest {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct GetAccountSummaryResponse {
-    id: Option<u64>,
-    system_name: Option<String>,
-    username: Option<String>,
-    email: Option<String>,
-    tfa_enabled: Option<bool>,
-    portfolio_margin_enabled: Option<bool>,
-    deposit_address: String,
-    currency: Currency,
-    r#type: Option<String>,
-    session_funding: f64,
+    pub id: Option<u64>,
+    pub system_name: Option<String>,
+    pub username: Option<String>,
+    pub email: Option<String>,
+    pub tfa_enabled: Option<bool>,
+    pub portfolio_margin_enabled: Option<bool>,
+    pub deposit_address: String,
+    pub currency: Currency,
+    pub r#type: Option<String>,
+    pub session_funding: f64,
 
-    maintenance_margin: f64,
-    projected_initial_margin: Option<f64>,
-    projected_maintenance_margin: Option<f64>,
-    initial_margin: f64,
-    margin_balance: f64,
-    balance: f64,
-    equity: f64,
-    available_withdrawal_funds: f64,
-    available_funds: f64,
+    pub maintenance_margin: f64,
+    pub projected_initial_margin: Option<f64>,
+    pub projected_maintenance_margin: Option<f64>,
+    pub initial_margin: f64,
+    pub margin_balance: f64,
+    pub balance: f64,
+    pub equity: f64,
+    pub available_withdrawal_funds: f64,
+    pub available_funds: f64,
 
-    futures_session_upl: f64,
-    futures_session_rpl: f64,
-    futures_pl: f64,
+    pub futures_session_upl: f64,
+    pub futures_session_rpl: f64,
+    pub futures_pl: f64,
 
-    options_gamma: f64,
-    options_vega: f64,
-    options_theta: f64,
-    options_delta: f64,
-    options_session_upl: f64,
-    options_session_rpl: f64,
-    options_pl: f64,
+    pub options_gamma: f64,
+    pub options_vega: f64,
+    pub options_theta: f64,
+    pub options_delta: f64,
+    pub options_session_upl: f64,
+    pub options_session_rpl: f64,
+    pub options_pl: f64,
 
-    delta_total: f64,
+    pub delta_total: f64,
 
-    session_upl: f64,
-    session_rpl: f64,
-    total_pl: f64,
+    pub session_upl: f64,
+    pub session_rpl: f64,
+    pub total_pl: f64,
 }
 
 impl Request for GetAccountSummaryRequest {
