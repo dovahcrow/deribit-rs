@@ -1,6 +1,8 @@
 Deribit API V2 Client for Rust Language
 =================
 
+WARNING: Due to futures is being stablized, you need rust nightly-2019-04-01 or before to successfully build this library ([ref](https://github.com/rust-lang-nursery/futures-rs/issues/1518)).
+
 This is experimental and currently under heavy development. Use at your own risk.
 
 This library uses Rust nightly features extensively like async/await and futures api. You need a nightly Rust to make it run.
@@ -8,12 +10,6 @@ This library uses Rust nightly features extensively like async/await and futures
 The current plan is to only implement the websocket communication, which includes call api through websocket 
 and websocket subscription. I will first implement these APIs used for my own trading purpose, however, if you want some APIs 
 to be prioritly implemented please open an issue or just throw me a PR (this is more welcome :P).
-
-# Donate
-
-![donationqr](assets/donationqr.png)
-
-16PeVqncfWoQ94M4pxnitkYnnW8agQBBZB
 
 # Implementation Status
 
@@ -96,3 +92,9 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [x] user.portfolio.{currency}
     - [x] user.trades.{instrument_name}.{interval}
     - [ ] user.trades.{kind}.{currency}.{interval}]
+
+# Donate
+
+![donationqr](assets/donationqr.png)
+
+16PeVqncfWoQ94M4pxnitkYnnW8agQBBZB
