@@ -13,7 +13,7 @@ impl BuyRequest {
     pub fn market(instrument_name: &str, amount: f64) -> BuyRequest {
         BuyRequest(TradeRequest::market(instrument_name, amount))
     }
-    pub fn limit(instrument_name: &str, amount: f64, price: f64) -> BuyRequest {
+    pub fn limit(instrument_name: &str, price: f64, amount: f64) -> BuyRequest {
         BuyRequest(TradeRequest::limit(instrument_name, amount, price))
     }
 }
@@ -31,7 +31,7 @@ impl SellRequest {
     pub fn market(instrument_name: &str, amount: f64) -> SellRequest {
         SellRequest(TradeRequest::market(instrument_name, amount))
     }
-    pub fn limit(instrument_name: &str, amount: f64, price: f64) -> SellRequest {
+    pub fn limit(instrument_name: &str, price: f64, amount: f64) -> SellRequest {
         SellRequest(TradeRequest::limit(instrument_name, amount, price))
     }
 }
