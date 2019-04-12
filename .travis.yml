@@ -1,6 +1,6 @@
 language: rust
 rust:
-- nightly
+- nightly-2019-04-01
 sudo: false
 env:
   global: 
