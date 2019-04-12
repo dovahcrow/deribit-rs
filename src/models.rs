@@ -223,10 +223,24 @@ impl<L, R> Either<L, R> {
         }
     }
 
+    pub fn left(self) -> Option<L> {
+        match self {
+            Either::Left(l) => Some(l),
+            Either::Right(_) => None,
+        }
+    }
+
     pub fn unwrap_right(self) -> R {
         match self {
             Either::Left(_) => panic!("Either is left"),
             Either::Right(r) => r,
+        }
+    }
+
+    pub fn right(self) -> Option<R> {
+        match self {
+            Either::Left(_) => None,
+            Either::Right(r) => Some(r),
         }
     }
 }
