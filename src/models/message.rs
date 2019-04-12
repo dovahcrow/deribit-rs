@@ -1,8 +1,10 @@
 use super::session_management::HeartbeatParams;
-use super::subscription::channel::BookInstrumentNameIntervalData;
-use super::subscription::channel::TickerInstrumentNameIntervalData;
-use super::subscription::channel::UserPortfolioCurrencyData;
-use super::subscription::channel::UserTradesInstrumentNameIntervalData;
+use super::subscription::channel::BookData;
+use super::subscription::channel::TickerData;
+use super::subscription::channel::TradesData;
+use super::subscription::channel::UserOrdersData;
+use super::subscription::channel::UserPortfolioData;
+use super::subscription::channel::UserTradesData;
 use crate::errors::{DeribitError, Result};
 use crate::models::Request;
 use serde_derive::{Deserialize, Serialize};
@@ -94,10 +96,13 @@ pub struct SubscriptionParams<D = SubscriptionData> {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum SubscriptionData {
-    BookInstrumentNameInterval(BookInstrumentNameIntervalData),
-    UserPortfolioCurrency(UserPortfolioCurrencyData),
-    UserTradesInstrumentNameInterval(Vec<UserTradesInstrumentNameIntervalData>),
-    TickerInstrumentNameInterval(TickerInstrumentNameIntervalData),
+    Book(BookData),
+    UserPortfolio(UserPortfolioData),
+    UserTrades(Vec<UserTradesData>),
+    Ticker(TickerData),
+    Trades(Vec<TradesData>),
+    UserOrders(UserOrdersData),
+    UserOrdersMulti(Vec<UserOrdersData>),
 }
 
 #[derive(Deserialize, Clone, Debug)]

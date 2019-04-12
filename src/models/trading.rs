@@ -5,9 +5,9 @@ use crate::models::{
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Debug, Clone)]
-pub struct BuyRequest(TradeRequest);
+pub struct BuyRequest(pub TradeRequest);
 #[derive(Deserialize, Debug, Clone)]
-pub struct BuyResponse(TradeResponse);
+pub struct BuyResponse(pub TradeResponse);
 
 impl BuyRequest {
     pub fn market(instrument_name: &str, amount: f64) -> BuyRequest {
@@ -24,9 +24,9 @@ impl Request for BuyRequest {
 }
 
 #[derive(Serialize, Debug, Clone)]
-pub struct SellRequest(TradeRequest);
+pub struct SellRequest(pub TradeRequest);
 #[derive(Deserialize, Debug, Clone)]
-pub struct SellResponse(TradeResponse);
+pub struct SellResponse(pub TradeResponse);
 impl SellRequest {
     pub fn market(instrument_name: &str, amount: f64) -> SellRequest {
         SellRequest(TradeRequest::market(instrument_name, amount))
@@ -160,11 +160,59 @@ pub enum CancelOrderType {
 }
 
 #[derive(Serialize, Debug, Clone)]
+pub struct CancelRequest {
+    order_id: String,
+}
+
+impl CancelRequest {
+    pub fn new(order_id: &str) -> Self {
+        Self {
+            order_id: order_id.into(),
+        }
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct CancelResponse {
+    pub advanced: Option<AdvanceOption>,
+    pub amount: f64,
+    pub api: bool,
+    pub average_price: f64,
+    pub commission: f64,
+    pub creation_timestamp: u64,
+    pub direction: Direction,
+    pub filled_amount: f64,
+    pub implv: Option<f64>,
+    pub instrument_name: String,
+    pub is_liquidation: bool,
+    pub label: String,
+    pub last_update_timestamp: u64,
+    pub max_show: f64,
+    pub order_id: String,
+    pub order_state: OrderState,
+    pub order_type: OrderType,
+    pub post_only: bool,
+    pub price: f64,
+    pub profit_loss: f64,
+    pub reduce_only: bool,
+    pub stop_price: Option<f64>,
+    pub time_in_force: TimeInForce,
+    pub trigger: Option<Trigger>,
+    pub triggered: Option<bool>,
+    pub usd: Option<f64>,
+}
+
+impl Request for CancelRequest {
+    const METHOD: &'static str = "private/cancel";
+    type Response = CancelResponse;
+}
+
+#[derive(Serialize, Debug, Clone)]
 pub struct CancelAllRequest;
 
 impl Request for CancelAllRequest {
     const METHOD: &'static str = "private/cancel_all";
-    type Response = CancelResponse;
+    type Response = CancelAllResponse;
 }
 
 impl EmptyRequest for CancelAllRequest {
@@ -199,6 +247,6 @@ impl Request for CancelAllByCurrencyRequest {
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
-pub enum CancelResponse {
+pub enum CancelAllResponse {
     Ok,
 }

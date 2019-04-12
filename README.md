@@ -87,11 +87,11 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] quote.{instrument_name}
     - [x] ticker.{instrument_name}.{interval}
     - [ ] trades.{instrument_name}.{interval}
-    - [ ] user.orders.{instrument_name}.{interval}
-    - [ ] user.orders.{kind}.{currency}.{interval}
+    - [x] user.orders.{instrument_name}.{interval}
+    - [x] user.orders.{kind}.{currency}.{interval}
     - [x] user.portfolio.{currency}
     - [x] user.trades.{instrument_name}.{interval}
-    - [ ] user.trades.{kind}.{currency}.{interval}]
+    - [x] user.trades.{kind}.{currency}.{interval}]
 
 # Donate
 

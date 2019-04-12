@@ -2,7 +2,7 @@ mod account;
 mod authentication;
 mod message;
 mod session_management;
-mod subscription;
+pub mod subscription;
 mod support;
 mod trading;
 
@@ -24,8 +24,8 @@ pub use support::{
 };
 pub use trading::{
     BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
-    CancelOrderType, CancelResponse, Order, SellRequest, SellResponse, Trade, TradeRequest,
-    TradeResponse,
+    CancelAllRequest, CancelAllResponse, CancelOrderType, CancelRequest, CancelResponse, Order,
+    SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
 };
 
 pub use message::{
@@ -33,9 +33,6 @@ pub use message::{
     WSMessage,
 };
 
-pub use subscription::channel::UserPortfolioCurrencyData;
-pub use subscription::channel::UserTradesInstrumentNameIntervalData;
-pub use subscription::channel::{BookInstrumentNameIntervalData, Delta, OrderBookDelta};
 pub use subscription::{PrivateSubscribeRequest, PublicSubscribeRequest, SubscribeResponse};
 
 pub trait Request {

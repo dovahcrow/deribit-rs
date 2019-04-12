@@ -12,7 +12,7 @@ pub enum Delta {
 pub struct OrderBookDelta(pub Delta, pub f64, pub f64);
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct BookInstrumentNameIntervalData {
+pub struct BookData {
     pub asks: Vec<OrderBookDelta>,
     pub bids: Vec<OrderBookDelta>,
     pub change_id: i64,

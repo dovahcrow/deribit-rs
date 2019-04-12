@@ -1,13 +1,8 @@
 use crate::models::Currency;
-use serde_derive::{Deserialize, Serialize};
-
-#[derive(Serialize, Debug, Clone, Copy)]
-pub struct UserPortfolioCurrencyRequest {
-    pub currency: Currency,
-}
+use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct UserPortfolioCurrencyData {
+pub struct UserPortfolioData {
     pub available_funds: f64,
     pub available_withdrawal_funds: f64,
     pub balance: f64,

@@ -2,7 +2,7 @@ use crate::models::OrderState;
 use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct TickerInstrumentNameIntervalData {
+pub struct TickerData {
     pub ask_iv: Option<f64>,
     pub best_ask_amount: f64,
     pub best_ask_price: Option<f64>,
