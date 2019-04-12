@@ -214,3 +214,19 @@ impl<T> Either<T, T> {
         }
     }
 }
+
+impl<L, R> Either<L, R> {
+    pub fn unwrap_left(self) -> L {
+        match self {
+            Either::Left(l) => l,
+            Either::Right(_) => panic!("Either is right"),
+        }
+    }
+
+    pub fn unwrap_right(self) -> R {
+        match self {
+            Either::Left(_) => panic!("Either is left"),
+            Either::Right(r) => r,
+        }
+    }
+}
