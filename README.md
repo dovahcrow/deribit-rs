@@ -35,7 +35,22 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [x] /private/subscribe
     - [ ] /private/unsubscribe
 - Account Management
-    - Not implemented
+    - [ ] /public/get_announcements
+    - [ ] /private/change_subaccount_name
+    - [ ] /private/create_subaccount
+    - [ ] /private/disable_tfa_for_subaccount
+    - [x] /private/get_account_summary
+    - [ ] /private/get_email_language
+    - [ ] /private/get_new_announcements
+    - [ ] /private/get_position
+    - [x] /private/get_positions
+    - [ ] /private/get_subaccounts
+    - [ ] /private/set_announcement_as_read
+    - [ ] /private/set_email_for_subaccount
+    - [ ] /private/set_email_language 
+    - [ ] /private/set_password_for_subaccount
+    - [ ] /private/toggle_notifications_from_subaccount
+    - [ ] /private/toggle_subaccount_login
 - Trading
     - [x] /private/buy
     - [x] /private/sell

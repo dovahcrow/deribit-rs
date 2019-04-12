@@ -12,7 +12,9 @@ use serde_derive::{Deserialize, Serialize};
 use std::fmt::{Display, Error as FmtError, Formatter};
 use std::result::Result as StdResult;
 
-pub use account::{GetPositionsRequest, GetPositionsResponse};
+pub use account::{
+    GetAccountSummaryRequest, GetAccountSummaryResponse, GetPositionsRequest, GetPositionsResponse,
+};
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
 pub use session_management::{
     HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,

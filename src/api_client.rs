@@ -13,7 +13,7 @@ use futures::compat::Compat01As03Sink;
 use futures::task::Waker;
 use futures::{Future, Poll, SinkExt};
 use futures01::stream::SplitSink as SplitSink01;
-use log::debug;
+use log::trace;
 use pin_utils::unsafe_pinned;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -60,7 +60,7 @@ impl DeribitAPIClient {
         self.id += 1;
 
         let payload = to_string(&req)?;
-        debug!("[Deribit] Request: {}", payload);
+        trace!("[Deribit] Request: {}", payload);
         await!(self.wstx.send(Message::Text(payload)))?;
         await!(self.waiter_tx.send((req.id, waiter_tx)))?;
         Ok(DeribitAPICallRawResult::new(waiter_rx))

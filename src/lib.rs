@@ -13,7 +13,7 @@ use crate::errors::Result;
 use crate::models::{Either, HeartbeatMessage, JSONRPCResponse, SubscriptionMessage, WSMessage};
 use derive_builder::Builder;
 use futures::channel::{mpsc, oneshot};
-use futures::compat::{Compat, Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
+use futures::compat::{Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
 use futures01::Stream as Stream01;
 use log::warn;
@@ -97,15 +97,15 @@ impl Deribit {
                                     }
                                 }
                                 WSMessage::Subscription(event) => {
-                                    let fut = Compat::new(stx.send(Either::Left(event)));
+                                    let fut = stx.send(Either::Left(event)).compat();
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
                                     await!(fut)?
-                                },
-                                 WSMessage::Heartbeat(event) => {
-                                    let fut = Compat::new(stx.send(Either::Right(event)));
+                                }
+                                WSMessage::Heartbeat(event) => {
+                                    let fut = stx.send(Either::Right(event)).compat();
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
                                     await!(fut)?
-                                },
+                                }
                             };
                         }
                         Message::Ping(_) => {

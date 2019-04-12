@@ -4,12 +4,11 @@ use deribit::errors::Result;
 use deribit::models::{GetTimeRequest, HelloRequest, TestRequest};
 use deribit::Deribit;
 use failure::Error;
-use futures::compat::Compat;
-use futures::FutureExt;
+use futures::{FutureExt, TryFutureExt};
 use tokio::runtime::Runtime;
 
 #[test]
-fn public_hello() -> Result<()> {
+fn hello() -> Result<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
@@ -26,13 +25,13 @@ fn public_hello() -> Result<()> {
         Ok::<_, Error>(())
     };
 
-    let fut = Compat::new(fut.boxed());
+    let fut = fut.boxed().compat();
     rt.block_on(fut)?;
     Ok(())
 }
 
 #[test]
-fn public_get_time() -> Result<()> {
+fn get_time() -> Result<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
@@ -44,13 +43,13 @@ fn public_get_time() -> Result<()> {
         Ok::<_, Error>(())
     };
 
-    let fut = Compat::new(fut.boxed());
+    let fut = fut.boxed().compat();
     rt.block_on(fut)?;
     Ok(())
 }
 
 #[test]
-fn public_test() -> Result<()> {
+fn test() -> Result<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
@@ -62,9 +61,7 @@ fn public_test() -> Result<()> {
         Ok::<_, Error>(await!(await!(client.call(req))?)?)
     };
 
-    let fut = Compat::new(fut.boxed());
-    let r = rt.block_on(fut);
-
-    assert!(r.is_err());
+    let fut = fut.boxed().compat();
+    assert!(rt.block_on(fut).is_err());
     Ok(())
 }
