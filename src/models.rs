@@ -24,8 +24,9 @@ pub use support::{
 };
 pub use trading::{
     BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
-    CancelAllRequest, CancelAllResponse, CancelOrderType, CancelRequest, CancelResponse, Order,
-    SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
+    CancelAllRequest, CancelAllResponse, CancelOrderType, CancelRequest, CancelResponse,
+    GetOrderStateRequest, GetOrderStateResponse, Order, SellRequest, SellResponse, Trade,
+    TradeRequest, TradeResponse,
 };
 
 pub use message::{
