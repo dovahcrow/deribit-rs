@@ -62,7 +62,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] /private/get_order_history_by_currency
     - [ ] /private/get_order_history_by_instrument
     - [ ] /private/get_order_margin_by_ids
-    - [ ] /private/get_order_state
+    - [x] /private/get_order_state
     - [ ] /private/get_user_trades_by_currency
     - [ ] /private/get_user_trades_by_currency_and_time
     - [ ] /private/get_user_trades_by_instrument
