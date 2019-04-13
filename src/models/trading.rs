@@ -6,8 +6,31 @@ use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Debug, Clone)]
 pub struct BuyRequest(pub TradeRequest);
+impl std::ops::Deref for BuyRequest {
+    type Target = TradeRequest;
+    fn deref(&self) -> &TradeRequest {
+        &self.0
+    }
+}
+impl std::ops::DerefMut for BuyRequest {
+    fn deref_mut(&mut self) -> &mut TradeRequest {
+        &mut self.0
+    }
+}
+
 #[derive(Deserialize, Debug, Clone)]
 pub struct BuyResponse(pub TradeResponse);
+impl std::ops::Deref for BuyResponse {
+    type Target = TradeResponse;
+    fn deref(&self) -> &TradeResponse {
+        &self.0
+    }
+}
+impl std::ops::DerefMut for BuyResponse {
+    fn deref_mut(&mut self) -> &mut TradeResponse {
+        &mut self.0
+    }
+}
 
 impl BuyRequest {
     pub fn market(instrument_name: &str, amount: f64) -> BuyRequest {
@@ -25,8 +48,30 @@ impl Request for BuyRequest {
 
 #[derive(Serialize, Debug, Clone)]
 pub struct SellRequest(pub TradeRequest);
+impl std::ops::Deref for SellRequest {
+    type Target = TradeRequest;
+    fn deref(&self) -> &TradeRequest {
+        &self.0
+    }
+}
+impl std::ops::DerefMut for SellRequest {
+    fn deref_mut(&mut self) -> &mut TradeRequest {
+        &mut self.0
+    }
+}
 #[derive(Deserialize, Debug, Clone)]
 pub struct SellResponse(pub TradeResponse);
+impl std::ops::Deref for SellResponse {
+    type Target = TradeResponse;
+    fn deref(&self) -> &TradeResponse {
+        &self.0
+    }
+}
+impl std::ops::DerefMut for SellResponse {
+    fn deref_mut(&mut self) -> &mut TradeResponse {
+        &mut self.0
+    }
+}
 impl SellRequest {
     pub fn market(instrument_name: &str, amount: f64) -> SellRequest {
         SellRequest(TradeRequest::market(instrument_name, amount))
