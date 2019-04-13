@@ -159,6 +159,12 @@ pub enum CancelOrderType {
     Stop,
 }
 
+impl Default for CancelOrderType {
+    fn default() -> Self {
+        CancelOrderType::All
+    }
+}
+
 #[derive(Serialize, Debug, Clone)]
 pub struct CancelRequest {
     order_id: String,
@@ -233,10 +239,11 @@ impl Request for CancelAllByInstrumentRequest {
     type Response = CancelResponse;
 }
 
-#[derive(Serialize, Debug, Clone, Copy)]
+#[derive(Serialize, Debug, Clone, Copy, Default)]
 pub struct CancelAllByCurrencyRequest {
     pub currency: Currency,
-    pub kind: AssetKind,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub kind: Option<AssetKind>,
     pub r#type: CancelOrderType,
 }
 
