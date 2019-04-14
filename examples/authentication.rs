@@ -11,7 +11,7 @@ use std::env::var;
 use tokio::runtime::Runtime;
 
 fn main() -> Result<()> {
-    dotenv().unwrap();
+    dotenv()?;
     init();
 
     let key = var("DERIBIT_KEY").unwrap();

@@ -16,4 +16,6 @@ pub enum DeribitError {
     ServoExited,
     #[fail(display = "Unknown currency {}", _0)]
     UnknownCurrency(String),
+    #[fail(display = "Websocket disconnected")]
+    WebsocketDisconnected,
 }

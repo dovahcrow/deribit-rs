@@ -9,7 +9,7 @@ mod subscription_client;
 pub use crate::api_client::{DeribitAPICallResult, DeribitAPIClient};
 pub use crate::subscription_client::DeribitSubscriptionClient;
 
-use crate::errors::Result;
+use crate::errors::{DeribitError, Result};
 use crate::models::{Either, HeartbeatMessage, JSONRPCResponse, SubscriptionMessage, WSMessage};
 use derive_builder::Builder;
 use futures::channel::{mpsc, oneshot};
@@ -78,8 +78,13 @@ impl Deribit {
             select! {
                 msg = ws.next() => {
                     trace!("[Servo] Message: {:?}", msg);
+                    let msg = if let Some(msg) = msg {
+                        msg
+                    } else {
+                        break Err(DeribitError::WebsocketDisconnected)?;
+                    };
 
-                    match msg.unwrap()? {
+                    match msg? {
                         Message::Text(msg) => {
                             let resp: WSMessage = match from_str(&msg) {
                                 Ok(msg) => msg,
@@ -92,7 +97,15 @@ impl Deribit {
                             match resp {
                                 WSMessage::RPC(msg) => {
                                     let id = msg.id;
-                                    if let Err(msg) = waiters.remove(&msg.id).unwrap().send(msg.to_result()) {
+                                    let waiter = match waiters.remove(&msg.id) {
+                                        Some(waiter) => waiter,
+                                        None => {
+                                            warn!("No waiter is waiting for {:?}", msg);
+                                            continue;
+                                        }
+                                    };
+
+                                    if let Err(msg) = waiter.send(msg.to_result()) {
                                         info!("The client for request {} is dropped, response is {:?}", id, msg);
                                     }
                                 }

@@ -98,7 +98,10 @@ where
     fn poll(self: Pin<&mut Self>, waker: &Waker) -> Poll<Result<JSONRPCResponse<R>>> {
         self.rx().poll(waker).map(|result| {
             let resp = result??;
-            let result = from_value(resp.result.unwrap())?;
+            let result = from_value(
+                resp.result
+                    .expect("result of JSONRPCResponse cannot be None"),
+            )?;
             Ok(JSONRPCResponse {
                 jsonrpc: resp.jsonrpc,
                 id: resp.id,
@@ -132,7 +135,9 @@ where
     fn poll(self: Pin<&mut Self>, waker: &Waker) -> Poll<Result<R>> {
         self.inner().poll(waker).map(|result| {
             let resp = result?;
-            Ok(resp.result.unwrap())
+            Ok(resp
+                .result
+                .expect("result of JSONRPCResponse cannot be None"))
         })
     }
 }
