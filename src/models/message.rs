@@ -1,10 +1,5 @@
 use super::session_management::HeartbeatParams;
-use super::subscription::channel::BookData;
-use super::subscription::channel::TickerData;
-use super::subscription::channel::TradesData;
-use super::subscription::channel::UserOrdersData;
-use super::subscription::channel::UserPortfolioData;
-use super::subscription::channel::UserTradesData;
+use super::subscription::channel::{BookData,TickerData,TradesData,UserOrdersData,UserPortfolioData,UserTradesData};
 use crate::errors::{DeribitError, Result};
 use crate::models::Request;
 use serde_derive::{Deserialize, Serialize};

@@ -74,6 +74,7 @@ impl Deribit {
         let mut ws = ws.fuse();
         let mut waiters: HashMap<i64, oneshot::Sender<Result<JSONRPCResponse>>> = HashMap::new();
 
+        let mut orphan_messages = HashMap::new();
         loop {
             select! {
                 msg = ws.next() => {
@@ -100,7 +101,7 @@ impl Deribit {
                                     let waiter = match waiters.remove(&msg.id) {
                                         Some(waiter) => waiter,
                                         None => {
-                                            warn!("No waiter is waiting for {:?}", msg);
+                                            orphan_messages.insert(msg.id, msg);
                                             continue;
                                         }
                                     };
@@ -132,10 +133,17 @@ impl Deribit {
                         }
                     }
                 }
-
                 waiter = waiter_rx.next() => {
                     if let Some((id, waiter)) = waiter {
-                        waiters.insert(id, waiter);
+                        if orphan_messages.contains_key(&id) {
+                            warn!("[Servo] Message come before waiter");
+                            let msg = orphan_messages.remove(&id).unwrap();
+                            if let Err(msg) = waiter.send(msg.to_result()) {
+                                info!("The client for request {} is dropped, response is {:?}", id, msg);
+                            }
+                        } else {
+                            waiters.insert(id, waiter);
+                        }
                     } else {
                         warn!("[Servo] API Client dropped");
                     }
