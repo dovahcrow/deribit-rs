@@ -10,7 +10,7 @@ use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::Compat01As03Sink;
-use futures::task::Waker;
+use futures::task::Context;
 use futures::{Future, Poll, SinkExt};
 use futures01::stream::SplitSink as SplitSink01;
 use log::trace;
@@ -95,8 +95,8 @@ where
     R: DeserializeOwned,
 {
     type Output = Result<JSONRPCResponse<R>>;
-    fn poll(self: Pin<&mut Self>, waker: &Waker) -> Poll<Result<JSONRPCResponse<R>>> {
-        self.rx().poll(waker).map(|result| {
+    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<JSONRPCResponse<R>>> {
+        self.rx().poll(cx).map(|result| {
             let resp = result??;
             let result = from_value(
                 resp.result
@@ -132,8 +132,8 @@ where
     R: DeserializeOwned,
 {
     type Output = Result<R>;
-    fn poll(self: Pin<&mut Self>, waker: &Waker) -> Poll<Result<R>> {
-        self.inner().poll(waker).map(|result| {
+    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<R>> {
+        self.inner().poll(cx).map(|result| {
             let resp = result?;
             Ok(resp
                 .result

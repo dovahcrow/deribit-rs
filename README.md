@@ -1,8 +1,6 @@
 Deribit API V2 Client for Rust Language
 =================
 
-WARNING: Due to futures is being stablized, you need rust nightly-2019-04-01 or before to successfully build this library ([ref](https://github.com/rust-lang-nursery/futures-rs/issues/1518)).
-
 This is experimental and currently under heavy development. Use at your own risk.
 
 This library uses Rust nightly features extensively like async/await and futures api. You need a nightly Rust to make it run.
