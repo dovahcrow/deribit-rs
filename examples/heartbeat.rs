@@ -1,15 +1,14 @@
-#![feature(async_await, futures_api, await_macro)]
+#![feature(async_await, await_macro)]
 
-use deribit::errors::Result;
 use deribit::models::{Either, HeartbeatType, SetHeartbeatRequest, TestRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
-use failure::Error;
+use failure::{Error, Fallible};
 use futures::{FutureExt, StreamExt, TryFutureExt};
 use tokio::runtime::Runtime;
 
-fn main() -> Result<()> {
+fn main() -> Fallible<()> {
     dotenv().unwrap();
     init();
 

@@ -5,9 +5,9 @@
 // mod support;
 // mod trading;
 
-use crate::errors::Result;
 use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
+use failure::Fallible;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::Compat01As03Sink;
 use futures::task::Context;
@@ -26,7 +26,7 @@ type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
 
 pub struct DeribitAPIClient {
     wstx: SplitWSCompatStream,
-    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Fallible<JSONRPCResponse>>)>,
 
     id: i64,
 }
@@ -34,7 +34,7 @@ pub struct DeribitAPIClient {
 impl DeribitAPIClient {
     pub(crate) fn new(
         wstx: SplitWSCompatStream,
-        waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+        waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Fallible<JSONRPCResponse>>)>,
     ) -> DeribitAPIClient {
         DeribitAPIClient {
             wstx: wstx,
@@ -47,7 +47,7 @@ impl DeribitAPIClient {
     pub async fn call_raw<'a, R>(
         &'a mut self,
         request: R,
-    ) -> Result<DeribitAPICallRawResult<R::Response>>
+    ) -> Fallible<DeribitAPICallRawResult<R::Response>>
     where
         R: Request + Serialize + 'a,
     {
@@ -66,7 +66,10 @@ impl DeribitAPIClient {
         Ok(DeribitAPICallRawResult::new(waiter_rx))
     }
 
-    pub async fn call<'a, R>(&'a mut self, request: R) -> Result<DeribitAPICallResult<R::Response>>
+    pub async fn call<'a, R>(
+        &'a mut self,
+        request: R,
+    ) -> Fallible<DeribitAPICallResult<R::Response>>
     where
         R: Request + Serialize + 'a,
     {
@@ -76,26 +79,26 @@ impl DeribitAPIClient {
 }
 
 pub struct DeribitAPICallRawResult<R> {
-    rx: oneshot::Receiver<Result<JSONRPCResponse>>,
+    rx: oneshot::Receiver<Fallible<JSONRPCResponse>>,
     _ty: PhantomData<R>,
 }
 
 impl<R> DeribitAPICallRawResult<R> {
-    pub(crate) fn new(rx: oneshot::Receiver<Result<JSONRPCResponse>>) -> Self {
+    pub(crate) fn new(rx: oneshot::Receiver<Fallible<JSONRPCResponse>>) -> Self {
         DeribitAPICallRawResult {
             rx: rx,
             _ty: PhantomData,
         }
     }
-    unsafe_pinned!(rx: oneshot::Receiver<Result<JSONRPCResponse>>);
+    unsafe_pinned!(rx: oneshot::Receiver<Fallible<JSONRPCResponse>>);
 }
 
 impl<R> Future for DeribitAPICallRawResult<R>
 where
     R: DeserializeOwned,
 {
-    type Output = Result<JSONRPCResponse<R>>;
-    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<JSONRPCResponse<R>>> {
+    type Output = Fallible<JSONRPCResponse<R>>;
+    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<JSONRPCResponse<R>>> {
         self.rx().poll(cx).map(|result| {
             let resp = result??;
             let result = from_value(
@@ -131,8 +134,8 @@ impl<R> Future for DeribitAPICallResult<R>
 where
     R: DeserializeOwned,
 {
-    type Output = Result<R>;
-    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<R>> {
+    type Output = Fallible<R>;
+    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<R>> {
         self.inner().poll(cx).map(|result| {
             let resp = result?;
             Ok(resp

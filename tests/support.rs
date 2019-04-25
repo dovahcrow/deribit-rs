@@ -1,14 +1,13 @@
-#![feature(async_await, futures_api, await_macro)]
+#![feature(async_await, await_macro)]
 
-use deribit::errors::Result;
 use deribit::models::{GetTimeRequest, HelloRequest, TestRequest};
 use deribit::Deribit;
-use failure::Error;
+use failure::{Error, Fallible};
 use futures::{FutureExt, TryFutureExt};
 use tokio::runtime::Runtime;
 
 #[test]
-fn hello() -> Result<()> {
+fn hello() -> Fallible<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
@@ -31,7 +30,7 @@ fn hello() -> Result<()> {
 }
 
 #[test]
-fn get_time() -> Result<()> {
+fn get_time() -> Fallible<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 
@@ -49,7 +48,7 @@ fn get_time() -> Result<()> {
 }
 
 #[test]
-fn test() -> Result<()> {
+fn test() -> Fallible<()> {
     let drb = Deribit::new();
     let mut rt = Runtime::new()?;
 

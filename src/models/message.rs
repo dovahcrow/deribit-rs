@@ -1,7 +1,10 @@
 use super::session_management::HeartbeatParams;
-use super::subscription::channel::{BookData,TickerData,TradesData,UserOrdersData,UserPortfolioData,UserTradesData};
-use crate::errors::{DeribitError, Result};
+use super::subscription::channel::{
+    BookData, TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData,
+};
+use crate::errors::DeribitError;
 use crate::models::Request;
+use failure::Fallible;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -35,7 +38,7 @@ pub struct JSONRPCResponse<R = Value> {
 }
 
 impl JSONRPCResponse {
-    pub fn to_result(self) -> Result<JSONRPCResponse> {
+    pub fn to_result(self) -> Fallible<JSONRPCResponse> {
         if let Some(err) = self.error {
             Err(DeribitError::RemoteError {
                 code: err.code,

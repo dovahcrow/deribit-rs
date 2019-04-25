@@ -1,17 +1,16 @@
-#![feature(async_await, futures_api, await_macro)]
+#![feature(async_await, await_macro)]
 
-use deribit::errors::Result;
 use deribit::models::{AuthRequest, GetOrderStateRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
-use failure::Error;
+use failure::{Error, Fallible};
 use futures::{FutureExt, TryFutureExt};
 use std::env::var;
 use tokio::runtime::Runtime;
 
 #[test]
-fn get_order_state() -> Result<()> {
+fn get_order_state() -> Fallible<()> {
     dotenv()?;
     init();
 

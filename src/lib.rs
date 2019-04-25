@@ -1,4 +1,4 @@
-#![feature(futures_api, async_await, await_macro, specialization)]
+#![feature(async_await, await_macro, specialization)]
 #![recursion_limit = "512"]
 
 mod api_client;
@@ -9,9 +9,10 @@ mod subscription_client;
 pub use crate::api_client::{DeribitAPICallResult, DeribitAPIClient};
 pub use crate::subscription_client::DeribitSubscriptionClient;
 
-use crate::errors::{DeribitError, Result};
+use crate::errors::DeribitError;
 use crate::models::{Either, HeartbeatMessage, JSONRPCResponse, SubscriptionMessage, WSMessage};
 use derive_builder::Builder;
+use failure::Fallible;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
@@ -46,7 +47,7 @@ impl Deribit {
         DeribitBuilder::default().build().unwrap()
     }
 
-    pub async fn connect(self) -> Result<(DeribitAPIClient, DeribitSubscriptionClient)> {
+    pub async fn connect(self) -> Fallible<(DeribitAPIClient, DeribitSubscriptionClient)> {
         let ws_url = if self.testnet { WS_URL_TESTNET } else { WS_URL };
         info!("Connecting");
         let (ws, _) = await!(connect_async(Url::parse(ws_url)?).compat())?;
@@ -67,12 +68,12 @@ impl Deribit {
     }
 
     pub async fn servo(
-        ws: impl Stream<Item = Result<Message>> + Unpin,
-        mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Result<JSONRPCResponse>>)>,
+        ws: impl Stream<Item = Fallible<Message>> + Unpin,
+        mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Fallible<JSONRPCResponse>>)>,
         mut stx: mpsc::Sender<Either<SubscriptionMessage, HeartbeatMessage>>,
-    ) -> Result<()> {
+    ) -> Fallible<()> {
         let mut ws = ws.fuse();
-        let mut waiters: HashMap<i64, oneshot::Sender<Result<JSONRPCResponse>>> = HashMap::new();
+        let mut waiters: HashMap<i64, oneshot::Sender<Fallible<JSONRPCResponse>>> = HashMap::new();
 
         let mut orphan_messages = HashMap::new();
         loop {

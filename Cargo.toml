@@ -19,6 +19,8 @@ log = "0.4"
 derive_builder = "0.7"
 pin-utils = "0.1.0-alpha.3"
 
+
 [dev-dependencies]
 env_logger = "0.6"
 dotenv = "0.13.0"
+fluid = "0.4"

@@ -1,7 +1,4 @@
-use failure::{Error, Fail};
-use std::result::Result as StdResult;
-
-pub type Result<T> = StdResult<T, Error>;
+use failure::Fail;
 
 #[derive(Fail, Debug)]
 pub enum DeribitError {

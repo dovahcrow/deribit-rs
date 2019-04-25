@@ -2,6 +2,7 @@ use crate::models::{
     AdvanceOption, AssetKind, Currency, Direction, Either, EmptyRequest, OrderState, OrderType,
     Request, Role, TimeInForce, Trigger,
 };
+use serde::{Deserialize, Deserializer};
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Debug, Clone)]
@@ -177,7 +178,8 @@ pub struct Order {
     pub time_in_force: TimeInForce,
     pub reduce_only: bool,
     pub profit_loss: f64,
-    pub price: Either<String, f64>,
+    #[serde(deserialize_with = "deserialize_price")]
+    pub price: Option<f64>, // None for stop_market
     pub post_only: bool,
     pub order_type: OrderType,
     pub order_state: OrderState,
@@ -194,6 +196,14 @@ pub struct Order {
     pub average_price: f64,
     pub api: bool,
     pub amount: f64,
+}
+
+fn deserialize_price<'de, D>(de: D) -> Result<Option<f64>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let p: Either<String, f64> = Deserialize::deserialize(de)?;
+    Ok(p.right())
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]

@@ -1,19 +1,17 @@
-#![feature(async_await, futures_api, await_macro)]
+#![feature(async_await, await_macro)]
 
-use deribit::errors::Result;
 use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
-use env_logger::init;
-use failure::Error;
+use failure::{Error, Fallible};
 use futures::{FutureExt, TryFutureExt};
 use std::env::var;
 use tokio::runtime::Runtime;
 
 #[test]
-fn get_account_summary() -> Result<()> {
+fn get_account_summary() -> Fallible<()> {
     dotenv()?;
-    init();
+
 
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();

@@ -6,8 +6,8 @@ pub mod subscription;
 mod support;
 mod trading;
 
-use crate::errors::{DeribitError, Result};
-use failure::Error;
+use crate::errors::DeribitError;
+use failure::{Error, Fallible};
 use serde_derive::{Deserialize, Serialize};
 use std::fmt::{Display, Error as FmtError, Formatter};
 use std::result::Result as StdResult;
@@ -72,7 +72,7 @@ impl std::fmt::Display for Currency {
 
 impl std::str::FromStr for Currency {
     type Err = Error;
-    fn from_str(s: &str) -> Result<Currency> {
+    fn from_str(s: &str) -> Fallible<Currency> {
         match s {
             "BTC" => Ok(Currency::BTC),
             "ETH" => Ok(Currency::ETH),
