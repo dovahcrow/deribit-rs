@@ -10,7 +10,7 @@ use tokio::runtime::Runtime;
 
 #[test]
 fn get_account_summary() -> Fallible<()> {
-    dotenv()?;
+    let _ = dotenv();
 
 
     let key = var("DERIBIT_KEY").unwrap();

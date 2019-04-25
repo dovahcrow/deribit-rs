@@ -3,6 +3,7 @@
 use deribit::models::subscription::{PrivateSubscribeRequest, PublicSubscribeRequest};
 use deribit::models::{AuthRequest, BuyRequest, CancelRequest};
 use deribit::{Deribit, DeribitBuilder};
+use dotenv::dotenv;
 use failure::{Error, Fallible};
 use fluid::prelude::*;
 use futures::{FutureExt, StreamExt, TryFutureExt};
@@ -10,8 +11,14 @@ use std::env::var;
 use tokio::runtime::Runtime;
 
 
-#[derive(Default)]
 struct SubscriptionTest;
+
+impl Default for SubscriptionTest {
+    fn default() -> Self {
+        let _ = dotenv();
+        SubscriptionTest
+    }
+}
 
 
 // The tests:
@@ -19,8 +26,6 @@ struct SubscriptionTest;
 impl SubscriptionTest {
     #[fact]
     fn ticker(self) -> Fallible<()> {
-        dotenv::dotenv()?;
-
         let drb = Deribit::new();
         let mut rt = Runtime::new()?;
 
@@ -45,7 +50,6 @@ impl SubscriptionTest {
 
     #[fact]
     fn orderbook(self) -> Fallible<()> {
-        dotenv::dotenv()?;
 
         let drb = Deribit::new();
         let mut rt = Runtime::new()?;
@@ -71,8 +75,6 @@ impl SubscriptionTest {
 
     #[fact]
     fn trades(self) -> Fallible<()> {
-        dotenv::dotenv()?;
-
         let drb = Deribit::new();
         let mut rt = Runtime::new()?;
 
@@ -100,7 +102,6 @@ impl SubscriptionTest {
 
     #[fact]
     fn user_orders(self) -> Fallible<()> {
-        dotenv::dotenv()?;
 
         let key = var("DERIBIT_KEY").unwrap();
         let secret = var("DERIBIT_SECRET").unwrap();

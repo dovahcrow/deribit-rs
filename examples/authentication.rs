@@ -10,7 +10,7 @@ use std::env::var;
 use tokio::runtime::Runtime;
 
 fn main() -> Fallible<()> {
-    dotenv()?;
+    let _ = dotenv();
     init();
 
     let key = var("DERIBIT_KEY").unwrap();
