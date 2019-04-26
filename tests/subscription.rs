@@ -11,12 +11,24 @@ use std::env::var;
 use tokio::runtime::Runtime;
 
 
-struct SubscriptionTest;
+struct SubscriptionTest {
+    rt: Runtime,
+    drb: Deribit,
+    key: String,
+    secret: String,
+}
 
 impl Default for SubscriptionTest {
     fn default() -> Self {
         let _ = dotenv();
-        SubscriptionTest
+
+        Self {
+            key: var("DERIBIT_KEY").unwrap(),
+            secret: var("DERIBIT_SECRET").unwrap(),
+            drb: DeribitBuilder::default().testnet(true).build().unwrap(),
+            rt: Runtime::new().unwrap(),
+
+        }
     }
 }
 
@@ -26,9 +38,7 @@ impl Default for SubscriptionTest {
 impl SubscriptionTest {
     #[fact]
     fn ticker(self) -> Fallible<()> {
-        let drb = Deribit::new();
-        let mut rt = Runtime::new()?;
-
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = await!(drb.connect()).unwrap();
 
@@ -50,9 +60,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn orderbook(self) -> Fallible<()> {
-
-        let drb = Deribit::new();
-        let mut rt = Runtime::new()?;
+        let Self { drb, mut rt, .. } = self;
 
         let fut = async {
             let (mut client, subscription) = await!(drb.connect()).unwrap();
@@ -75,9 +83,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn trades(self) -> Fallible<()> {
-        let drb = Deribit::new();
-        let mut rt = Runtime::new()?;
-
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = await!(drb.connect()).unwrap();
 
@@ -90,24 +96,24 @@ impl SubscriptionTest {
 
             let _ = await!(client.call(req)).unwrap();
 
-            let v = await!(subscription.take(5).collect::<Vec<_>>());
+            let v = await!(subscription.take(2).collect::<Vec<_>>());
             Ok::<_, Error>(v)
         };
 
         let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
-        v.len().should().be_equal_to(5);
+        v.len().should().be_equal_to(2);
         Ok(())
     }
 
     #[fact]
     fn user_orders(self) -> Fallible<()> {
-
-        let key = var("DERIBIT_KEY").unwrap();
-        let secret = var("DERIBIT_SECRET").unwrap();
-
-        let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
+        let Self {
+            mut rt,
+            drb,
+            key,
+            secret,
+        } = self;
 
         let fut = async move {
             let (mut client, subscription) = await!(drb.connect()).unwrap();

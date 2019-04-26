@@ -1,5 +1,5 @@
 use super::session_management::HeartbeatParams;
-use super::subscription::channel::{
+use super::subscription::{
     BookData, TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData,
 };
 use crate::errors::DeribitError;

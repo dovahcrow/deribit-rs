@@ -1,5 +1,6 @@
 use crate::models::{AssetKind, Currency, Direction, Request};
 use serde_derive::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Debug, Clone, Default)]
 pub struct GetPositionsRequest {
@@ -101,4 +102,55 @@ pub struct GetAccountSummaryResponse {
 impl Request for GetAccountSummaryRequest {
     const METHOD: &'static str = "private/get_account_summary";
     type Response = GetAccountSummaryResponse;
+}
+
+#[derive(Serialize)]
+pub struct GetSubaccountsRequest {
+    pub with_portfolio: bool,
+}
+
+impl GetSubaccountsRequest {
+    pub fn new() -> Self {
+        Self {
+            with_portfolio: false,
+        }
+    }
+
+    pub fn with_portfolio() -> Self {
+        Self {
+            with_portfolio: true,
+        }
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct Portfolio {
+    available_funds: f64,
+    available_withdrawal_funds: f64,
+    balance: f64,
+    currency: Currency,
+    equity: f64,
+    initial_margin: f64,
+    maintenance_margin: f64,
+    margin_balance: f64,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct GetSubaccountsResponse {
+    pub email: String,
+    pub id: u64,
+    pub is_password: bool,
+    pub login_enabled: bool,
+    pub not_confirmed_email: Option<String>,
+    pub portfolio: HashMap<Currency, Portfolio>,
+    pub receive_notifications: bool,
+    pub system_name: String,
+    pub tfa_enabled: bool,
+    pub r#type: String,
+    pub username: String,
+}
+
+impl Request for GetSubaccountsRequest {
+    const METHOD: &'static str = "private/get_subaccounts";
+    type Response = Vec<GetSubaccountsResponse>;
 }

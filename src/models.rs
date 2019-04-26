@@ -1,5 +1,6 @@
 mod account;
 mod authentication;
+mod market_data;
 mod message;
 mod session_management;
 pub mod subscription;
@@ -14,8 +15,14 @@ use std::result::Result as StdResult;
 
 pub use account::{
     GetAccountSummaryRequest, GetAccountSummaryResponse, GetPositionsRequest, GetPositionsResponse,
+    GetSubaccountsRequest, GetSubaccountsResponse,
 };
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
+pub use market_data::{GetIndexRequest, GetIndexResponse};
+pub use message::{
+    HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
+    WSMessage,
+};
 pub use session_management::{
     HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,
 };
@@ -29,10 +36,6 @@ pub use trading::{
     TradeRequest, TradeResponse,
 };
 
-pub use message::{
-    HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
-    WSMessage,
-};
 
 pub use subscription::{PrivateSubscribeRequest, PublicSubscribeRequest, SubscribeResponse};
 
@@ -54,7 +57,9 @@ impl<R: Request> EmptyRequest for R {
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Currency {
+    #[serde(alias = "btc")]
     BTC,
+    #[serde(alias = "eth")]
     ETH,
 }
 

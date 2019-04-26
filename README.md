@@ -38,7 +38,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] /private/get_new_announcements
     - [ ] /private/get_position
     - [x] /private/get_positions
-    - [ ] /private/get_subaccounts
+    - [x] /private/get_subaccounts
     - [ ] /private/set_announcement_as_read
     - [ ] /private/set_email_for_subaccount
     - [ ] /private/set_email_language 
@@ -70,7 +70,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] /private/get_settlement_history_by_currency
 
 - Market Data
-    - Not implemented
+    - [x] /public/get_index
 - Wallet
     - Not implemented
 - Subscriptions
