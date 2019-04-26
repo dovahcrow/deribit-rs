@@ -125,14 +125,14 @@ impl GetSubaccountsRequest {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Portfolio {
-    available_funds: f64,
-    available_withdrawal_funds: f64,
-    balance: f64,
-    currency: Currency,
-    equity: f64,
-    initial_margin: f64,
-    maintenance_margin: f64,
-    margin_balance: f64,
+    pub available_funds: f64,
+    pub available_withdrawal_funds: f64,
+    pub balance: f64,
+    pub currency: Currency,
+    pub equity: f64,
+    pub initial_margin: f64,
+    pub maintenance_margin: f64,
+    pub margin_balance: f64,
 }
 
 #[derive(Deserialize, Debug, Clone)]
