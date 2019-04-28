@@ -254,7 +254,7 @@ pub struct CancelAllByInstrumentRequest {
 
 impl Request for CancelAllByInstrumentRequest {
     const METHOD: &'static str = "private/cancel_all_by_instrument";
-    type Response = CancelResponse;
+    type Response = CancelAllResponse;
 }
 
 #[derive(Serialize, Debug, Clone, Copy, Default)]
@@ -267,7 +267,7 @@ pub struct CancelAllByCurrencyRequest {
 
 impl Request for CancelAllByCurrencyRequest {
     const METHOD: &'static str = "private/cancel_all_by_currency";
-    type Response = CancelResponse;
+    type Response = CancelAllResponse;
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
