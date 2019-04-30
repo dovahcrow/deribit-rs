@@ -18,7 +18,9 @@ pub use account::{
     GetSubaccountsRequest, GetSubaccountsResponse,
 };
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
-pub use market_data::{GetIndexRequest, GetIndexResponse};
+pub use market_data::{
+    GetIndexRequest, GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
+};
 pub use message::{
     HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
     WSMessage,
@@ -61,6 +63,8 @@ pub enum Currency {
     BTC,
     #[serde(alias = "eth")]
     ETH,
+    #[serde(alias = "usd")]
+    USD,
 }
 
 impl Default for Currency {

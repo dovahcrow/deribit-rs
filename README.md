@@ -71,6 +71,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
 
 - Market Data
     - [x] /public/get_index
+    - [x] /public/get_instruments
 - Wallet
     - Not implemented
 - Subscriptions
