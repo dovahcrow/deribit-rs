@@ -15,9 +15,25 @@ pub struct PublicSubscribeRequest {
     pub channels: Vec<String>,
 }
 
+impl PublicSubscribeRequest {
+    pub fn new(channels: &[String]) -> Self {
+        Self {
+            channels: channels.to_vec(),
+        }
+    }
+}
+
 #[derive(Serialize, Debug, Clone)]
 pub struct PrivateSubscribeRequest {
     pub channels: Vec<String>,
+}
+
+impl PrivateSubscribeRequest {
+    pub fn new(channels: &[String]) -> Self {
+        Self {
+            channels: channels.to_vec(),
+        }
+    }
 }
 
 #[derive(Deserialize, Debug, Clone)]
