@@ -16,7 +16,7 @@ pub struct TickerData {
     pub index_price: f64,
     pub instrument_name: String,
     pub interest_rate: Option<f64>,
-    pub last_price: f64,
+    pub last_price: Option<f64>,
     pub mark_iv: Option<f64>,
     pub mark_price: f64,
     pub max_price: f64,
