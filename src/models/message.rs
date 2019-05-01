@@ -1,6 +1,7 @@
 use super::session_management::HeartbeatParams;
 use super::subscription::{
-    BookData, TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData,
+    BookData, GroupedBookData, TickerData, TradesData, UserOrdersData, UserPortfolioData,
+    UserTradesData,
 };
 use crate::errors::DeribitError;
 use crate::models::Request;
@@ -95,6 +96,7 @@ pub struct SubscriptionParams<D = SubscriptionData> {
 #[serde(untagged)]
 pub enum SubscriptionData {
     Book(BookData),
+    GroupedBook(GroupedBookData),
     UserPortfolio(UserPortfolioData),
     UserTrades(Vec<UserTradesData>),
     Ticker(TickerData),

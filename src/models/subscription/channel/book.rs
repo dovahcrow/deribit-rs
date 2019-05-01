@@ -20,3 +20,13 @@ pub struct BookData {
     pub prev_change_id: Option<i64>,
     pub timestamp: u64,
 }
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct GroupedBookData {
+    pub asks: Vec<(f64, f64)>,
+    pub bids: Vec<(f64, f64)>,
+    pub change_id: i64,
+    pub instrument_name: String,
+    pub prev_change_id: Option<i64>,
+    pub timestamp: u64,
+}

@@ -5,7 +5,7 @@ mod user_orders;
 mod user_portfolio;
 mod user_trades;
 
-pub use book::{BookData, Delta, OrderBookDelta};
+pub use book::{BookData, Delta, GroupedBookData, OrderBookDelta};
 pub use ticker::{Greeks, Stats, TickerData};
 pub use trades::TradesData;
 pub use user_orders::UserOrdersData;

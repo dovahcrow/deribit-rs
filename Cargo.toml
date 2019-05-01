@@ -1,12 +1,13 @@
 [package]
 name = "deribit"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Weiyüen Wu <doomsplayer@gmail.com>"]
 edition = "2018"
 description = "Rust client for deribit, nightly only. Please look at tests/examples for detail usage at current stage."
 license = "MIT"
 documentation = "https://docs.rs/deribit"
 repository = "https://github.com/dovahcrow/deribit-rs"
+readme = "README.md"
 
 [dependencies]
 futures01 = { version = "0.1", package = "futures"}

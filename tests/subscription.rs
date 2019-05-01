@@ -43,13 +43,18 @@ impl SubscriptionTest {
             let (mut client, subscription) = await!(drb.connect()).unwrap();
 
             let req = PublicSubscribeRequest {
-                channels: vec!["ticker.BTC-28JUN19.100ms".into()],
+                channels: vec![
+                    "ticker.BTC-28JUN19.100ms".into(),
+                    "ticker.BTC-28JUN19.raw".into(),
+                    "ticker.BTC-28JUN19-7500-P.raw".into(),
+                    "ticker.BTC-28JUN19-7500-P.100ms".into(),
+                ],
             };
 
             let _ = await!(client.call(req)).unwrap();
 
             let v = await!(subscription.take(5).collect::<Vec<_>>());
-            Ok::<_, Error>(v)
+            Ok::<Vec<_>, Error>(v)
         };
 
         let fut = fut.boxed().compat();

@@ -26,7 +26,7 @@ pub struct TickerData {
     pub state: OrderState,
     pub stats: Stats,
     pub timestamp: u64,
-    pub underlying_index: Option<f64>,
+    pub underlying_index: Option<String>,
     pub underlying_price: Option<f64>,
 }
 
@@ -41,7 +41,7 @@ pub struct Greeks {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Stats {
-    pub high: f64,
-    pub low: f64,
-    pub volume: f64,
+    pub high: Option<f64>,
+    pub low: Option<f64>,
+    pub volume: Option<f64>,
 }

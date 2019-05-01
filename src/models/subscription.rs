@@ -7,7 +7,7 @@ pub use channel::TradesData;
 pub use channel::UserOrdersData;
 pub use channel::UserPortfolioData;
 pub use channel::UserTradesData;
-pub use channel::{BookData, Delta, OrderBookDelta};
+pub use channel::{BookData, Delta, GroupedBookData, OrderBookDelta};
 pub use channel::{Greeks, Stats, TickerData};
 
 #[derive(Serialize, Debug, Clone)]
