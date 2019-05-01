@@ -6,7 +6,7 @@ pub mod errors;
 pub mod models;
 mod subscription_client;
 
-pub use crate::api_client::{DeribitAPICallResult, DeribitAPIClient};
+pub use crate::api_client::{DeribitAPICallRawResult, DeribitAPICallResult, DeribitAPIClient};
 pub use crate::subscription_client::DeribitSubscriptionClient;
 
 use crate::errors::DeribitError;
@@ -67,7 +67,7 @@ impl Deribit {
         ))
     }
 
-    pub async fn servo(
+    async fn servo(
         ws: impl Stream<Item = Fallible<Message>> + Unpin,
         mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Fallible<JSONRPCResponse>>)>,
         mut stx: mpsc::Sender<Either<SubscriptionMessage, HeartbeatMessage>>,

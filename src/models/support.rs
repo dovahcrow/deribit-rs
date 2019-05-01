@@ -1,9 +1,13 @@
 use crate::models::{EmptyRequest, Request};
 use serde_derive::{Deserialize, Serialize};
+use shrinkwraprs::Shrinkwrap;
 
 #[derive(Serialize, Debug, Clone)]
 pub struct GetTimeRequest;
-pub type GetTimeResponse = i64;
+
+#[derive(Deserialize, Debug, Clone, Shrinkwrap)]
+#[shrinkwrap(mutable)]
+pub struct GetTimeResponse(pub i64);
 
 impl Request for GetTimeRequest {
     const METHOD: &'static str = "public/get_time";

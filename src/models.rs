@@ -22,8 +22,8 @@ pub use market_data::{
     GetIndexRequest, GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
 };
 pub use message::{
-    HeartbeatMessage, JSONRPCRequest, JSONRPCResponse, SubscriptionData, SubscriptionMessage,
-    WSMessage,
+    HeartbeatMessage, HeartbeatMethod, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion,
+    SubscriptionData, SubscriptionMessage, WSMessage,
 };
 pub use session_management::{
     HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,
