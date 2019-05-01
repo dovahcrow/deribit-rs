@@ -75,17 +75,17 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
 - Wallet
     - Not implemented
 - Subscriptions
-    - [ ] announcements
-    - [ ] book.{instrument_name}.{group}.{depth}.{interval}
+    - [x] announcements
+    - [x] book.{instrument_name}.{group}.{depth}.{interval}
     - [x] book.{instrument_name}.{interval}
-    - [ ] deribit_price_index.{index_name}
-    - [ ] deribit_price_ranking.{index_name}
-    - [ ] estimated_expiration_price.{index_name}
-    - [ ] markprice.options.{index_name}
-    - [ ] perpetual.{instrument_name}.{interval}
-    - [ ] quote.{instrument_name}
+    - [x] deribit_price_index.{index_name}
+    - [x] deribit_price_ranking.{index_name}
+    - [x] estimated_expiration_price.{index_name}
+    - [x] markprice.options.{index_name}
+    - [x] perpetual.{instrument_name}.{interval}
+    - [x] quote.{instrument_name}
     - [x] ticker.{instrument_name}.{interval}
-    - [ ] trades.{instrument_name}.{interval}
+    - [x] trades.{instrument_name}.{interval}
     - [x] user.orders.{instrument_name}.{interval}
     - [x] user.orders.{kind}.{currency}.{interval}
     - [x] user.portfolio.{currency}

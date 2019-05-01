@@ -1,7 +1,8 @@
 use super::session_management::HeartbeatParams;
 use super::subscription::{
-    BookData, GroupedBookData, TickerData, TradesData, UserOrdersData, UserPortfolioData,
-    UserTradesData,
+    AnnouncementsData, BookData, DeribitPriceIndexData, DeribitPriceRankingData,
+    EstimatedExpirationPriceData, GroupedBookData, MarkPriceOptionData, PerpetualData, QuoteData,
+    TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData,
 };
 use crate::errors::DeribitError;
 use crate::models::Request;
@@ -95,14 +96,21 @@ pub struct SubscriptionParams<D = SubscriptionData> {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum SubscriptionData {
+    Announcements(AnnouncementsData),
     Book(BookData),
+    DeribitPriceIndex(DeribitPriceIndexData),
+    DeribitPriceRanking(Vec<DeribitPriceRankingData>),
+    EstimatedExpirationPrice(EstimatedExpirationPriceData),
     GroupedBook(GroupedBookData),
-    UserPortfolio(UserPortfolioData),
-    UserTrades(Vec<UserTradesData>),
+    MarkPriceOption(Vec<MarkPriceOptionData>),
+    Perpetual(PerpetualData),
+    Quote(QuoteData),
     Ticker(TickerData),
     Trades(Vec<TradesData>),
     UserOrders(UserOrdersData),
-    UserOrdersMulti(Vec<UserOrdersData>),
+    UserOrdersBatch(Vec<UserOrdersData>),
+    UserPortfolio(UserPortfolioData),
+    UserTrades(Vec<UserTradesData>),
 }
 
 #[derive(Deserialize, Clone, Debug)]

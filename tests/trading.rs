@@ -37,7 +37,7 @@ impl TradingTest {
             let req = AuthRequest::credential_auth(&key, &secret);
             let _ = await!(await!(client.call(req))?)?;
 
-            let req = GetOrderStateRequest::new("2260120935");
+            let req = GetOrderStateRequest::new("2320198993");
             Ok::<_, Error>(await!(await!(client.call(req))?)?)
         };
 
