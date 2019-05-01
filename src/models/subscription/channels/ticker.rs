@@ -1,7 +1,7 @@
 use crate::models::OrderState;
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TickerData {
     pub ask_iv: Option<f64>,
     pub best_ask_amount: f64,
@@ -30,7 +30,7 @@ pub struct TickerData {
     pub underlying_price: Option<f64>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Greeks {
     pub delta: f64,
     pub gamma: f64,
@@ -39,7 +39,7 @@ pub struct Greeks {
     pub vega: f64,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Stats {
     pub high: Option<f64>,
     pub low: Option<f64>,

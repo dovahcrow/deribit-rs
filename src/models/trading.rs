@@ -6,11 +6,11 @@ use serde::{Deserialize, Deserializer};
 use serde_derive::{Deserialize, Serialize};
 use shrinkwraprs::Shrinkwrap;
 
-#[derive(Serialize, Debug, Clone, Shrinkwrap)]
+#[derive(Deserialize, Serialize, Debug, Clone, Shrinkwrap)]
 #[shrinkwrap(mutable)]
 pub struct BuyRequest(pub TradeRequest);
 
-#[derive(Deserialize, Debug, Clone, Shrinkwrap)]
+#[derive(Deserialize, Serialize, Debug, Clone, Shrinkwrap)]
 #[shrinkwrap(mutable)]
 pub struct BuyResponse(pub TradeResponse);
 
@@ -28,11 +28,11 @@ impl Request for BuyRequest {
     type Response = BuyResponse;
 }
 
-#[derive(Serialize, Debug, Clone, Shrinkwrap)]
+#[derive(Deserialize, Serialize, Clone, Debug, Shrinkwrap)]
 #[shrinkwrap(mutable)]
 pub struct SellRequest(pub TradeRequest);
 
-#[derive(Deserialize, Debug, Clone, Shrinkwrap)]
+#[derive(Deserialize, Serialize, Debug, Clone, Shrinkwrap)]
 #[shrinkwrap(mutable)]
 pub struct SellResponse(pub TradeResponse);
 
@@ -50,7 +50,7 @@ impl Request for SellRequest {
     type Response = SellResponse;
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct TradeRequest {
     pub instrument_name: String,
     pub amount: f64,
@@ -108,13 +108,13 @@ impl TradeRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TradeResponse {
     pub trades: Vec<Trade>,
     pub order: Order,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Trade {
     pub trade_seq: i64,
     pub trade_id: String,
@@ -136,7 +136,7 @@ pub struct Trade {
     pub amount: f64,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Order {
     pub time_in_force: TimeInForce,
     pub reduce_only: bool,
@@ -183,7 +183,7 @@ impl Default for CancelOrderType {
     }
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct CancelRequest {
     order_id: String,
 }
@@ -196,7 +196,7 @@ impl CancelRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CancelResponse {
     pub advanced: Option<AdvanceOption>,
     pub amount: f64,
@@ -231,7 +231,7 @@ impl Request for CancelRequest {
     type Response = CancelResponse;
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct CancelAllRequest;
 
 impl Request for CancelAllRequest {
@@ -246,7 +246,7 @@ impl EmptyRequest for CancelAllRequest {
     }
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct CancelAllByInstrumentRequest {
     pub instrument_name: String,
     pub r#type: CancelOrderType,
@@ -257,7 +257,7 @@ impl Request for CancelAllByInstrumentRequest {
     type Response = CancelAllResponse;
 }
 
-#[derive(Serialize, Debug, Clone, Copy, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, Default)]
 pub struct CancelAllByCurrencyRequest {
     pub currency: Currency,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -276,7 +276,7 @@ pub enum CancelAllResponse {
     Ok,
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetOrderStateRequest {
     order_id: String,
 }
@@ -289,7 +289,7 @@ impl GetOrderStateRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetOrderStateResponse {
     pub advanced: Option<AdvanceOption>,
     pub amount: f64,

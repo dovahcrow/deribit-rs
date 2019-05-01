@@ -2,10 +2,10 @@ use crate::models::{EmptyRequest, Request};
 use serde_derive::{Deserialize, Serialize};
 use shrinkwraprs::Shrinkwrap;
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetTimeRequest;
 
-#[derive(Deserialize, Debug, Clone, Shrinkwrap)]
+#[derive(Deserialize, Serialize, Debug, Clone, Shrinkwrap)]
 #[shrinkwrap(mutable)]
 pub struct GetTimeResponse(pub i64);
 
@@ -21,13 +21,13 @@ impl EmptyRequest for GetTimeRequest {
     }
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct HelloRequest {
     pub client_name: String,
     pub client_version: String,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct HelloResponse {
     pub version: String,
 }
@@ -37,12 +37,12 @@ impl Request for HelloRequest {
     type Response = HelloResponse;
 }
 
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct TestRequest {
     pub expected_result: Option<String>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TestResponse {
     pub version: String,
 }

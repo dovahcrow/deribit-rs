@@ -1,6 +1,6 @@
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct QuoteData {
     pub best_ask_amount: f64,
     pub best_ask_price: f64,

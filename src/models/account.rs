@@ -2,14 +2,14 @@ use crate::models::{AssetKind, Currency, Direction, Request};
 use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct GetPositionsRequest {
     pub currency: Currency,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub kind: Option<AssetKind>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetPositionsResponse {
     pub average_price: f64,
     pub average_price_usd: Option<f64>,
@@ -37,7 +37,7 @@ impl Request for GetPositionsRequest {
     type Response = Vec<GetPositionsResponse>;
 }
 
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct GetAccountSummaryRequest {
     pub currency: Currency,
     pub extended: bool,
@@ -57,7 +57,7 @@ impl GetAccountSummaryRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetAccountSummaryResponse {
     pub id: Option<u64>,
     pub system_name: Option<String>,
@@ -104,7 +104,7 @@ impl Request for GetAccountSummaryRequest {
     type Response = GetAccountSummaryResponse;
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetSubaccountsRequest {
     pub with_portfolio: bool,
 }
@@ -123,7 +123,7 @@ impl GetSubaccountsRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Portfolio {
     pub available_funds: f64,
     pub available_withdrawal_funds: f64,
@@ -135,7 +135,7 @@ pub struct Portfolio {
     pub margin_balance: f64,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetSubaccountsResponse {
     pub email: String,
     pub id: u64,

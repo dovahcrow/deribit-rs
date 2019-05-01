@@ -2,7 +2,7 @@ use crate::models::{AssetKind, Currency, Request};
 use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetIndexRequest {
     pub currency: Currency,
 }
@@ -13,7 +13,7 @@ impl GetIndexRequest {
     }
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetIndexResponse {
     pub edp: f64,
     #[serde(flatten)]
@@ -26,8 +26,7 @@ impl Request for GetIndexRequest {
     type Response = GetIndexResponse;
 }
 
-
-#[derive(Serialize, Default)]
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
 pub struct GetInstrumentsRequest {
     pub currency: Currency,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -61,7 +60,7 @@ impl GetInstrumentsRequest {
     }
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetInstrumentsResponse {
     pub base_currency: String,
     pub contract_size: f64,

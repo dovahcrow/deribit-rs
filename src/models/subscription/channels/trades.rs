@@ -1,7 +1,7 @@
 use crate::models::Direction;
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TradesData {
     pub amount: f64,
     pub direction: Direction,

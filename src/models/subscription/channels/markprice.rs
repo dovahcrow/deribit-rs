@@ -1,6 +1,6 @@
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct MarkPriceOptionData {
     pub instrument_name: String,
     pub iv: f64,

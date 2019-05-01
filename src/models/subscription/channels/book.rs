@@ -1,6 +1,6 @@
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Clone, Copy)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum Delta {
     New,
@@ -8,10 +8,10 @@ pub enum Delta {
     Delete,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct OrderBookDelta(pub Delta, pub f64, pub f64);
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct BookData {
     pub asks: Vec<OrderBookDelta>,
     pub bids: Vec<OrderBookDelta>,
@@ -21,7 +21,7 @@ pub struct BookData {
     pub timestamp: u64,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GroupedBookData {
     pub asks: Vec<(f64, f64)>,
     pub bids: Vec<(f64, f64)>,

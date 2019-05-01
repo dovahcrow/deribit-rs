@@ -10,7 +10,7 @@ use failure::Fallible;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum WSMessage {
     RPC(JSONRPCResponse),
@@ -18,7 +18,7 @@ pub enum WSMessage {
     Heartbeat(HeartbeatMessage),
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct JSONRPCRequest<Q: Request> {
     pub id: i64,
     pub method: String,
@@ -26,7 +26,7 @@ pub struct JSONRPCRequest<Q: Request> {
     pub params: Q,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct JSONRPCResponse<R = Value> {
     pub jsonrpc: JSONRPCVersion,
@@ -55,45 +55,45 @@ impl JSONRPCResponse {
     }
 }
 
-#[derive(Deserialize, Clone, Debug, Copy)]
+#[derive(Deserialize, Serialize, Clone, Debug, Copy)]
 pub enum JSONRPCVersion {
     #[serde(rename = "2.0")]
     V2,
 }
 
-#[derive(Deserialize, Clone, Debug, Copy)]
+#[derive(Deserialize, Serialize, Clone, Debug, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum SubscriptionMethod {
     Subscription,
 }
 
-#[derive(Deserialize, Clone, Debug, Copy)]
+#[derive(Deserialize, Serialize, Clone, Debug, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum HeartbeatMethod {
     Heartbeat,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct HeartbeatMessage {
     pub jsonrpc: JSONRPCVersion,
     pub method: HeartbeatMethod,
     pub params: HeartbeatParams,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct SubscriptionMessage<D = SubscriptionData> {
     pub jsonrpc: JSONRPCVersion,
     pub method: SubscriptionMethod,
     pub params: SubscriptionParams<D>,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct SubscriptionParams<D = SubscriptionData> {
     pub channel: String,
     pub data: D,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum SubscriptionData {
     Announcements(AnnouncementsData),
@@ -113,7 +113,7 @@ pub enum SubscriptionData {
     UserTrades(Vec<UserTradesData>),
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct ErrorDetail {
     pub code: i64,
     pub message: String,

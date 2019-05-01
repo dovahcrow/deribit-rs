@@ -1,10 +1,10 @@
 use crate::models::{Currency, Direction, OrderState, OrderType, Role};
-use serde_derive::Deserialize;
+use serde_derive::{Deserialize, Serialize};
 
 // This is for
 // user.trades.{kind}.{currency}.{interval}.rs
 // user.trades.{instrument_name}.{interval}
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserTradesData {
     pub amount: f64,
     pub direction: Direction,

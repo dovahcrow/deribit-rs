@@ -1,7 +1,7 @@
 use crate::models::Request;
 use serde_derive::{Deserialize, Serialize};
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum GrantType {
     Password,
@@ -16,7 +16,7 @@ impl Default for GrantType {
     }
 }
 
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct AuthRequest {
     pub grant_type: GrantType,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -80,7 +80,7 @@ impl AuthRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AuthResponse {
     acccess_token: Option<String>,
     expires_in: i64,

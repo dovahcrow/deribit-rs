@@ -17,7 +17,7 @@ pub use channels::UserTradesData;
 pub use channels::{BookData, Delta, GroupedBookData, OrderBookDelta};
 pub use channels::{Greeks, Stats, TickerData};
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct PublicSubscribeRequest {
     pub channels: Vec<String>,
 }
@@ -30,7 +30,7 @@ impl PublicSubscribeRequest {
     }
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct PrivateSubscribeRequest {
     pub channels: Vec<String>,
 }
@@ -43,7 +43,7 @@ impl PrivateSubscribeRequest {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct SubscribeResponse(pub Vec<String>);
 
 impl Request for PublicSubscribeRequest {
