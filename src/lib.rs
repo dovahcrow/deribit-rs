@@ -56,7 +56,7 @@ impl Deribit {
         let (stx, srx) = mpsc::channel(self.subscription_buffer_size);
         let (waiter_tx, waiter_rx) = mpsc::channel(10);
         let background = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|e| {
-            error!("[Servo] Exiting because of '{}'", e);
+            warn!("[Servo] Exiting because of '{}'", e);
         });
 
         tokio::spawn(background.boxed().compat());
@@ -76,15 +76,14 @@ impl Deribit {
         let mut waiters: HashMap<i64, oneshot::Sender<Fallible<JSONRPCResponse>>> = HashMap::new();
 
         let mut orphan_messages = HashMap::new();
-        loop {
+
+        let (mut sdropped, mut cdropped) = (false, false);
+        while !sdropped && !cdropped {
             select! {
                 msg = ws.next() => {
                     trace!("[Servo] Message: {:?}", msg);
-                    let msg = if let Some(msg) = msg {
-                        msg
-                    } else {
-                        break Err(DeribitError::WebsocketDisconnected)?;
-                    };
+                    if sdropped { continue; }
+                    let msg = if let Some(msg) = msg { msg } else { Err(DeribitError::WebsocketDisconnected)? };
 
                     match msg? {
                         Message::Text(msg) => {
@@ -114,23 +113,34 @@ impl Deribit {
                                 WSMessage::Subscription(event) => {
                                     let fut = stx.send(Either::Left(event)).compat();
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
-                                    await!(fut)?
+                                    match await!(fut).map_err(|e| e.into_inner()) {
+                                        Ok(_) => {}
+                                        Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
+                                        Err(Some(e)) => { unreachable!("futures::mpsc won't complain channel is full") },
+                                        Err(None) => { warn!("Subscription channel is full") }
+                                    }
+
                                 }
                                 WSMessage::Heartbeat(event) => {
                                     let fut = stx.send(Either::Right(event)).compat();
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
-                                    await!(fut)?
+                                    match await!(fut).map_err(|e| e.into_inner()) {
+                                        Ok(_) => {}
+                                        Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
+                                        Err(Some(e)) => { unreachable!("futures::mpsc won't complain channel is full") },
+                                        Err(None) => { warn!("Subscription channel is full") }
+                                    }
                                 }
                             };
                         }
                         Message::Ping(_) => {
-                            println!("Received Ping");
+                            trace!("Received Ping");
                         }
                         Message::Pong(_) => {
-                            println!("Received Ping");
+                            trace!("Received Ping");
                         }
                         Message::Binary(_) => {
-                            println!("Received Binary");
+                            trace!("Received Binary");
                         }
                     }
                 }
@@ -146,10 +156,13 @@ impl Deribit {
                             waiters.insert(id, waiter);
                         }
                     } else {
+                        cdropped = true;
                         warn!("[Servo] API Client dropped");
                     }
                 }
             };
         }
+
+        Ok(()) // Exit with all receiver dropped
     }
 }
