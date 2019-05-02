@@ -2,6 +2,7 @@ use crate::models::{AdvanceOption, Direction, OrderState, OrderType, TimeInForce
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct UserOrdersData {
     pub advanced: Option<AdvanceOption>,
     pub amount: f64,

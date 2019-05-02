@@ -2,6 +2,7 @@ use crate::models::OrderState;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct TickerData {
     pub ask_iv: Option<f64>,
     pub best_ask_amount: f64,

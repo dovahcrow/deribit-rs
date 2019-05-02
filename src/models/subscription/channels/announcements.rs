@@ -1,6 +1,7 @@
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct AnnouncementsData {
     pub action: String,
     pub title: String,

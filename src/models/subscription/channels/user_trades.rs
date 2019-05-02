@@ -5,6 +5,7 @@ use serde_derive::{Deserialize, Serialize};
 // user.trades.{kind}.{currency}.{interval}.rs
 // user.trades.{instrument_name}.{interval}
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct UserTradesData {
     pub amount: f64,
     pub direction: Direction,

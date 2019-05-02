@@ -21,7 +21,7 @@ struct SubscriptionTest {
 impl Default for SubscriptionTest {
     fn default() -> Self {
         let _ = dotenv();
-
+        // env_logger::init();
         Self {
             key: var("DERIBIT_KEY").unwrap(),
             secret: var("DERIBIT_SECRET").unwrap(),
@@ -257,6 +257,7 @@ impl SubscriptionTest {
             let _ = await!(client.call(req)).unwrap();
 
             let v = await!(subscription.take(5).collect::<Vec<_>>());
+
             Ok::<Vec<_>, Error>(v)
         };
 
