@@ -90,7 +90,7 @@ impl Deribit {
                             let resp: WSMessage = match from_str(&msg) {
                                 Ok(msg) => msg,
                                 Err(e) => {
-                                    error!("Cannot decode rpc message {:?}", e);
+                                    error!("[Servo] Cannot decode rpc message {:?}", e);
                                     Err(e)?
                                 }
                             };
@@ -107,7 +107,7 @@ impl Deribit {
                                     };
 
                                     if let Err(msg) = waiter.send(msg.to_result()) {
-                                        info!("The client for request {} is dropped, response is {:?}", id, msg);
+                                        info!("[Servo] The client for request {} is dropped, response is {:?}", id, msg);
                                     }
                                 }
                                 WSMessage::Subscription(event) => {
@@ -116,8 +116,8 @@ impl Deribit {
                                     match await!(fut).map_err(|e| e.into_inner()) {
                                         Ok(_) => {}
                                         Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
-                                        Err(Some(e)) => { unreachable!("futures::mpsc won't complain channel is full") },
-                                        Err(None) => { warn!("Subscription channel is full") }
+                                        Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
+                                        Err(None) => { warn!("[Servo] Subscription channel is full") }
                                     }
 
                                 }
@@ -127,20 +127,20 @@ impl Deribit {
                                     match await!(fut).map_err(|e| e.into_inner()) {
                                         Ok(_) => {}
                                         Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
-                                        Err(Some(e)) => { unreachable!("futures::mpsc won't complain channel is full") },
-                                        Err(None) => { warn!("Subscription channel is full") }
+                                        Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
+                                        Err(None) => { warn!("[Servo] Subscription channel is full") }
                                     }
                                 }
                             };
                         }
                         Message::Ping(_) => {
-                            trace!("Received Ping");
+                            trace!("[Servo] Received Ping");
                         }
                         Message::Pong(_) => {
-                            trace!("Received Ping");
+                            trace!("[Servo] Received Ping");
                         }
                         Message::Binary(_) => {
-                            trace!("Received Binary");
+                            trace!("[Servo] Received Binary");
                         }
                     }
                 }
@@ -150,14 +150,14 @@ impl Deribit {
                             warn!("[Servo] Message come before waiter");
                             let msg = orphan_messages.remove(&id).unwrap();
                             if let Err(msg) = waiter.send(msg.to_result()) {
-                                info!("The client for request {} is dropped, response is {:?}", id, msg);
+                                info!("[Servo] The client for request {} is dropped, response is {:?}", id, msg);
                             }
                         } else {
                             waiters.insert(id, waiter);
                         }
                     } else {
                         cdropped = true;
-                        warn!("[Servo] API Client dropped");
+                        info!("[Servo] API Client dropped");
                     }
                 }
             };
