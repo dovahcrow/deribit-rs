@@ -1,4 +1,5 @@
 Deribit API V2 Client for Rust Language
+![LICENSE](https://img.shields.io/crates/l/deribit.svg?style=flat-square) ![BUILD](https://img.shields.io/travis/dovahcrow/deribit-rs.svg?style=flat-square) ![VERSION](https://img.shields.io/crates/v/deribit.svg?style=flat-square)
 =================
 
 This is experimental and currently under heavy development. Use at your own risk.
