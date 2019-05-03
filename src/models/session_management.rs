@@ -1,4 +1,4 @@
-use crate::models::Request;
+use crate::models::{Request, VoidRequest};
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -33,4 +33,27 @@ pub enum SetHeartbeatResponse {
 impl Request for SetHeartbeatRequest {
     const METHOD: &'static str = "public/set_heartbeat";
     type Response = SetHeartbeatResponse;
+}
+
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct DisableHeartbeatRequest;
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+#[serde(rename_all = "snake_case")]
+pub enum DisableHeartbeatResponse {
+    Ok,
+}
+
+impl Request for DisableHeartbeatRequest {
+    const METHOD: &'static str = "public/disable_heartbeat";
+    type Response = DisableHeartbeatResponse;
+}
+
+
+impl VoidRequest for DisableHeartbeatRequest {
+    #[inline]
+    fn empty(&self) -> bool {
+        true
+    }
 }

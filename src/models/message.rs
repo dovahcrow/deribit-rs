@@ -22,7 +22,7 @@ pub enum WSMessage {
 pub struct JSONRPCRequest<Q: Request> {
     pub id: i64,
     pub method: String,
-    #[serde(skip_serializing_if = "crate::models::EmptyRequest::empty")]
+    #[serde(skip_serializing_if = "crate::models::VoidRequest::empty")]
     pub params: Q,
 }
 

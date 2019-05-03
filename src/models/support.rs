@@ -1,4 +1,4 @@
-use crate::models::{EmptyRequest, Request};
+use crate::models::{Request, VoidRequest};
 use serde_derive::{Deserialize, Serialize};
 use shrinkwraprs::Shrinkwrap;
 
@@ -14,7 +14,7 @@ impl Request for GetTimeRequest {
     type Response = GetTimeResponse;
 }
 
-impl EmptyRequest for GetTimeRequest {
+impl VoidRequest for GetTimeRequest {
     #[inline]
     fn empty(&self) -> bool {
         true

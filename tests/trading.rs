@@ -1,6 +1,8 @@
 #![feature(async_await, await_macro)]
 
-use deribit::models::{AuthRequest, BuyRequest, GetOrderStateRequest, SellRequest};
+use deribit::models::{
+    AuthRequest, BuyRequest, CancelRequest, EditRequest, GetOrderStateRequest, SellRequest,
+};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use failure::{Error, Fallible};
@@ -67,6 +69,40 @@ impl TradingTest {
             await!(await!(
                 client.call(SellRequest::market("BTC-PERPETUAL", 10.))
             )?)?;
+            Ok::<_, Error>(())
+        };
+
+        let fut = fut.boxed().compat();
+        let _ = rt.block_on(fut)?;
+        Ok(())
+    }
+
+    #[fact]
+    fn buy_and_edit_and_cancel(self) -> Fallible<()> {
+        let _ = dotenv();
+
+        let key = var("DERIBIT_KEY").unwrap();
+        let secret = var("DERIBIT_SECRET").unwrap();
+        let drb = DeribitBuilder::default().testnet(true).build().unwrap();
+        let mut rt = Runtime::new()?;
+
+        let fut = async move {
+            let (mut client, _) = await!(drb.connect())?;
+            let req = AuthRequest::credential_auth(&key, &secret);
+            let _ = await!(await!(client.call(req))?)?;
+
+            let id = await!(await!(client.call(BuyRequest::limit(
+                "BTC-PERPETUAL",
+                10.,
+                10.
+            )))?)?
+            .0
+            .order
+            .order_id;
+
+            await!(await!(client.call(EditRequest::new(&id, 12., 10.)))?)?;
+
+            await!(await!(client.call(CancelRequest::new(&id,)))?)?;
             Ok::<_, Error>(())
         };
 

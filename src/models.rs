@@ -34,8 +34,8 @@ pub use support::{
 pub use trading::{
     BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
     CancelAllRequest, CancelAllResponse, CancelOrderType, CancelRequest, CancelResponse,
-    GetOrderStateRequest, GetOrderStateResponse, Order, SellRequest, SellResponse, Trade,
-    TradeRequest, TradeResponse,
+    EditRequest, EditResponse, GetOrderStateRequest, GetOrderStateResponse, Order, SellRequest,
+    SellResponse, Trade, TradeRequest, TradeResponse,
 };
 
 
@@ -46,11 +46,11 @@ pub trait Request {
     type Response;
 }
 
-trait EmptyRequest {
+trait VoidRequest {
     fn empty(&self) -> bool;
 }
 
-impl<R: Request> EmptyRequest for R {
+impl<R: Request> VoidRequest for R {
     #[inline]
     default fn empty(&self) -> bool {
         false

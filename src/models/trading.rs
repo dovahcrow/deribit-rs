@@ -1,6 +1,6 @@
 use crate::models::{
-    AdvanceOption, AssetKind, Currency, Direction, Either, EmptyRequest, OrderState, OrderType,
-    Request, Role, TimeInForce, Trigger,
+    AdvanceOption, AssetKind, Currency, Direction, Either, OrderState, OrderType, Request, Role,
+    TimeInForce, Trigger, VoidRequest,
 };
 use serde::{Deserialize, Deserializer};
 use serde_derive::{Deserialize, Serialize};
@@ -49,6 +49,42 @@ impl Request for SellRequest {
     const METHOD: &'static str = "private/sell";
     type Response = SellResponse;
 }
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct EditRequest {
+    pub order_id: String,
+    pub amount: f64,
+    pub price: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_only: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub advanced: Option<AdvanceOption>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stop_price: Option<f64>,
+}
+
+impl EditRequest {
+    pub fn new(order_id: &str, price: f64, amount: f64) -> Self {
+        Self {
+            order_id: order_id.to_string(),
+            amount: amount,
+            price: price,
+            post_only: None,
+            advanced: None,
+            stop_price: None,
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Shrinkwrap)]
+#[shrinkwrap(mutable)]
+pub struct EditResponse(pub TradeResponse);
+
+impl Request for EditRequest {
+    const METHOD: &'static str = "private/edit";
+    type Response = EditResponse;
+}
+
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct TradeRequest {
@@ -239,7 +275,7 @@ impl Request for CancelAllRequest {
     type Response = CancelAllResponse;
 }
 
-impl EmptyRequest for CancelAllRequest {
+impl VoidRequest for CancelAllRequest {
     #[inline]
     fn empty(&self) -> bool {
         true

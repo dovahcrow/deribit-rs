@@ -16,7 +16,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] /private/logout
 - Session Management
     - [x] /public/set_heartbeat
-    - [ ] /public/disable_heartbeat
+    - [x] /public/disable_heartbeat
     - [ ] /private/enable_cancel_on_disconnect
     - [ ] /private/disable_cancel_on_disconnect
 - Supporting
@@ -48,8 +48,8 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
 - Trading
     - [x] /private/buy
     - [x] /private/sell
-    - [ ] /private/edit
-    - [ ] /private/cancel
+    - [x] /private/edit
+    - [x] /private/cancel
     - [x] /private/cancel_all
     - [x] /private/cancel_all_by_currency
     - [x] /private/cancel_all_by_instrument
