@@ -1,6 +1,24 @@
 Deribit API V2 Client for Rust Language
-![LICENSE](https://img.shields.io/crates/l/deribit.svg?style=flat-square) ![BUILD](https://img.shields.io/travis/dovahcrow/deribit-rs.svg?style=flat-square) ![VERSION](https://img.shields.io/crates/v/deribit.svg?style=flat-square)
 =================
+
+[![Build Status]][travis] [![Latest Version]][crates.io] [![Rustc Version nightly]][rustc] [![license]][license-content] [![keybase logo]][keybase] ![btc]
+
+[Build Status]: https://img.shields.io/travis/dovahcrow/deribit-rs.svg?style=flat-square
+[travis]: https://travis-ci.org/dovahcrow/deribit-rs
+
+[Latest Version]: https://img.shields.io/crates/v/deribit.svg?style=flat-square
+[crates.io]: https://crates.io/crates/deribit
+
+[Rustc Version nightly]: https://img.shields.io/badge/rustc-nightly-lightgray.svg?style=flat-square
+[rustc]: #
+
+[license]: https://img.shields.io/crates/l/deribit.svg?style=flat-square
+[license-content]: LICENSE
+
+[keybase logo]: https://img.shields.io/keybase/pgp/dovahcrow.svg?style=flat-square
+[keybase]: #
+
+[btc]: https://img.shields.io/keybase/btc/dovahcrow.svg?style=flat-square
 
 This is experimental and currently under heavy development. Use at your own risk.
 
