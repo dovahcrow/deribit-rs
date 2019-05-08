@@ -1,11 +1,11 @@
-mod account;
-mod authentication;
-mod market_data;
-mod message;
-mod session_management;
+pub mod account;
+pub mod authentication;
+pub mod market_data;
+pub mod message;
+pub mod session_management;
 pub mod subscription;
-mod support;
-mod trading;
+pub mod support;
+pub mod trading;
 
 use crate::errors::DeribitError;
 use failure::{Error, Fallible};
