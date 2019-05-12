@@ -61,8 +61,8 @@ impl DeribitAPIClient {
 
         let payload = to_string(&req)?;
         trace!("[Deribit] Request: {}", payload);
-        await!(self.wstx.send(Message::Text(payload)))?;
-        await!(self.waiter_tx.send((req.id, waiter_tx)))?;
+        self.wstx.send(Message::Text(payload)).await?;
+        self.waiter_tx.send((req.id, waiter_tx)).await?;
         Ok(DeribitAPICallRawResult::new(waiter_rx))
     }
 
@@ -73,7 +73,7 @@ impl DeribitAPIClient {
     where
         R: Request + Serialize + 'a,
     {
-        let resp: DeribitAPICallRawResult<R::Response> = await!(self.call_raw(request))?;
+        let resp: DeribitAPICallRawResult<R::Response> = self.call_raw(request).await?;
         Ok(DeribitAPICallResult::new(resp))
     }
 }

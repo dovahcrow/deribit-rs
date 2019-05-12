@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 use deribit::models::{AuthRequest, Currency, GetPositionsRequest, PrivateSubscribeRequest};
 use deribit::DeribitBuilder;
@@ -21,16 +21,16 @@ fn main() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async move {
-        let (mut client, mut subscription) = await!(drb.connect())?;
+        let (mut client, mut subscription) = drb.connect().await?;
         let req = AuthRequest::credential_auth(&key, &secret);
 
-        let _ = await!(client.call(req))?;
+        let _ = client.call(req).await?;
         let req = GetPositionsRequest {
             currency: Currency::BTC,
             ..Default::default()
         };
-        let positions = await!(client.call(req))?;
-        println!("{:?}", await!(positions)?);
+        let positions = client.call(req).await?;
+        println!("{:?}", positions.await?);
         let req = PrivateSubscribeRequest {
             channels: vec![
                 "user.portfolio.BTC".into(),
@@ -39,10 +39,10 @@ fn main() -> Fallible<()> {
             ],
         };
 
-        let result = await!(client.call(req))?;
-        println!("Subscription result: {:?}", await!(result)?);
+        let result = client.call(req).await?;
+        println!("Subscription result: {:?}", result.await?);
 
-        while let Some(sub) = await!(subscription.next()) {
+        while let Some(sub) = subscription.next().await {
             println!("{:?}", sub);
         }
 

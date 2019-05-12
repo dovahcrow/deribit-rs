@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 use deribit::models::{Currency, GetIndexRequest, GetInstrumentsRequest};
 use deribit::DeribitBuilder;
@@ -15,11 +15,11 @@ fn get_index() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async move {
-        let (mut client, _) = await!(drb.connect())?;
+        let (mut client, _) = drb.connect().await?;
         let req = GetIndexRequest::new(Currency::BTC);
-        let _ = await!(await!(client.call(req))?)?;
+        let _ = client.call(req).await?.await?;
         let req = GetIndexRequest::new(Currency::ETH);
-        let _ = await!(await!(client.call(req))?)?;
+        let _ = client.call(req).await?.await?;
 
         Ok::<_, Error>(())
     };
@@ -38,11 +38,11 @@ fn get_instruments() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async move {
-        let (mut client, _) = await!(drb.connect())?;
+        let (mut client, _) = drb.connect().await?;
         let req = GetInstrumentsRequest::new(Currency::BTC);
-        let _ = await!(await!(client.call(req))?)?;
+        let _ = client.call(req).await?.await?;
         let req = GetInstrumentsRequest::expired(Currency::ETH);
-        let _ = await!(await!(client.call(req))?)?;
+        let _ = client.call(req).await?.await?;
 
         Ok::<_, Error>(())
     };

@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 use deribit::models::{
     AuthRequest, BuyRequest, CancelRequest, EditRequest, GetOrderStateRequest, SellRequest,
@@ -35,12 +35,12 @@ impl TradingTest {
         let mut rt = Runtime::new()?;
 
         let fut = async move {
-            let (mut client, _) = await!(drb.connect())?;
+            let (mut client, _) = drb.connect().await?;
             let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = await!(await!(client.call(req))?)?;
+            let _ = client.call(req).await?.await?;
 
             let req = GetOrderStateRequest::new("2320198993");
-            Ok::<_, Error>(await!(await!(client.call(req))?)?)
+            Ok::<_, Error>(client.call(req).await?.await?)
         };
 
         let fut = fut.boxed().compat();
@@ -58,17 +58,17 @@ impl TradingTest {
         let mut rt = Runtime::new()?;
 
         let fut = async move {
-            let (mut client, _) = await!(drb.connect())?;
+            let (mut client, _) = drb.connect().await?;
             let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = await!(await!(client.call(req))?)?;
+            let _ = client.call(req).await?.await?;
 
-            await!(await!(
+            
                 client.call(BuyRequest::market("BTC-PERPETUAL", 10.))
-            )?)?;
-            await!(Delay::new(Instant::now() + Duration::from_secs(1)).compat())?;
-            await!(await!(
+            .await?.await?;
+            Delay::new(Instant::now() + Duration::from_secs(1)).compat().await?;
+            
                 client.call(SellRequest::market("BTC-PERPETUAL", 10.))
-            )?)?;
+            .await?.await?;
             Ok::<_, Error>(())
         };
 
@@ -87,22 +87,22 @@ impl TradingTest {
         let mut rt = Runtime::new()?;
 
         let fut = async move {
-            let (mut client, _) = await!(drb.connect())?;
+            let (mut client, _) = drb.connect().await?;
             let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = await!(await!(client.call(req))?)?;
+            let _ = client.call(req).await?.await?;
 
-            let id = await!(await!(client.call(BuyRequest::limit(
+            let id = client.call(BuyRequest::limit(
                 "BTC-PERPETUAL",
                 10.,
                 10.
-            )))?)?
+            )).await?.await?
             .0
             .order
             .order_id;
 
-            await!(await!(client.call(EditRequest::new(&id, 12., 10.)))?)?;
+            client.call(EditRequest::new(&id, 12., 10.)).await?.await?;
 
-            await!(await!(client.call(CancelRequest::new(&id,)))?)?;
+            client.call(CancelRequest::new(&id,)).await?.await?;
             Ok::<_, Error>(())
         };
 

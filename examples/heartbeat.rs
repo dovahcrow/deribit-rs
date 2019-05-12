@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 use deribit::models::{Either, HeartbeatType, SetHeartbeatRequest, TestRequest};
 use deribit::DeribitBuilder;
@@ -17,17 +17,17 @@ fn main() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async move {
-        let (mut client, mut subscription) = await!(drb.connect())?;
+        let (mut client, mut subscription) = drb.connect().await?;
 
-        let resp = await!(client.call(SetHeartbeatRequest::with_interval(10)))?;
-        println!("Hearbet response {:?}", await!(resp)?);
+        let resp = client.call(SetHeartbeatRequest::with_interval(10)).await?;
+        println!("Hearbet response {:?}", resp.await?);
 
-        while let Some(sub) = await!(subscription.next()) {
+        while let Some(sub) = subscription.next().await {
             match sub {
                 Either::Right(l) => match l.params.r#type {
                     HeartbeatType::TestRequest => {
                         println!("Test Requested");
-                        await!(client.call(TestRequest::default()))?;
+                        client.call(TestRequest::default()).await?;
                     }
                     _ => println!("Heartbeat"),
                 },

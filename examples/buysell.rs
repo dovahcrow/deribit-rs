@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 use deribit::models::{AuthRequest, BuyRequest, SellRequest};
 use deribit::DeribitBuilder;
@@ -21,16 +21,16 @@ fn main() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async move {
-        let (mut client, _) = await!(drb.connect())?;
+        let (mut client, _) = drb.connect().await?;
         let req = AuthRequest::credential_auth(&key, &secret);
 
-        let _ = await!(client.call(req))?;
+        let _ = client.call(req).await?;
         let req = BuyRequest::market("BTC-PERPETUAL", 10f64);
-        let resp = await!(client.call(req))?;
-        println!("{:?}", await!(resp)?);
+        let resp = client.call(req).await?;
+        println!("{:?}", resp.await?);
         let req = SellRequest::market("BTC-PERPETUAL", 10f64);
-        let resp = await!(client.call(req))?;
-        println!("{:?}", await!(resp)?);
+        let resp = client.call(req).await?;
+        println!("{:?}", resp.await?);
 
         Ok::<_, Error>(())
     };

@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubaccountsRequest};
 use deribit::{Deribit, DeribitBuilder};
@@ -41,11 +41,11 @@ impl AccountTest {
             secret,
         } = self;
         let fut = async move {
-            let (mut client, _) = await!(drb.connect())?;
+            let (mut client, _) = drb.connect().await?;
             let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = await!(await!(client.call(req))?)?;
+            let _ = client.call(req).await?.await?;
             let req = GetAccountSummaryRequest::extended(Currency::BTC);
-            Ok::<_, Error>(await!(await!(client.call(req))?)?)
+            Ok::<_, Error>(client.call(req).await?.await?)
         };
 
         let fut = fut.boxed().compat();
@@ -62,12 +62,12 @@ impl AccountTest {
             secret,
         } = self;
         let fut = async move {
-            let (mut client, _) = await!(drb.connect())?;
+            let (mut client, _) = drb.connect().await?;
             let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = await!(await!(client.call(req))?)?;
+            let _ = client.call(req).await?.await?;
 
             let req = GetSubaccountsRequest::with_portfolio();
-            Ok::<_, Error>(await!(await!(client.call(req))?)?)
+            Ok::<_, Error>(client.call(req).await?.await?)
         };
         let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;

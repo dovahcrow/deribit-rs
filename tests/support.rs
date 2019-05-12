@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 use deribit::models::{GetTimeRequest, HelloRequest, TestRequest};
 use deribit::Deribit;
@@ -12,14 +12,14 @@ fn hello() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async {
-        let (mut client, _) = await!(drb.connect())?;
+        let (mut client, _) = drb.connect().await?;
 
         let req = HelloRequest {
             client_name: "deribit-rs".into(),
             client_version: "0.0.1".into(),
         };
 
-        let _ = await!(await!(client.call(req))?)?;
+        let _ = client.call(req).await?.await?;
 
         Ok::<_, Error>(())
     };
@@ -35,9 +35,9 @@ fn get_time() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async {
-        let (mut client, _) = await!(drb.connect())?;
+        let (mut client, _) = drb.connect().await?;
 
-        let _ = await!(await!(client.call(GetTimeRequest))?);
+        let _ = client.call(GetTimeRequest).await?.await;
 
         Ok::<_, Error>(())
     };
@@ -53,11 +53,11 @@ fn test() -> Fallible<()> {
     let mut rt = Runtime::new()?;
 
     let fut = async {
-        let (mut client, _) = await!(drb.connect())?;
+        let (mut client, _) = drb.connect().await?;
         let req = TestRequest {
             expected_result: Some("exception".into()),
         };
-        Ok::<_, Error>(await!(await!(client.call(req))?)?)
+        Ok::<_, Error>(client.call(req).await?.await?)
     };
 
     let fut = fut.boxed().compat();

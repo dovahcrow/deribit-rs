@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro, specialization)]
+#![feature(async_await, specialization)]
 #![recursion_limit = "512"]
 
 mod api_client;
@@ -50,7 +50,7 @@ impl Deribit {
     pub async fn connect(self) -> Fallible<(DeribitAPIClient, DeribitSubscriptionClient)> {
         let ws_url = if self.testnet { WS_URL_TESTNET } else { WS_URL };
         info!("Connecting");
-        let (ws, _) = await!(connect_async(Url::parse(ws_url)?).compat())?;
+        let (ws, _) = connect_async(Url::parse(ws_url)?).compat().await?;
 
         let (wstx, wsrx) = ws.split();
         let (stx, srx) = mpsc::channel(self.subscription_buffer_size);
@@ -113,7 +113,7 @@ impl Deribit {
                                 WSMessage::Subscription(event) => {
                                     let fut = stx.send(Either::Left(event)).compat();
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
-                                    match await!(fut).map_err(|e| e.into_inner()) {
+                                    match fut.await.map_err(|e| e.into_inner()) {
                                         Ok(_) => {}
                                         Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
                                         Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
@@ -124,7 +124,7 @@ impl Deribit {
                                 WSMessage::Heartbeat(event) => {
                                     let fut = stx.send(Either::Right(event)).compat();
                                     let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
-                                    match await!(fut).map_err(|e| e.into_inner()) {
+                                    match fut.await.map_err(|e| e.into_inner()) {
                                         Ok(_) => {}
                                         Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
                                         Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
