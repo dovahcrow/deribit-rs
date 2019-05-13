@@ -360,5 +360,5 @@ pub struct GetOpenOrdersByCurrencyResponse {
 
 impl Request for GetOpenOrdersByCurrencyRequest {
     const METHOD: &'static str = "private/get_open_orders_by_currency";
-    type Response = GetOpenOrdersByCurrencyResponse;
+    type Response = Vec<GetOpenOrdersByCurrencyResponse>;
 }

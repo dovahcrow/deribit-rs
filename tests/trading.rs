@@ -84,7 +84,7 @@ impl TradingTest {
     }
 
     #[fact]
-    fn buy_and_edit_and_cancel(self) -> Fallible<()> {
+    fn buy_and_edit_and_inspect_and_cancel(self) -> Fallible<()> {
         let _ = dotenv();
 
         let key = var("DERIBIT_KEY").unwrap();
