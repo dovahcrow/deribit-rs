@@ -34,8 +34,9 @@ pub use support::{
 pub use trading::{
     BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
     CancelAllRequest, CancelAllResponse, CancelOrderType, CancelRequest, CancelResponse,
-    EditRequest, EditResponse, GetOrderStateRequest, GetOrderStateResponse, Order, SellRequest,
-    SellResponse, Trade, TradeRequest, TradeResponse,
+    EditRequest, EditResponse, GetOpenOrderType, GetOpenOrdersByCurrencyRequest,
+    GetOpenOrdersByCurrencyResponse, GetOrderStateRequest, GetOrderStateResponse, Order,
+    SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
 };
 
 
@@ -122,7 +123,7 @@ impl Direction {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
-pub enum Role {
+pub enum Liquidity {
     #[serde(rename = "M")]
     Maker,
     #[serde(rename = "T")]

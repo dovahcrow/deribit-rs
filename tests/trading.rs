@@ -1,7 +1,8 @@
 #![feature(async_await)]
 
 use deribit::models::{
-    AuthRequest, BuyRequest, CancelRequest, EditRequest, GetOrderStateRequest, SellRequest,
+    AuthRequest, BuyRequest, CancelRequest, Currency, EditRequest, GetOpenOrdersByCurrencyRequest,
+    GetOrderStateRequest, SellRequest,
 };
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
@@ -62,13 +63,18 @@ impl TradingTest {
             let req = AuthRequest::credential_auth(&key, &secret);
             let _ = client.call(req).await?.await?;
 
-            
-                client.call(BuyRequest::market("BTC-PERPETUAL", 10.))
-            .await?.await?;
-            Delay::new(Instant::now() + Duration::from_secs(1)).compat().await?;
-            
-                client.call(SellRequest::market("BTC-PERPETUAL", 10.))
-            .await?.await?;
+            client
+                .call(BuyRequest::market("BTC-PERPETUAL", 10.))
+                .await?
+                .await?;
+            Delay::new(Instant::now() + Duration::from_secs(1))
+                .compat()
+                .await?;
+
+            client
+                .call(SellRequest::market("BTC-PERPETUAL", 10.))
+                .await?
+                .await?;
             Ok::<_, Error>(())
         };
 
@@ -91,18 +97,21 @@ impl TradingTest {
             let req = AuthRequest::credential_auth(&key, &secret);
             let _ = client.call(req).await?.await?;
 
-            let id = client.call(BuyRequest::limit(
-                "BTC-PERPETUAL",
-                10.,
-                10.
-            )).await?.await?
-            .0
-            .order
-            .order_id;
+            let id = client
+                .call(BuyRequest::limit("BTC-PERPETUAL", 10., 10.))
+                .await?
+                .await?
+                .0
+                .order
+                .order_id;
 
             client.call(EditRequest::new(&id, 12., 10.)).await?.await?;
+            client
+                .call(GetOpenOrdersByCurrencyRequest::by_currency(Currency::BTC))
+                .await?
+                .await?;
 
-            client.call(CancelRequest::new(&id,)).await?.await?;
+            client.call(CancelRequest::new(&id)).await?.await?;
             Ok::<_, Error>(())
         };
 

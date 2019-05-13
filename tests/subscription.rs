@@ -279,7 +279,9 @@ impl SubscriptionTest {
 
         let fut = async move {
             let (mut client, subscription) = drb.connect().await.unwrap();
-            let _ = client.call(AuthRequest::credential_auth(&key, &secret)).await?;
+            let _ = client
+                .call(AuthRequest::credential_auth(&key, &secret))
+                .await?;
 
             let req = PublicSubscribeRequest {
                 channels: vec![
@@ -289,14 +291,15 @@ impl SubscriptionTest {
             };
             let _ = client.call(req).await.unwrap();
 
-            
-                client.call(BuyRequest::market("BTC-PERPETUAL", 10.))
-            .await?.await?;
-            
-                client.call(SellRequest::market("BTC-PERPETUAL", 10.))
-            .await?.await?;
+            client
+                .call(BuyRequest::market("BTC-PERPETUAL", 10.))
+                .await?
+                .await?;
 
-
+            client
+                .call(SellRequest::market("BTC-PERPETUAL", 10.))
+                .await?
+                .await?;
             let v = subscription.take(2).collect::<Vec<_>>().await;
             Ok::<_, Error>(v)
         };
@@ -320,7 +323,9 @@ impl SubscriptionTest {
         let fut = async move {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
-            let _ = client.call(AuthRequest::credential_auth(&key, &secret)).await?;
+            let _ = client
+                .call(AuthRequest::credential_auth(&key, &secret))
+                .await?;
 
             let req = PrivateSubscribeRequest {
                 channels: vec!["user.orders.BTC-PERPETUAL.raw".into()],
@@ -335,7 +340,7 @@ impl SubscriptionTest {
             let v = subscription.take(1).collect::<Vec<_>>().await;
             let req = CancelRequest::new(&id);
             let resp = client.call(req).await?.await?;
-            id.should().be_equal_to(resp.order_id);
+            id.should().be_equal_to(resp.order.order_id);
             Ok::<_, Error>(v)
         };
 
@@ -356,7 +361,9 @@ impl SubscriptionTest {
         let fut = async move {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
-            let _ = client.call(AuthRequest::credential_auth(&key, &secret)).await?;
+            let _ = client
+                .call(AuthRequest::credential_auth(&key, &secret))
+                .await?;
 
             let req = PrivateSubscribeRequest::new(&[
                 "user.portfolio.BTC".into(),
