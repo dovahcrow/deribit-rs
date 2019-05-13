@@ -147,7 +147,7 @@ impl Deribit {
                 waiter = waiter_rx.next() => {
                     if let Some((id, waiter)) = waiter {
                         if orphan_messages.contains_key(&id) {
-                            warn!("[Servo] Message come before waiter");
+                            info!("[Servo] Message come before waiter");
                             let msg = orphan_messages.remove(&id).unwrap();
                             if let Err(msg) = waiter.send(msg.to_result()) {
                                 info!("[Servo] The client for request {} is dropped, response is {:?}", id, msg);
