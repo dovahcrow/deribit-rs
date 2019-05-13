@@ -35,7 +35,8 @@ pub use trading::{
     BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
     CancelAllRequest, CancelAllResponse, CancelOrderType, CancelRequest, CancelResponse,
     EditRequest, EditResponse, GetOpenOrderType, GetOpenOrdersByCurrencyRequest,
-    GetOpenOrdersByCurrencyResponse, GetOrderStateRequest, GetOrderStateResponse, Order,
+    GetOpenOrdersByCurrencyResponse, GetOpenOrdersByInstrumentRequest,
+    GetOpenOrdersByInstrumentResponse, GetOrderStateRequest, GetOrderStateResponse, Order,
     SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
 };
 

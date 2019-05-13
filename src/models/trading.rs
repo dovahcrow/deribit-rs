@@ -362,3 +362,35 @@ impl Request for GetOpenOrdersByCurrencyRequest {
     const METHOD: &'static str = "private/get_open_orders_by_currency";
     type Response = Vec<GetOpenOrdersByCurrencyResponse>;
 }
+
+
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+pub struct GetOpenOrdersByInstrumentRequest {
+    pub instrument_name: String,
+    pub r#type: GetOpenOrderType,
+}
+
+impl GetOpenOrdersByInstrumentRequest {
+    pub fn new(instrument_name: &str, r#type: GetOpenOrderType) -> Self {
+        Self {
+            instrument_name: instrument_name.to_string(),
+            r#type,
+        }
+    }
+
+    pub fn by_instrument(instrument_name: &str) -> Self {
+        Self::new(instrument_name, GetOpenOrderType::default())
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct GetOpenOrdersByInstrumentResponse {
+    #[serde(flatten)]
+    pub order: Order,
+    pub original_order_type: Option<String>,
+}
+
+impl Request for GetOpenOrdersByInstrumentRequest {
+    const METHOD: &'static str = "private/get_open_orders_by_instrument";
+    type Response = Vec<GetOpenOrdersByInstrumentResponse>;
+}

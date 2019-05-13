@@ -2,7 +2,7 @@
 
 use deribit::models::{
     AuthRequest, BuyRequest, CancelRequest, Currency, EditRequest, GetOpenOrdersByCurrencyRequest,
-    GetOrderStateRequest, SellRequest,
+    GetOpenOrdersByInstrumentRequest, GetOrderStateRequest, SellRequest,
 };
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
@@ -110,7 +110,12 @@ impl TradingTest {
                 .call(GetOpenOrdersByCurrencyRequest::by_currency(Currency::BTC))
                 .await?
                 .await?;
-
+            client
+                .call(GetOpenOrdersByInstrumentRequest::by_instrument(
+                    "BTC-PERPETUAL",
+                ))
+                .await?
+                .await?;
             client.call(CancelRequest::new(&id)).await?.await?;
             Ok::<_, Error>(())
         };

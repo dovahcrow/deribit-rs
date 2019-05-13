@@ -75,7 +75,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] /private/close_position
     - [ ] /private/get_margins
     - [x] /private/get_open_orders_by_currency
-    - [ ] /private/get_open_orders_by_instrument
+    - [x] /private/get_open_orders_by_instrument
     - [ ] /private/get_order_history_by_currency
     - [ ] /private/get_order_history_by_instrument
     - [ ] /private/get_order_margin_by_ids
