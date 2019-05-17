@@ -28,6 +28,10 @@ pub use message::{
 pub use session_management::{
     HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,
 };
+pub use subscription::{
+    PrivateSubscribeRequest, PrivateUnsubscribeRequest, PublicSubscribeRequest,
+    PublicUnsubscribeRequest, SubscribeResponse,
+};
 pub use support::{
     GetTimeRequest, GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse,
 };
@@ -39,9 +43,6 @@ pub use trading::{
     GetOpenOrdersByInstrumentResponse, GetOrderStateRequest, GetOrderStateResponse, Order,
     SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
 };
-
-
-pub use subscription::{PrivateSubscribeRequest, PublicSubscribeRequest, SubscribeResponse};
 
 pub trait Request {
     const METHOD: &'static str;
