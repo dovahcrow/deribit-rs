@@ -55,3 +55,43 @@ impl Request for PrivateSubscribeRequest {
     const METHOD: &'static str = "private/subscribe";
     type Response = SubscribeResponse;
 }
+
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct PublicUnsubscribeRequest {
+    pub channels: Vec<String>,
+}
+
+impl PublicUnsubscribeRequest {
+    pub fn new(channels: &[String]) -> Self {
+        Self {
+            channels: channels.to_vec(),
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct PrivateUnsubscribeRequest {
+    pub channels: Vec<String>,
+}
+
+impl PrivateUnsubscribeRequest {
+    pub fn new(channels: &[String]) -> Self {
+        Self {
+            channels: channels.to_vec(),
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct UnsubscribeResponse(pub Vec<String>);
+
+impl Request for PublicUnsubscribeRequest {
+    const METHOD: &'static str = "public/unsubscribe";
+    type Response = UnsubscribeResponse;
+}
+
+impl Request for PrivateUnsubscribeRequest {
+    const METHOD: &'static str = "private/unsubscribe";
+    type Response = UnsubscribeResponse;
+}

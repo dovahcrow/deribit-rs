@@ -380,4 +380,40 @@ impl SubscriptionTest {
         v.len().should().be_equal_to(2);
         Ok(())
     }
+
+    #[fact]
+    fn sub_unsub(self) -> Fallible<()> {
+        let Self { drb, mut rt, .. } = self;
+        let fut = async {
+            let (mut client, _) = drb.connect().await.unwrap();
+
+            let req = PublicSubscribeRequest {
+                channels: vec![
+                    "ticker.BTC-PERPETUAL.raw".into(),
+                    "ticker.ETH-PERPETUAL.raw".into(),
+                    "ticker.BTC-28JUN19.100ms".into(),
+                    "ticker.BTC-28JUN19.raw".into(),
+                    "ticker.BTC-28JUN19-7500-P.raw".into(),
+                    "ticker.BTC-28JUN19-7500-P.100ms".into(),
+                ],
+            };
+
+            let _ = client.call(req).await.unwrap();
+            let req = PublicSubscribeRequest::new(&[
+                "ticker.BTC-PERPETUAL.raw".into(),
+                "ticker.ETH-PERPETUAL.raw".into(),
+                "ticker.BTC-28JUN19.100ms".into(),
+                "ticker.BTC-28JUN19.raw".into(),
+                "ticker.BTC-28JUN19-7500-P.raw".into(),
+                "ticker.BTC-28JUN19-7500-P.100ms".into(),
+            ]);
+
+            client.call(req).await.unwrap();
+            Ok::<(), Error>(())
+        };
+
+        let fut = fut.boxed().compat();
+        rt.block_on(fut)?;
+        Ok(())
+    }
 }
