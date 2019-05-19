@@ -169,7 +169,7 @@ while let Some(message) = subscription.next().await {
     - [x] user.orders.{kind}.{currency}.{interval}
     - [x] user.portfolio.{currency}
     - [x] user.trades.{instrument_name}.{interval}
-    - [x] user.trades.{kind}.{currency}.{interval}]
+    - [x] user.trades.{kind}.{currency}.{interval}
 
 # Donate
 
