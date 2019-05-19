@@ -30,39 +30,38 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
 
 # Basic usage
 
-```
-    // This will gives you a Deribit instance, which the only purpose is creating connection.
-    let drb = deribit::DeribitBuilder::default().build().expect("Cannot create deribit client");
+```rust
+// This will give you a Deribit instance, which the only purpose is to create connection.
+let drb = deribit::DeribitBuilder::default().build().expect("Cannot create deribit client");
 
-    // "Deribit::connect" will connect deribit server with websocket as well as
-    // spin up a task in the backgroud polling message from the websocket
-    // and dispatch them to subscription channel or RPC channel respectively.
-    // "Deribit::connect" returns a "(DeribitAPIClient, DeribitSubscriptionClient)" tuple, where
-    // the former is used to send out RPC requests, and the later is used to receive notifications.
-    let (mut client, mut subscription) = drb.connect().await?;
+// "Deribit::connect" will connect to the deribit server with websocket as well as
+// spin up a task in the backgroud polling message and dispatch them to subscription channel or RPC channel respectively.
+// "Deribit::connect" returns a "(DeribitAPIClient, DeribitSubscriptionClient)" tuple, where
+// the former is used for sending out RPC requests, and the later is used for receiving notifications.
+let (mut client, mut subscription) = drb.connect().await?;
 
-    // All the request models reside in "deribit::models" module, with the
-    // naming convention of "camelCase(method)+Request", e.g. "/public/test" would be
-    // "TestRequest" in deribit-rs.
-    let req = deribit::models::TestRequest::default();
+// All the request models reside in "deribit::models" module, with the
+// naming convention of "camelCase(method)+Request", e.g. "/public/test" would be
+// "TestRequest" in deribit-rs.
+let req = deribit::models::TestRequest::default();
 
-    // Calls to deribit server is made by giving "DeribitAPIClient::call" the request object.
-    // The return type of "DeribitAPIClient::call" is "impl Future<Output=impl Future<Output=R>>", 
-    // where the first layer future denotes the send process, and the second one denotes the receive process. This brings
-    // find grained control of the communication. The response type R depends on your request, with similar naming convention: 
-    // "TestRequest" will have "TestResponse".
-    let _ = client.call(req).await?.await?;
-    
-    // Subscription is made by calling with "PublicSubscribeRequest" or "PrivateSubscribeRequest".
-    let req = PublicSubscribeRequest::new(&["book.BTC-PERPETUAL.raw".into()]);
+// Calls to deribit server is made by giving "DeribitAPIClient::call" the request object.
+// The return type of "DeribitAPIClient::call" is "impl Future<Output=impl Future<Output=R>>", 
+// where the first layer future denotes the send process, and the second one denotes the receive process. This brings
+// fine grained control of the communication. The response type "R" depends on your request, with similar naming convention: 
+// "TestRequest" will have "TestResponse".
+let _ = client.call(req).await?.await?;
 
-    // You can avoid the second ".await" to save some time - no worries, the request will still be received by the deribit server.
-    let _ = client.call(req).await?;
+// Subscription is made by calling with "PublicSubscribeRequest" or "PrivateSubscribeRequest".
+let req = PublicSubscribeRequest::new(&["book.BTC-PERPETUAL.raw".into()]);
 
-    // In order to get your subscriptions, just poll the subscription stream. The "DeribitSubscriptionClient" implements the "Stream" trait.
-    while let Some(message) = subscription.next().await {
-        println!("Subscription message received {:?}", message);
-    }
+// You can avoid the second ".await" to save some time - no worries, the request will still be received by the deribit server.
+let _ = client.call(req).await?;
+
+// In order to get your subscriptions, just poll the subscription stream. The "DeribitSubscriptionClient" implements the "futures::Stream" trait.
+while let Some(message) = subscription.next().await {
+    println!("Subscription message received {:?}", message);
+}
 
 ```
 # Implementation Status
