@@ -19,7 +19,8 @@ pub use account::{
 };
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
 pub use market_data::{
-    GetIndexRequest, GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
+    GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest,
+    GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
 };
 pub use message::{
     HeartbeatMessage, HeartbeatMethod, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion,

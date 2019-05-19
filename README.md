@@ -89,6 +89,7 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [ ] /private/get_settlement_history_by_currency
 
 - Market Data
+    - [x] /public/get_book_summary_by_currency
     - [x] /public/get_index
     - [x] /public/get_instruments
 - Wallet
