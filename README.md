@@ -44,9 +44,9 @@ to be prioritly implemented please open an issue or just throw me a PR (this is 
     - [x] /public/test
 - Subscription Management
     - [x] /public/subscribe
-    - [ ] /public/unsubscribe
+    - [x] /public/unsubscribe
     - [x] /private/subscribe
-    - [ ] /private/unsubscribe
+    - [x] /private/unsubscribe
 - Account Management
     - [ ] /public/get_announcements
     - [ ] /private/change_subaccount_name
