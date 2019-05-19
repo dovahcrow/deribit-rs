@@ -3,54 +3,45 @@
 use deribit::models::{AuthRequest, Currency, GetPositionsRequest, PrivateSubscribeRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
-use env_logger::init;
-use failure::{Error, Fallible};
-use futures::{FutureExt, StreamExt, TryFutureExt};
+use failure::Fallible;
+use futures::StreamExt;
+use runtime_tokio::Tokio;
 use std::env::var;
-use tokio::runtime::Runtime;
 
-fn main() -> Fallible<()> {
+#[runtime::main(Tokio)]
+async fn main() -> Fallible<()> {
     let _ = dotenv();
-    init();
 
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
 
-    let mut rt = Runtime::new()?;
+    let (mut client, mut subscription) = drb.connect().await?;
 
-    let fut = async move {
-        let (mut client, mut subscription) = drb.connect().await?;
-        let req = AuthRequest::credential_auth(&key, &secret);
+    let _ = client
+        .call(AuthRequest::credential_auth(&key, &secret))
+        .await?;
 
-        let _ = client.call(req).await?;
-        let req = GetPositionsRequest {
-            currency: Currency::BTC,
-            ..Default::default()
-        };
-        let positions = client.call(req).await?;
-        println!("{:?}", positions.await?);
-        let req = PrivateSubscribeRequest {
-            channels: vec![
-                "user.portfolio.BTC".into(),
-                "user.trades.BTC-PERPETUAL.raw".into(),
-                "user.trades.BTC-28JUN19-3000-P.raw".into(),
-            ],
-        };
+    let positions = client
+        .call(GetPositionsRequest::futures(Currency::BTC))
+        .await?
+        .await?;
 
-        let result = client.call(req).await?;
-        println!("Subscription result: {:?}", result.await?);
+    println!("{:?}", positions);
 
-        while let Some(sub) = subscription.next().await {
-            println!("{:?}", sub);
-        }
+    let req = PrivateSubscribeRequest::new(&[
+        "user.portfolio.BTC".into(),
+        "user.trades.BTC-PERPETUAL.raw".into(),
+        "user.trades.BTC-28JUN19-3000-P.raw".into(),
+    ]);
 
-        Ok::<_, Error>(())
-    };
+    let result = client.call(req).await?.await?;
+    println!("Subscription result: {:?}", result);
 
-    let fut = fut.boxed().compat();
-    let r = rt.block_on(fut);
-    println!("{:?}", r);
+    while let Some(sub) = subscription.next().await {
+        println!("{:?}", sub);
+    }
+
     Ok(())
 }

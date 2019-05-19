@@ -9,6 +9,29 @@ pub struct GetPositionsRequest {
     pub kind: Option<AssetKind>,
 }
 
+impl GetPositionsRequest {
+    pub fn all(currency: Currency) -> Self {
+        Self {
+            currency,
+            kind: None,
+        }
+    }
+
+    pub fn futures(currency: Currency) -> Self {
+        Self {
+            currency,
+            kind: Some(AssetKind::Future),
+        }
+    }
+
+    pub fn options(currency: Currency) -> Self {
+        Self {
+            currency,
+            kind: Some(AssetKind::Option),
+        }
+    }
+}
+
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetPositionsResponse {
     pub average_price: f64,

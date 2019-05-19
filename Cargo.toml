@@ -29,6 +29,5 @@ shrinkwraprs = "0.2"
 env_logger = "0.6"
 dotenv = "0.13.0"
 fluid = "0.4"
-
-# [patch.crates-io]
-# futures-preview = { git = "https://github.com/rust-lang-nursery/futures-rs", features = ["compat", "nightly", "async-await"]}
+runtime = "0.3.0-alpha.4"
+runtime-tokio = "0.3.0-alpha.4"
