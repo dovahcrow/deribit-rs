@@ -1,18 +1,6 @@
 use crate::models::{Request, VoidRequest};
 use serde_derive::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
-pub enum HeartbeatType {
-    Heartbeat,
-    TestRequest,
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct HeartbeatParams {
-    pub r#type: HeartbeatType,
-}
-
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct SetHeartbeatRequest {
     pub interval: u64,

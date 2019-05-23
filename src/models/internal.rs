@@ -1,22 +1,10 @@
-use super::session_management::HeartbeatParams;
 use super::subscription::{
     AnnouncementsData, BookData, DeribitPriceIndexData, DeribitPriceRankingData,
     EstimatedExpirationPriceData, GroupedBookData, MarkPriceOptionData, PerpetualData, QuoteData,
     TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData,
 };
-use crate::errors::DeribitError;
-use crate::models::Request;
-use failure::Fallible;
+use crate::models::{Either, Request};
 use serde_derive::{Deserialize, Serialize};
-use serde_json::Value;
-
-#[derive(Deserialize, Serialize, Clone, Debug)]
-#[serde(untagged)]
-pub enum WSMessage {
-    RPC(JSONRPCResponse),
-    Subscription(SubscriptionMessage),
-    Heartbeat(HeartbeatMessage),
-}
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct JSONRPCRequest<Q: Request> {
@@ -28,31 +16,15 @@ pub struct JSONRPCRequest<Q: Request> {
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct JSONRPCResponse<R = Value> {
+pub struct JSONRPCResponse<R> {
     pub jsonrpc: JSONRPCVersion,
     pub id: i64,
     pub testnet: bool,
-    pub error: Option<ErrorDetail>,
-    pub result: Option<R>,
+    #[serde(alias = "error")]
+    pub result: Either<R, ErrorDetail>,
     pub us_in: u64,
     pub us_out: u64,
     pub us_diff: u64,
-}
-
-impl JSONRPCResponse {
-    pub fn to_result(self) -> Fallible<JSONRPCResponse> {
-        if let Some(err) = self.error {
-            Err(DeribitError::RemoteError {
-                code: err.code,
-                message: err.message,
-            }
-            .into())
-        } else if let Some(_) = self.result {
-            Ok(self)
-        } else {
-            unreachable!()
-        }
-    }
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, Copy)]
@@ -61,36 +33,77 @@ pub enum JSONRPCVersion {
     V2,
 }
 
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct SubscriptionMessage {
+    pub jsonrpc: JSONRPCVersion,
+    pub method: SubscriptionMethod,
+    pub params: SubscriptionParams,
+}
+
+impl SubscriptionMessage {
+    pub fn is_subscription(&self) -> bool {
+        self.method.is_subscription()
+    }
+    pub fn is_heartbeat(&self) -> bool {
+        self.method.is_heartbeat()
+    }
+}
+
 #[derive(Deserialize, Serialize, Clone, Debug, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum SubscriptionMethod {
     Subscription,
-}
-
-#[derive(Deserialize, Serialize, Clone, Debug, Copy)]
-#[serde(rename_all = "lowercase")]
-pub enum HeartbeatMethod {
     Heartbeat,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct HeartbeatMessage {
-    pub jsonrpc: JSONRPCVersion,
-    pub method: HeartbeatMethod,
-    pub params: HeartbeatParams,
+impl SubscriptionMethod {
+    pub fn is_subscription(self) -> bool {
+        match self {
+            SubscriptionMethod::Subscription => true,
+            SubscriptionMethod::Heartbeat => false,
+        }
+    }
+    pub fn is_heartbeat(&self) -> bool {
+        match self {
+            SubscriptionMethod::Subscription => false,
+            SubscriptionMethod::Heartbeat => true,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct SubscriptionMessage<D = SubscriptionData> {
-    pub jsonrpc: JSONRPCVersion,
-    pub method: SubscriptionMethod,
-    pub params: SubscriptionParams<D>,
+#[serde(untagged)]
+pub enum SubscriptionParams {
+    Subscription {
+        channel: String,
+        data: SubscriptionData,
+    },
+    Heartbeat {
+        r#type: HeartbeatType,
+    },
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct SubscriptionParams<D = SubscriptionData> {
-    pub channel: String,
-    pub data: D,
+
+impl SubscriptionParams {
+    pub fn is_subscription(&self) -> bool {
+        match self {
+            SubscriptionParams::Subscription { .. } => true,
+            SubscriptionParams::Heartbeat { .. } => false,
+        }
+    }
+    pub fn is_heartbeat(&self) -> bool {
+        match self {
+            SubscriptionParams::Subscription { .. } => false,
+            SubscriptionParams::Heartbeat { .. } => true,
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
+pub enum HeartbeatType {
+    Heartbeat,
+    TestRequest,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

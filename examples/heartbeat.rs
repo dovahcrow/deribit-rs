@@ -1,8 +1,9 @@
 #![feature(async_await)]
 
-use deribit::models::{Either, HeartbeatType, SetHeartbeatRequest, TestRequest};
+use deribit::models::{HeartbeatType, SetHeartbeatRequest, SubscriptionParams, TestRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
+use env_logger::init;
 use failure::Fallible;
 use futures::StreamExt;
 use runtime_tokio::Tokio;
@@ -10,6 +11,7 @@ use runtime_tokio::Tokio;
 #[runtime::main(Tokio)]
 async fn main() -> Fallible<()> {
     dotenv().unwrap();
+    init();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
 
@@ -19,16 +21,19 @@ async fn main() -> Fallible<()> {
     println!("Hearbet response {:?}", resp.await?);
 
     while let Some(sub) = subscription.next().await {
-        match sub {
-            Either::Right(l) => match l.params.r#type {
-                HeartbeatType::TestRequest => {
-                    println!("Test Requested");
-                    client.call(TestRequest::default()).await?;
-                }
-                _ => println!("Heartbeat"),
-            },
-            _ => {}
+        if sub.is_heartbeat() {
+            match sub.params {
+                SubscriptionParams::Heartbeat { r#type: ty } => match ty {
+                    HeartbeatType::TestRequest => {
+                        println!("Test Requested");
+                        client.call(TestRequest::default()).await?;
+                    }
+                    _ => println!("Heartbeat"),
+                },
+                _ => {}
+            }
         }
+
     }
 
     Ok(())

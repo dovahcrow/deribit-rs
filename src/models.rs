@@ -1,7 +1,7 @@
 pub mod account;
 pub mod authentication;
+pub mod internal;
 pub mod market_data;
-pub mod message;
 pub mod session_management;
 pub mod subscription;
 pub mod support;
@@ -18,17 +18,15 @@ pub use account::{
     GetSubaccountsRequest, GetSubaccountsResponse,
 };
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
+pub use internal::{
+    HeartbeatType, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion, SubscriptionData,
+    SubscriptionMessage, SubscriptionParams,
+};
 pub use market_data::{
     GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest,
     GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
 };
-pub use message::{
-    HeartbeatMessage, HeartbeatMethod, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion,
-    SubscriptionData, SubscriptionMessage, WSMessage,
-};
-pub use session_management::{
-    HeartbeatParams, HeartbeatType, SetHeartbeatRequest, SetHeartbeatResponse,
-};
+pub use session_management::{SetHeartbeatRequest, SetHeartbeatResponse};
 pub use subscription::{
     PrivateSubscribeRequest, PrivateUnsubscribeRequest, PublicSubscribeRequest,
     PublicUnsubscribeRequest, SubscribeResponse,
@@ -216,6 +214,18 @@ impl<L, R> Either<L, R> {
         match self {
             Either::Right(r) => Either::Right(f(r)),
             Either::Left(l) => Either::Left(l),
+        }
+    }
+    pub fn left_result(self) -> Result<L, R> {
+        match self {
+            Either::Left(l) => Ok(l),
+            Either::Right(r) => Err(r),
+        }
+    }
+    pub fn right_result(self) -> Result<R, L> {
+        match self {
+            Either::Left(l) => Err(l),
+            Either::Right(r) => Ok(r),
         }
     }
 }

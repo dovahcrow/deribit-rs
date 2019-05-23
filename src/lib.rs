@@ -10,16 +10,16 @@ pub use crate::api_client::{DeribitAPICallRawResult, DeribitAPICallResult, Derib
 pub use crate::subscription_client::DeribitSubscriptionClient;
 
 use crate::errors::DeribitError;
-use crate::models::{Either, HeartbeatMessage, JSONRPCResponse, SubscriptionMessage, WSMessage};
 use derive_builder::Builder;
 use failure::Fallible;
 use futures::channel::{mpsc, oneshot};
 use futures::compat::{Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
 use futures01::Stream as Stream01;
+use lazy_static::lazy_static;
 use log::warn;
-use log::{error, info, trace};
-use serde_json::from_str;
+use log::{info, trace};
+use regex::Regex;
 use std::collections::HashMap;
 use std::time::Duration;
 use tokio::net::TcpStream;
@@ -27,6 +27,10 @@ use tokio::timer::Timeout;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
+
+lazy_static! {
+    static ref RE: Regex = Regex::new(r#""id": ?(\d+),"#).unwrap();
+}
 
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
@@ -69,11 +73,11 @@ impl Deribit {
 
     async fn servo(
         ws: impl Stream<Item = Fallible<Message>> + Unpin,
-        mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<Fallible<JSONRPCResponse>>)>,
-        mut stx: mpsc::Sender<Either<SubscriptionMessage, HeartbeatMessage>>,
+        mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<String>)>,
+        mut stx: mpsc::Sender<String>,
     ) -> Fallible<()> {
         let mut ws = ws.fuse();
-        let mut waiters: HashMap<i64, oneshot::Sender<Fallible<JSONRPCResponse>>> = HashMap::new();
+        let mut waiters: HashMap<i64, oneshot::Sender<String>> = HashMap::new();
 
         let mut orphan_messages = HashMap::new();
 
@@ -87,51 +91,32 @@ impl Deribit {
 
                     match msg? {
                         Message::Text(msg) => {
-                            let resp: WSMessage = match from_str(&msg) {
-                                Ok(msg) => msg,
-                                Err(e) => {
-                                    error!("[Servo] Cannot decode rpc message {:?}", e);
-                                    Err(e)?
-                                }
-                            };
-
-                            match resp {
-                                WSMessage::RPC(msg) => {
-                                    let id = msg.id;
-                                    let waiter = match waiters.remove(&msg.id) {
-                                        Some(waiter) => waiter,
-                                        None => {
-                                            orphan_messages.insert(msg.id, msg);
-                                            continue;
-                                        }
-                                    };
-
-                                    if let Err(msg) = waiter.send(msg.to_result()) {
-                                        info!("[Servo] The client for request {} is dropped, response is {:?}", id, msg);
+                            if let Some(cap) = RE.captures(&msg) {
+                                let id_str = cap.get(1).expect("No captured group in a capture result, this cannot happen").as_str();
+                                let id = id_str.parse().map_err(|_| {
+                                    DeribitError::ParseRPCResponseID(id_str.into())
+                                })?;
+                                let waiter = match waiters.remove(&id) {
+                                    Some(waiter) => waiter,
+                                    None => {
+                                        orphan_messages.insert(id, msg);
+                                        continue;
                                     }
-                                }
-                                WSMessage::Subscription(event) => {
-                                    let fut = stx.send(Either::Left(event)).compat();
-                                    let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
-                                    match fut.await.map_err(|e| e.into_inner()) {
-                                        Ok(_) => {}
-                                        Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
-                                        Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
-                                        Err(None) => { warn!("[Servo] Subscription channel is full") }
-                                    }
+                                };
 
+                                if let Err(msg) = waiter.send(msg) {
+                                    info!("[Servo] The client for request {} is dropped, response is {:?}", id, msg);
                                 }
-                                WSMessage::Heartbeat(event) => {
-                                    let fut = stx.send(Either::Right(event)).compat();
-                                    let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
-                                    match fut.await.map_err(|e| e.into_inner()) {
-                                        Ok(_) => {}
-                                        Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
-                                        Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
-                                        Err(None) => { warn!("[Servo] Subscription channel is full") }
-                                    }
+                            } else {
+                                let fut = stx.send(msg).compat();
+                                let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
+                                match fut.await.map_err(|e| e.into_inner()) {
+                                    Ok(_) => {}
+                                    Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
+                                    Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
+                                    Err(None) => { warn!("[Servo] Subscription channel is full") }
                                 }
-                            };
+                            }
                         }
                         Message::Ping(_) => {
                             trace!("[Servo] Received Ping");
@@ -149,7 +134,7 @@ impl Deribit {
                         if orphan_messages.contains_key(&id) {
                             info!("[Servo] Message come before waiter");
                             let msg = orphan_messages.remove(&id).unwrap();
-                            if let Err(msg) = waiter.send(msg.to_result()) {
+                            if let Err(msg) = waiter.send(msg) {
                                 info!("[Servo] The client for request {} is dropped, response is {:?}", id, msg);
                             }
                         } else {

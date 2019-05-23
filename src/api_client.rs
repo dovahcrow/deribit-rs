@@ -1,10 +1,4 @@
-// mod account;
-// mod authentication;
-// mod session_management;
-// mod subscription;
-// mod support;
-// mod trading;
-
+use crate::errors::DeribitError;
 use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
 use failure::Fallible;
@@ -17,7 +11,7 @@ use log::trace;
 use pin_utils::unsafe_pinned;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use serde_json::{from_value, to_string};
+use serde_json::{from_str, to_string};
 use std::marker::PhantomData;
 use std::pin::Pin;
 use tungstenite::Message;
@@ -26,7 +20,7 @@ type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
 
 pub struct DeribitAPIClient {
     wstx: SplitWSCompatStream,
-    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Fallible<JSONRPCResponse>>)>,
+    waiter_tx: mpsc::Sender<(i64, oneshot::Sender<String>)>,
 
     id: i64,
 }
@@ -34,7 +28,7 @@ pub struct DeribitAPIClient {
 impl DeribitAPIClient {
     pub(crate) fn new(
         wstx: SplitWSCompatStream,
-        waiter_tx: mpsc::Sender<(i64, oneshot::Sender<Fallible<JSONRPCResponse>>)>,
+        waiter_tx: mpsc::Sender<(i64, oneshot::Sender<String>)>,
     ) -> DeribitAPIClient {
         DeribitAPIClient {
             wstx: wstx,
@@ -79,18 +73,18 @@ impl DeribitAPIClient {
 }
 
 pub struct DeribitAPICallRawResult<R> {
-    rx: oneshot::Receiver<Fallible<JSONRPCResponse>>,
+    rx: oneshot::Receiver<String>,
     _ty: PhantomData<R>,
 }
 
 impl<R> DeribitAPICallRawResult<R> {
-    pub(crate) fn new(rx: oneshot::Receiver<Fallible<JSONRPCResponse>>) -> Self {
+    pub(crate) fn new(rx: oneshot::Receiver<String>) -> Self {
         DeribitAPICallRawResult {
             rx: rx,
             _ty: PhantomData,
         }
     }
-    unsafe_pinned!(rx: oneshot::Receiver<Fallible<JSONRPCResponse>>);
+    unsafe_pinned!(rx: oneshot::Receiver<String>);
 }
 
 impl<R> Future for DeribitAPICallRawResult<R>
@@ -100,21 +94,9 @@ where
     type Output = Fallible<JSONRPCResponse<R>>;
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<JSONRPCResponse<R>>> {
         self.rx().poll(cx).map(|result| {
-            let resp = result??;
-            let result = from_value(
-                resp.result
-                    .expect("result of JSONRPCResponse cannot be None"),
-            )?;
-            Ok(JSONRPCResponse {
-                jsonrpc: resp.jsonrpc,
-                id: resp.id,
-                testnet: resp.testnet,
-                error: None,
-                result: Some(result),
-                us_in: resp.us_in,
-                us_out: resp.us_out,
-                us_diff: resp.us_diff,
-            })
+            let resp = result?;
+            let result: JSONRPCResponse<R> = from_str(&resp)?;
+            Ok(result)
         })
     }
 }
@@ -136,11 +118,16 @@ where
 {
     type Output = Fallible<R>;
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<R>> {
-        self.inner().poll(cx).map(|result| {
-            let resp = result?;
-            Ok(resp
-                .result
-                .expect("result of JSONRPCResponse cannot be None"))
-        })
+        match self.inner().poll(cx) {
+            Poll::Ready(Ok(resp)) => Poll::Ready(resp.result.left_result().map_err(|e| {
+                DeribitError::RemoteError {
+                    code: e.code,
+                    message: e.message,
+                }
+                .into()
+            })),
+            Poll::Ready(Err(e)) => Poll::Ready(Err(e)),
+            Poll::Pending => Poll::Pending,
+        }
     }
 }
