@@ -33,4 +33,3 @@ dotenv = "0.13.0"
 fluid = "0.4"
 runtime = "0.3.0-alpha.4"
 runtime-tokio = "0.3.0-alpha.4"
-scheduler = { branch = "fix-casts", git = "https://github.com/dovahcrow/rust-scheduler"}
