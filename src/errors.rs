@@ -15,6 +15,4 @@ pub enum DeribitError {
     UnknownCurrency(String),
     #[fail(display = "Websocket disconnected")]
     WebsocketDisconnected,
-    #[fail(display = "Cannot parse id of RPC response: got '{}'", _0)]
-    ParseRPCResponseID(String),
 }

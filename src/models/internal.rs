@@ -34,10 +34,10 @@ pub enum JSONRPCVersion {
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct SubscriptionMessage {
+pub struct SubscriptionMessage<D = SubscriptionData> {
     pub jsonrpc: JSONRPCVersion,
     pub method: SubscriptionMethod,
-    pub params: SubscriptionParams,
+    pub params: SubscriptionParams<D>,
 }
 
 impl SubscriptionMessage {
@@ -73,14 +73,9 @@ impl SubscriptionMethod {
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(untagged)]
-pub enum SubscriptionParams {
-    Subscription {
-        channel: String,
-        data: SubscriptionData,
-    },
-    Heartbeat {
-        r#type: HeartbeatType,
-    },
+pub enum SubscriptionParams<D = SubscriptionData> {
+    Subscription { channel: String, data: D },
+    Heartbeat { r#type: HeartbeatType },
 }
 
 

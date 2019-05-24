@@ -21,7 +21,6 @@ type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
 pub struct DeribitAPIClient {
     wstx: SplitWSCompatStream,
     waiter_tx: mpsc::Sender<(i64, oneshot::Sender<String>)>,
-
     id: i64,
 }
 

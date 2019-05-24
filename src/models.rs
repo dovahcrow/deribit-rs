@@ -268,3 +268,138 @@ impl<L, R> Either<L, R> {
         }
     }
 }
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any3<O1, O2, O3> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any4<O1, O2, O3, O4> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any5<O1, O2, O3, O4, O5> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any6<O1, O2, O3, O4, O5, O6> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+    Sixth(O6),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any7<O1, O2, O3, O4, O5, O6, O7> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+    Sixth(O6),
+    Seventh(O7),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any8<O1, O2, O3, O4, O5, O6, O7, O8> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+    Sixth(O6),
+    Seventh(O7),
+    Eighth(O8),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any9<O1, O2, O3, O4, O5, O6, O7, O8, O9> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+    Sixth(O6),
+    Seventh(O7),
+    Eighth(O8),
+    Ninth(O9),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any10<O1, O2, O3, O4, O5, O6, O7, O8, O9, O10> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+    Sixth(O6),
+    Seventh(O7),
+    Eighth(O8),
+    Ninth(O9),
+    Tenth(O10),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any11<O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+    Sixth(O6),
+    Seventh(O7),
+    Eighth(O8),
+    Ninth(O9),
+    Tenth(O10),
+    Eleventh(O11),
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Any12<O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11, O12> {
+    First(O1),
+    Second(O2),
+    Third(O3),
+    Fourth(O4),
+    Fifth(O5),
+    Sixth(O6),
+    Seventh(O7),
+    Eighth(O8),
+    Ninth(O9),
+    Tenth(O10),
+    Eleventh(O11),
+    Twelfth(O12),
+}

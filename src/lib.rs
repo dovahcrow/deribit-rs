@@ -7,7 +7,7 @@ pub mod models;
 mod subscription_client;
 
 pub use crate::api_client::{DeribitAPICallRawResult, DeribitAPICallResult, DeribitAPIClient};
-pub use crate::subscription_client::DeribitSubscriptionClient;
+pub use crate::subscription_client::{DeribitSubscriptionClient, DeribitSubscriptionLimitedClient};
 
 use crate::errors::DeribitError;
 use derive_builder::Builder;
@@ -28,8 +28,9 @@ use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
 
+
 lazy_static! {
-    static ref RE: Regex = Regex::new(r#""id": ?(\d+),"#).unwrap();
+    static ref RE: Regex = Regex::new(r#""jsonrpc":"2.0","id":(\d+),"#).unwrap();
 }
 
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
@@ -93,9 +94,7 @@ impl Deribit {
                         Message::Text(msg) => {
                             if let Some(cap) = RE.captures(&msg) {
                                 let id_str = cap.get(1).expect("No captured group in a capture result, this cannot happen").as_str();
-                                let id = id_str.parse().map_err(|_| {
-                                    DeribitError::ParseRPCResponseID(id_str.into())
-                                })?;
+                                let id = id_str.parse().expect("Cannot parse integer while it is deemed as integer by regex, this cannot happen");
                                 let waiter = match waiters.remove(&id) {
                                     Some(waiter) => waiter,
                                     None => {
