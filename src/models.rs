@@ -10,6 +10,7 @@ pub mod trading;
 use crate::errors::DeribitError;
 use failure::{Error, Fallible};
 use serde_derive::{Deserialize, Serialize};
+use serde_json::from_str;
 use std::fmt::{Display, Error as FmtError, Formatter};
 use std::result::Result as StdResult;
 
@@ -84,20 +85,29 @@ impl std::fmt::Display for Currency {
 impl std::str::FromStr for Currency {
     type Err = Error;
     fn from_str(s: &str) -> Fallible<Currency> {
-        match s {
-            "BTC" => Ok(Currency::BTC),
-            "ETH" => Ok(Currency::ETH),
-            s => Err(DeribitError::UnknownCurrency(s.to_string()).into()),
-        }
+        from_str(&format!(r#""{}""#, s))
+            .map_err(|_| DeribitError::UnknownCurrency(s.to_string()).into())
     }
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum AssetKind {
+    #[serde(alias = "future")]
     Future,
+    #[serde(alias = "option")]
     Option,
 }
+
+
+impl std::str::FromStr for AssetKind {
+    type Err = Error;
+    fn from_str(s: &str) -> Fallible<AssetKind> {
+        from_str(&format!(r#""{}""#, s))
+            .map_err(|_| DeribitError::UnknownAssetKind(s.to_string()).into())
+    }
+}
+
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
 #[serde(rename_all = "lowercase")]

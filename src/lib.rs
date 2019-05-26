@@ -92,7 +92,7 @@ impl Deribit {
 
                     match msg? {
                         Message::Text(msg) => {
-                            if let Some(cap) = RE.captures(&msg) {
+                            if let Some(cap) = RE.captures(&msg) { // TODO: If deribit returns unordered keys, then this will fail.
                                 let id_str = cap.get(1).expect("No captured group in a capture result, this cannot happen").as_str();
                                 let id = id_str.parse().expect("Cannot parse integer while it is deemed as integer by regex, this cannot happen");
                                 let waiter = match waiters.remove(&id) {

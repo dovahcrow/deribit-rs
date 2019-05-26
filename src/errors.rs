@@ -13,6 +13,8 @@ pub enum DeribitError {
     ServoExited,
     #[fail(display = "Unknown currency {}", _0)]
     UnknownCurrency(String),
+    #[fail(display = "Unknown asset kind {}", _0)]
+    UnknownAssetKind(String),
     #[fail(display = "Websocket disconnected")]
     WebsocketDisconnected,
 }
