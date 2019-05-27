@@ -42,6 +42,18 @@ pub struct TestRequest {
     pub expected_result: Option<String>,
 }
 
+impl TestRequest {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn expect(result: &str) -> Self {
+        Self {
+            expected_result: Some(result.into()),
+        }
+    }
+}
+
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TestResponse {
     pub version: String,

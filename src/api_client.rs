@@ -7,7 +7,7 @@ use futures::compat::Compat01As03Sink;
 use futures::task::Context;
 use futures::{Future, Poll, SinkExt};
 use futures01::stream::SplitSink as SplitSink01;
-use log::trace;
+use log::{trace, warn};
 use pin_utils::unsafe_pinned;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -53,7 +53,7 @@ impl DeribitAPIClient {
         self.id += 1;
 
         let payload = to_string(&req)?;
-        trace!("[Deribit] Request: {}", payload);
+        trace!("[API Client] Request: {}", payload);
         self.wstx.send(Message::Text(payload)).await?;
         self.waiter_tx.send((req.id, waiter_tx)).await?;
         Ok(DeribitAPICallRawResult::new(waiter_rx))
@@ -94,8 +94,11 @@ where
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<JSONRPCResponse<R>>> {
         self.rx().poll(cx).map(|result| {
             let resp = result?;
-            let result: JSONRPCResponse<R> = from_str(&resp)?;
-            Ok(result)
+            let result: Result<JSONRPCResponse<R>, _> = from_str(&resp);
+            if let Err(_) = result.as_ref() {
+                warn!("[API Client] Cannot deserialize RPC response: {}", resp);
+            }
+            Ok(result?)
         })
     }
 }
