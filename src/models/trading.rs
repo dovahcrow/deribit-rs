@@ -1,5 +1,5 @@
 use crate::models::{
-    AdvanceOption, AssetKind, Currency, Direction, Either, Liquidity, OrderState, OrderType,
+    AdvanceOption, AssetKind, Currency, Direction, Either, LiquidityType, OrderState, OrderType,
     Request, TimeInForce, Trigger, VoidRequest,
 };
 use serde::{Deserialize, Deserializer};
@@ -160,7 +160,7 @@ pub struct Trade {
     pub instrument_name: String,
     pub iv: Option<f64>,
     pub label: Option<String>,
-    pub liquidity: Liquidity,
+    pub liquidity: LiquidityType,
     pub matching_id: Option<String>,
     pub order_id: String,
     pub order_type: OrderType,

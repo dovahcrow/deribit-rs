@@ -1,4 +1,4 @@
-use crate::models::Direction;
+use crate::models::{Direction, LiquidationType};
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -9,6 +9,7 @@ pub struct TradesData {
     pub index_price: f64,
     pub instrument_name: String,
     pub iv: Option<f64>,
+    pub liquidation: Option<LiquidationType>,
     pub price: f64,
     pub tick_direction: u64,
     pub timestamp: u64,

@@ -133,12 +133,23 @@ impl Direction {
     }
 }
 
+
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
-pub enum Liquidity {
+pub enum LiquidityType {
     #[serde(rename = "M")]
     Maker,
     #[serde(rename = "T")]
     Taker,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
+pub enum LiquidationType {
+    #[serde(rename = "M")]
+    Maker,
+    #[serde(rename = "T")]
+    Taker,
+    #[serde(rename = "MT")]
+    MakerTaker,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
