@@ -2,7 +2,7 @@
 
 use deribit::models::subscription::{BookData, TickerData, TradesData};
 use deribit::models::{
-    Any3, HeartbeatType, PublicSubscribeRequest, SubscriptionParams, TestRequest,
+    Any3, HeartbeatType, PublicSubscribeRequest, SubscriptionParams, TestRequest, SetHeartbeatRequest
 };
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
@@ -16,7 +16,7 @@ async fn main() -> Fallible<()> {
     let _ = dotenv();
     init();
 
-    let drb = DeribitBuilder::default().testnet(true).build().unwrap();
+    let drb = DeribitBuilder::default().subscription_buffer_size(100000usize).build().unwrap();
 
     let (mut client, subscription) = drb.connect().await?;
 
@@ -35,6 +35,8 @@ async fn main() -> Fallible<()> {
     ]);
 
     let _ = client.call(req).await?.await?;
+    
+    client.call(SetHeartbeatRequest::with_interval(30)).await?.await?;
 
     while let Some(m) = subscription.next().await {
         if let SubscriptionParams::Heartbeat {
