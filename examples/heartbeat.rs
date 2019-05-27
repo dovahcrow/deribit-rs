@@ -10,7 +10,7 @@ use runtime_tokio::Tokio;
 
 #[runtime::main(Tokio)]
 async fn main() -> Fallible<()> {
-    dotenv().unwrap();
+    let _ = dotenv();
     init();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
