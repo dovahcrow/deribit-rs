@@ -20,7 +20,7 @@ async fn main() -> Fallible<()> {
     let resp = client.call(SetHeartbeatRequest::with_interval(10)).await?;
     println!("Hearbet response {:?}", resp.await?);
 
-    while let Some(sub) = subscription.next().await {
+    while let Some(Ok(sub)) = subscription.next().await {
         if sub.is_heartbeat() {
             match sub.params {
                 SubscriptionParams::Heartbeat { r#type: ty } => match ty {
