@@ -85,7 +85,6 @@ impl Request for EditRequest {
     type Response = EditResponse;
 }
 
-
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct TradeRequest {
     pub instrument_name: String,
@@ -291,10 +290,7 @@ impl Request for CancelAllByCurrencyRequest {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
-#[serde(rename_all = "snake_case")]
-pub enum CancelAllResponse {
-    Ok,
-}
+pub struct CancelAllResponse(usize);
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetOrderStateRequest {
@@ -362,7 +358,6 @@ impl Request for GetOpenOrdersByCurrencyRequest {
     const METHOD: &'static str = "private/get_open_orders_by_currency";
     type Response = Vec<GetOpenOrdersByCurrencyResponse>;
 }
-
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct GetOpenOrdersByInstrumentRequest {
