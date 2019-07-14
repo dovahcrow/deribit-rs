@@ -1,4 +1,4 @@
-use crate::models::{Currency, Direction, LiquidityType, OrderState, OrderType};
+use crate::models::{Currency, Direction, LiquidationType, LiquidityType, OrderState, OrderType};
 use serde_derive::{Deserialize, Serialize};
 
 // This is for
@@ -16,6 +16,7 @@ pub struct UserTradesData {
     pub iv: Option<f64>,
     pub label: Option<String>,
     pub liquidity: LiquidityType,
+    pub liquidation: Option<LiquidationType>,
     pub matching_id: Option<String>,
     pub order_id: String,
     pub order_type: OrderType,
