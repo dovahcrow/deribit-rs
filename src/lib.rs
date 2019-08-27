@@ -1,4 +1,3 @@
-#![feature(specialization)]
 #![recursion_limit = "512"]
 
 mod api_client;
@@ -83,7 +82,7 @@ impl Deribit {
         let mut orphan_messages = HashMap::new();
 
         let (mut sdropped, mut cdropped) = (false, false);
-        while !sdropped && !cdropped {
+        while !(sdropped && cdropped) {
             select! {
                 msg = ws.next() => {
                     trace!("[Servo] Message: {:?}", msg);
@@ -104,7 +103,7 @@ impl Deribit {
                                 };
 
                                 if let Err(msg) = waiter.send(msg) {
-                                    info!("[Servo] The client for request {} is dropped, response is {:?}", id, msg);
+                                    info!("[Servo] Orphan response: {:?}", msg);
                                 }
                             } else {
                                 let fut = stx.send(msg).compat();
@@ -153,7 +152,7 @@ impl Deribit {
                 }
             };
         }
-
+        info!("Servo exit with all receiver dropped");
         Ok(()) // Exit with all receiver dropped
     }
 }

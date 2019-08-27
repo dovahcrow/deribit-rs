@@ -10,7 +10,7 @@ use serde_derive::{Deserialize, Serialize};
 pub struct JSONRPCRequest<Q: Request> {
     pub id: i64,
     pub method: String,
-    #[serde(skip_serializing_if = "crate::models::VoidRequest::empty")]
+    #[serde(skip_serializing_if = "crate::models::Request::without_payload")]
     pub params: Q,
 }
 
@@ -77,7 +77,6 @@ pub enum SubscriptionParams<D = SubscriptionData> {
     Subscription { channel: String, data: D },
     Heartbeat { r#type: HeartbeatType },
 }
-
 
 impl SubscriptionParams {
     pub fn is_subscription(&self) -> bool {

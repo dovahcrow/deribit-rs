@@ -47,15 +47,9 @@ pub use trading::{
 pub trait Request {
     const METHOD: &'static str;
     type Response;
-}
 
-trait VoidRequest {
-    fn empty(&self) -> bool;
-}
-
-impl<R: Request> VoidRequest for R {
     #[inline]
-    default fn empty(&self) -> bool {
+    fn without_payload(&self) -> bool {
         false
     }
 }
@@ -99,7 +93,6 @@ pub enum AssetKind {
     Option,
 }
 
-
 impl std::str::FromStr for AssetKind {
     type Err = Error;
     fn from_str(s: &str) -> Fallible<AssetKind> {
@@ -107,7 +100,6 @@ impl std::str::FromStr for AssetKind {
             .map_err(|_| DeribitError::UnknownAssetKind(s.to_string()).into())
     }
 }
-
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -132,7 +124,6 @@ impl Direction {
         }
     }
 }
-
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
 pub enum LiquidityType {
@@ -290,7 +281,6 @@ impl<L, R> Either<L, R> {
     }
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Any3<O1, O2, O3> {
@@ -298,7 +288,6 @@ pub enum Any3<O1, O2, O3> {
     Second(O2),
     Third(O3),
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -309,7 +298,6 @@ pub enum Any4<O1, O2, O3, O4> {
     Fourth(O4),
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Any5<O1, O2, O3, O4, O5> {
@@ -319,7 +307,6 @@ pub enum Any5<O1, O2, O3, O4, O5> {
     Fourth(O4),
     Fifth(O5),
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -332,7 +319,6 @@ pub enum Any6<O1, O2, O3, O4, O5, O6> {
     Sixth(O6),
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Any7<O1, O2, O3, O4, O5, O6, O7> {
@@ -344,7 +330,6 @@ pub enum Any7<O1, O2, O3, O4, O5, O6, O7> {
     Sixth(O6),
     Seventh(O7),
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -359,7 +344,6 @@ pub enum Any8<O1, O2, O3, O4, O5, O6, O7, O8> {
     Eighth(O8),
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Any9<O1, O2, O3, O4, O5, O6, O7, O8, O9> {
@@ -373,7 +357,6 @@ pub enum Any9<O1, O2, O3, O4, O5, O6, O7, O8, O9> {
     Eighth(O8),
     Ninth(O9),
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -390,7 +373,6 @@ pub enum Any10<O1, O2, O3, O4, O5, O6, O7, O8, O9, O10> {
     Tenth(O10),
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Any11<O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11> {
@@ -406,7 +388,6 @@ pub enum Any11<O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11> {
     Tenth(O10),
     Eleventh(O11),
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]

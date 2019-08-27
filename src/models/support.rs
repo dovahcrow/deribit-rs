@@ -1,4 +1,4 @@
-use crate::models::{Request, VoidRequest};
+use crate::models::Request;
 use serde_derive::{Deserialize, Serialize};
 use shrinkwraprs::Shrinkwrap;
 
@@ -12,11 +12,8 @@ pub struct GetTimeResponse(pub i64);
 impl Request for GetTimeRequest {
     const METHOD: &'static str = "public/get_time";
     type Response = GetTimeResponse;
-}
-
-impl VoidRequest for GetTimeRequest {
     #[inline]
-    fn empty(&self) -> bool {
+    fn without_payload(&self) -> bool {
         true
     }
 }

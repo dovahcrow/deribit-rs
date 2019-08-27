@@ -7,7 +7,7 @@ use dotenv::dotenv;
 use failure::{Error, Fallible};
 use fluid::prelude::*;
 use futures::compat::Future01CompatExt;
-use futures::{Future, FutureExt, TryFutureExt};
+use futures::{FutureExt, TryFutureExt};
 use std::env::var;
 use std::time::{Duration, Instant};
 use tokio::runtime::Runtime;
@@ -65,7 +65,7 @@ impl TradingTest {
                 .await?;
             Delay::new(Instant::now() + Duration::from_secs(1))
                 .compat()
-                .await;
+                .await?;
 
             client
                 .call(SellRequest::market("BTC-PERPETUAL", 10.))

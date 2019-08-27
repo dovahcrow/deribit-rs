@@ -1,6 +1,6 @@
 use crate::models::{
     AdvanceOption, AssetKind, Currency, Direction, Either, LiquidityType, OrderState, OrderType,
-    Request, TimeInForce, Trigger, VoidRequest,
+    Request, TimeInForce, Trigger,
 };
 use serde::{Deserialize, Deserializer};
 use serde_derive::{Deserialize, Serialize};
@@ -256,11 +256,8 @@ pub struct CancelAllRequest;
 impl Request for CancelAllRequest {
     const METHOD: &'static str = "private/cancel_all";
     type Response = CancelAllResponse;
-}
-
-impl VoidRequest for CancelAllRequest {
     #[inline]
-    fn empty(&self) -> bool {
+    fn without_payload(&self) -> bool {
         true
     }
 }

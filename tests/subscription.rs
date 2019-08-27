@@ -18,7 +18,7 @@ struct SubscriptionTest {
 impl Default for SubscriptionTest {
     fn default() -> Self {
         let _ = dotenv();
-        // env_logger::init();
+        let _ = env_logger::try_init();
         Self {
             key: var("DERIBIT_KEY").unwrap(),
             secret: var("DERIBIT_SECRET").unwrap(),
@@ -313,18 +313,19 @@ impl SubscriptionTest {
         } = self;
 
         let fut = async move {
-            let (mut client, subscription) = drb.connect().await.unwrap();
+            let (mut client, subscription) = drb.connect().await?;
 
             let _ = client
                 .call(AuthRequest::credential_auth(&key, &secret))
+                .await?
                 .await?;
 
             let req = PrivateSubscribeRequest {
                 channels: vec!["user.orders.BTC-PERPETUAL.raw".into()],
             };
-            let _ = client.call(req).await.unwrap();
+            let _ = client.call(req).await?.await?;
 
-            let req = BuyRequest::limit("BTC-PERPETUAL", 10f64, 10f64);
+            let req = BuyRequest::limit("BTC-PERPETUAL", 100f64, 10f64);
 
             let resp = client.call(req).await?.await?;
             let id = resp.0.order.order_id;
@@ -336,7 +337,7 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
         let fut = fut.boxed().compat();
-        let _ = rt.block_on(fut).unwrap();
+        let _ = rt.block_on(fut)?;
         Ok(())
     }
 
