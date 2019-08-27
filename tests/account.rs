@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubaccountsRequest};
 use deribit::{Deribit, DeribitBuilder};
 use dotenv::dotenv;
@@ -9,13 +7,11 @@ use futures::{FutureExt, TryFutureExt};
 use std::env::var;
 use tokio::runtime::Runtime;
 
-
 pub struct AccountTest {
     key: String,
     secret: String,
     drb: Deribit,
     rt: Runtime,
-
 }
 
 impl Default for AccountTest {
@@ -47,7 +43,6 @@ impl AccountTest {
             let req = GetAccountSummaryRequest::extended(Currency::BTC);
             Ok::<_, Error>(client.call(req).await?.await?)
         };
-
         let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())

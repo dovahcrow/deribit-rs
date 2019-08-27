@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use deribit::models::{
     Currency, GetBookSummaryByCurrencyRequest, GetIndexRequest, GetInstrumentsRequest,
 };
@@ -8,7 +6,7 @@ use dotenv::dotenv;
 use failure::{Error, Fallible};
 use futures::{FutureExt, TryFutureExt};
 use tokio::runtime::Runtime;
-
+// use futures::compat::
 #[test]
 fn get_index() -> Fallible<()> {
     let _ = dotenv();
@@ -25,12 +23,10 @@ fn get_index() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-
     let fut = fut.boxed().compat();
     let _ = rt.block_on(fut)?;
     Ok(())
 }
-
 
 #[test]
 fn get_instruments() -> Fallible<()> {
@@ -48,12 +44,10 @@ fn get_instruments() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-
     let fut = fut.boxed().compat();
     let _ = rt.block_on(fut)?;
     Ok(())
 }
-
 
 #[test]
 fn get_book_summary_by_currency() -> Fallible<()> {
@@ -73,7 +67,6 @@ fn get_book_summary_by_currency() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-
     let fut = fut.boxed().compat();
     let _ = rt.block_on(fut)?;
     Ok(())

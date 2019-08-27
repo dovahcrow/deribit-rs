@@ -1,14 +1,11 @@
-#![feature(async_await)]
-
 use deribit::models::{HeartbeatType, SetHeartbeatRequest, SubscriptionParams, TestRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
 use failure::Fallible;
 use futures::StreamExt;
-use runtime_tokio::Tokio;
 
-#[runtime::main(Tokio)]
+#[runtime::main(runtime_tokio::Tokio)]
 async fn main() -> Fallible<()> {
     let _ = dotenv();
     init();
@@ -33,7 +30,6 @@ async fn main() -> Fallible<()> {
                 _ => {}
             }
         }
-
     }
 
     Ok(())

@@ -1,4 +1,4 @@
-#![feature(async_await, specialization)]
+#![feature(specialization)]
 #![recursion_limit = "512"]
 
 mod api_client;
@@ -27,7 +27,6 @@ use tokio::timer::Timeout;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
-
 
 lazy_static! {
     static ref RE: Regex = Regex::new(r#""jsonrpc":"2.0","id":(\d+),"#).unwrap();
@@ -58,16 +57,17 @@ impl Deribit {
         let (ws, _) = connect_async(Url::parse(ws_url)?).compat().await?;
 
         let (wstx, wsrx) = ws.split();
+        let (wstx, wsrx) = (wstx.sink_compat(), wsrx.compat());
+
         let (stx, srx) = mpsc::channel(self.subscription_buffer_size);
         let (waiter_tx, waiter_rx) = mpsc::channel(10);
-        let background = Self::servo(wsrx.compat().err_into(), waiter_rx, stx).map_err(|e| {
-            warn!("[Servo] Exiting because of '{}'", e);
-        });
+        let background = Self::servo(wsrx.err_into(), waiter_rx, stx)
+            .map_err(|e| warn!("[Servo] Exiting because of '{}'", e));
 
         tokio::spawn(background.boxed().compat());
 
         Ok((
-            DeribitAPIClient::new(wstx.sink_compat(), waiter_tx),
+            DeribitAPIClient::new(wstx, waiter_tx),
             DeribitSubscriptionClient::new(srx),
         ))
     }
@@ -110,6 +110,10 @@ impl Deribit {
                                 let fut = stx.send(msg).compat();
                                 let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
                                 match fut.await.map_err(|e| e.into_inner()) {
+                                    // Ok(Ok(_)) => {}
+                                    // Ok(Err(ref e)) if e.is_disconnected() => sdropped = true,
+                                    // Ok(Err(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
+                                    // Err(_) => { warn!("[Servo] Subscription channel is full") }
                                     Ok(_) => {}
                                     Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
                                     Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
@@ -125,6 +129,9 @@ impl Deribit {
                         }
                         Message::Binary(_) => {
                             trace!("[Servo] Received Binary");
+                        }
+                        Message::Close(_) => {
+                            trace!("[Servo] Received Close");
                         }
                     }
                 }

@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use deribit::models::subscription::{PrivateSubscribeRequest, PublicSubscribeRequest};
 use deribit::models::{AuthRequest, BuyRequest, CancelRequest, SellRequest};
 use deribit::{Deribit, DeribitBuilder};
@@ -9,7 +7,6 @@ use fluid::prelude::*;
 use futures::{FutureExt, StreamExt, TryFutureExt};
 use std::env::var;
 use tokio::runtime::Runtime;
-
 
 struct SubscriptionTest {
     rt: Runtime,
@@ -27,11 +24,9 @@ impl Default for SubscriptionTest {
             secret: var("DERIBIT_SECRET").unwrap(),
             drb: DeribitBuilder::default().testnet(true).build().unwrap(),
             rt: Runtime::new().unwrap(),
-
         }
     }
 }
-
 
 // The tests:
 #[session]
@@ -49,6 +44,7 @@ impl SubscriptionTest {
     //         Ok::<_, Error>(v)
     //     };
 
+    //
     //     let fut = fut.boxed().compat();
     //     let v = rt.block_on(fut)?;
     //     v.len().should().be_equal_to(1);
@@ -103,7 +99,6 @@ impl SubscriptionTest {
         Ok(())
     }
 
-
     #[fact]
     fn deribit_price_index(self) -> Fallible<()> {
         let Self { drb, mut rt, .. } = self;
@@ -125,7 +120,6 @@ impl SubscriptionTest {
         v.len().should().be_equal_to(2);
         Ok(())
     }
-
 
     #[fact]
     fn deribit_price_ranking(self) -> Fallible<()> {
@@ -267,7 +261,6 @@ impl SubscriptionTest {
         Ok(())
     }
 
-
     #[fact]
     fn trades(self) -> Fallible<()> {
         let Self {
@@ -310,7 +303,6 @@ impl SubscriptionTest {
         Ok(())
     }
 
-
     #[fact]
     fn user_orders(self) -> Fallible<()> {
         let Self {
@@ -343,9 +335,8 @@ impl SubscriptionTest {
             id.should().be_equal_to(resp.order.order_id);
             Ok::<_, Error>(v)
         };
-
         let fut = fut.boxed().compat();
-        let _ = rt.block_on(fut)?;
+        let _ = rt.block_on(fut).unwrap();
         Ok(())
     }
 
@@ -411,7 +402,6 @@ impl SubscriptionTest {
             client.call(req).await.unwrap();
             Ok::<(), Error>(())
         };
-
         let fut = fut.boxed().compat();
         rt.block_on(fut)?;
         Ok(())

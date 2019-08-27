@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use deribit::models::{
     HeartbeatType, PublicSubscribeRequest, SetHeartbeatRequest, SubscriptionParams, TestRequest,
 };
@@ -8,9 +6,8 @@ use dotenv::dotenv;
 use env_logger::init;
 use failure::Fallible;
 use futures::StreamExt;
-use runtime_tokio::Tokio;
 
-#[runtime::main(Tokio)]
+#[runtime::main(runtime_tokio::Tokio)]
 async fn main() -> Fallible<()> {
     let _ = dotenv();
     init();
@@ -21,7 +18,6 @@ async fn main() -> Fallible<()> {
         .unwrap();
 
     let (mut client, mut subscription) = drb.connect().await?;
-
 
     let req = PublicSubscribeRequest::new(&[
         "book.BTC-PERPETUAL.5.20.100ms".into(),

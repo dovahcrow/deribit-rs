@@ -1,14 +1,11 @@
-#![feature(async_await)]
-
 use deribit::models::{AuthRequest, Currency, GetPositionsRequest, PrivateSubscribeRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use failure::Fallible;
 use futures::StreamExt;
-use runtime_tokio::Tokio;
 use std::env::var;
 
-#[runtime::main(Tokio)]
+#[runtime::main(runtime_tokio::Tokio)]
 async fn main() -> Fallible<()> {
     let _ = dotenv();
 

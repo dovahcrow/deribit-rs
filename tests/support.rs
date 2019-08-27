@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use deribit::models::{GetTimeRequest, HelloRequest, TestRequest};
 use deribit::Deribit;
 use failure::{Error, Fallible};
@@ -23,7 +21,6 @@ fn hello() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-
     let fut = fut.boxed().compat();
     rt.block_on(fut)?;
     Ok(())
@@ -41,7 +38,6 @@ fn get_time() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-
     let fut = fut.boxed().compat();
     rt.block_on(fut)?;
     Ok(())
@@ -59,7 +55,6 @@ fn test() -> Fallible<()> {
         };
         Ok::<_, Error>(client.call(req).await?.await?)
     };
-
     let fut = fut.boxed().compat();
     assert!(rt.block_on(fut).is_err());
     Ok(())

@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use deribit::models::{
     AuthRequest, BuyRequest, CancelRequest, Currency, EditRequest, GetOpenOrdersByCurrencyRequest,
     GetOpenOrdersByInstrumentRequest, GetOrderStateRequest, SellRequest,
@@ -9,12 +7,11 @@ use dotenv::dotenv;
 use failure::{Error, Fallible};
 use fluid::prelude::*;
 use futures::compat::Future01CompatExt;
-use futures::{FutureExt, TryFutureExt};
+use futures::{Future, FutureExt, TryFutureExt};
 use std::env::var;
 use std::time::{Duration, Instant};
 use tokio::runtime::Runtime;
 use tokio::timer::Delay;
-
 
 struct TradingTest;
 
@@ -43,7 +40,6 @@ impl TradingTest {
             let req = GetOrderStateRequest::new("2320198993");
             Ok::<_, Error>(client.call(req).await?.await?)
         };
-
         let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
@@ -69,7 +65,7 @@ impl TradingTest {
                 .await?;
             Delay::new(Instant::now() + Duration::from_secs(1))
                 .compat()
-                .await?;
+                .await;
 
             client
                 .call(SellRequest::market("BTC-PERPETUAL", 10.))
@@ -77,7 +73,6 @@ impl TradingTest {
                 .await?;
             Ok::<_, Error>(())
         };
-
         let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
@@ -119,7 +114,6 @@ impl TradingTest {
             client.call(CancelRequest::new(&id)).await?.await?;
             Ok::<_, Error>(())
         };
-
         let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
