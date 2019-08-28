@@ -27,4 +27,6 @@ pub struct UserTradesData {
     pub timestamp: u64,
     pub trade_id: String,
     pub trade_seq: i64,
+    pub reduce_only: bool,
+    pub post_only: bool,
 }
