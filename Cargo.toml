@@ -11,7 +11,7 @@ readme = "README.md"
 
 [dependencies]
 futures01 = { version = "0.1", package = "futures"}
-futures-preview = { version = "0.3.0-alpha.18", features = ["compat", "nightly", "async-await"]}
+futures-preview = { version = "0.3.0-alpha.19", features = ["compat", "async-await"]}
 tokio = "0.1"
 tungstenite = "0.9"
 tokio-tungstenite = "0.9"
@@ -22,7 +22,7 @@ serde_derive = "1"
 failure = "0.1"
 log = "0.4"
 derive_builder = "0.7"
-pin-utils = "0.1.0-alpha.4"
+pin-project = "0.4"
 shrinkwraprs = "0.2"
 regex = "1"
 lazy_static = "1"

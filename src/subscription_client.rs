@@ -4,7 +4,7 @@ use futures::channel::mpsc;
 use futures::Stream;
 use futures::{task::Context, Poll};
 use log::warn;
-use pin_utils::unsafe_pinned;
+use pin_project::pin_project;
 use serde::de::DeserializeOwned;
 use serde_json::from_str;
 use std::marker::PhantomData;
@@ -51,20 +51,19 @@ impl Stream for DeribitSubscriptionClient {
 }
 
 
+#[pin_project]
 pub struct DeribitSubscriptionLimitedClient<D> {
+    #[pin]
     rx: mpsc::Receiver<String>,
     _ty: PhantomData<D>,
-}
-
-impl<D> DeribitSubscriptionLimitedClient<D> {
-    unsafe_pinned!(rx: mpsc::Receiver<String>);
 }
 
 impl<D: DeserializeOwned> Stream for DeribitSubscriptionLimitedClient<D> {
     type Item = Fallible<SubscriptionMessage<D>>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
-        match self.rx().poll_next(cx) {
+        let this = self.project();
+        match this.rx.poll_next(cx) {
             Poll::Ready(Some(v)) => {
                 let data = from_str::<SubscriptionMessage<D>>(&v).map_err(From::from);
                 if let Err(_) = data.as_ref() {

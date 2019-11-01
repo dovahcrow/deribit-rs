@@ -8,7 +8,7 @@ use futures::task::Context;
 use futures::{Future, Poll, SinkExt};
 use futures01::stream::SplitSink as SplitSink01;
 use log::{trace, warn};
-use pin_utils::unsafe_pinned;
+use pin_project::pin_project;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use serde_json::{from_str, to_string};
@@ -71,7 +71,9 @@ impl DeribitAPIClient {
     }
 }
 
+#[pin_project]
 pub struct DeribitAPICallRawResult<R> {
+    #[pin]
     rx: oneshot::Receiver<String>,
     _ty: PhantomData<R>,
 }
@@ -83,7 +85,6 @@ impl<R> DeribitAPICallRawResult<R> {
             _ty: PhantomData,
         }
     }
-    unsafe_pinned!(rx: oneshot::Receiver<String>);
 }
 
 impl<R> Future for DeribitAPICallRawResult<R>
@@ -92,7 +93,8 @@ where
 {
     type Output = Fallible<JSONRPCResponse<R>>;
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<JSONRPCResponse<R>>> {
-        self.rx().poll(cx).map(|result| {
+        let this = self.project();
+        this.rx.poll(cx).map(|result| {
             let resp = result?;
             let result: Result<JSONRPCResponse<R>, _> = from_str(&resp);
             if let Err(_) = result.as_ref() {
@@ -103,7 +105,9 @@ where
     }
 }
 
+#[pin_project]
 pub struct DeribitAPICallResult<R> {
+    #[pin]
     inner: DeribitAPICallRawResult<R>,
 }
 
@@ -111,7 +115,6 @@ impl<R> DeribitAPICallResult<R> {
     pub(crate) fn new(inner: DeribitAPICallRawResult<R>) -> Self {
         DeribitAPICallResult { inner: inner }
     }
-    unsafe_pinned!(inner: DeribitAPICallRawResult<R>);
 }
 
 impl<R> Future for DeribitAPICallResult<R>
@@ -120,7 +123,8 @@ where
 {
     type Output = Fallible<R>;
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<R>> {
-        match self.inner().poll(cx) {
+        let this = self.project();
+        match this.inner.poll(cx) {
             Poll::Ready(Ok(resp)) => Poll::Ready(resp.result.left_result().map_err(|e| {
                 DeribitError::RemoteError {
                     code: e.code,
