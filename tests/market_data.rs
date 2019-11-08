@@ -4,15 +4,14 @@ use deribit::models::{
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use failure::{Error, Fallible};
-use futures::{FutureExt, TryFutureExt};
 use tokio::runtime::Runtime;
-// use futures::compat::
+
 #[test]
 fn get_index() -> Fallible<()> {
     let _ = dotenv();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let mut rt = Runtime::new()?;
+    let rt = Runtime::new()?;
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -23,7 +22,6 @@ fn get_index() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-    let fut = fut.boxed().compat();
     let _ = rt.block_on(fut)?;
     Ok(())
 }
@@ -33,7 +31,7 @@ fn get_instruments() -> Fallible<()> {
     let _ = dotenv();
 
     let drb = DeribitBuilder::default().build().unwrap();
-    let mut rt = Runtime::new()?;
+    let rt = Runtime::new()?;
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -44,7 +42,6 @@ fn get_instruments() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-    let fut = fut.boxed().compat();
     let _ = rt.block_on(fut)?;
     Ok(())
 }
@@ -54,7 +51,7 @@ fn get_book_summary_by_currency() -> Fallible<()> {
     let _ = dotenv();
 
     let drb = DeribitBuilder::default().build().unwrap();
-    let mut rt = Runtime::new()?;
+    let rt = Runtime::new()?;
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -67,7 +64,6 @@ fn get_book_summary_by_currency() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-    let fut = fut.boxed().compat();
     let _ = rt.block_on(fut)?;
     Ok(())
 }

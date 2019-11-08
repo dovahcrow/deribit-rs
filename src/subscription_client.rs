@@ -1,8 +1,8 @@
 use crate::models::SubscriptionMessage;
 use failure::Fallible;
 use futures::channel::mpsc;
+use futures::task::{Context, Poll};
 use futures::Stream;
-use futures::{task::Context, Poll};
 use log::warn;
 use pin_project::pin_project;
 use serde::de::DeserializeOwned;
@@ -34,7 +34,6 @@ impl Stream for DeribitSubscriptionClient {
         let pin = Pin::new(&mut self.rx);
         match pin.poll_next(cx) {
             Poll::Ready(Some(v)) => {
-
                 let data = from_str::<SubscriptionMessage>(&v).map_err(From::from);
                 if let Err(_) = data.as_ref() {
                     warn!(
@@ -49,7 +48,6 @@ impl Stream for DeribitSubscriptionClient {
         }
     }
 }
-
 
 #[pin_project]
 pub struct DeribitSubscriptionLimitedClient<D> {

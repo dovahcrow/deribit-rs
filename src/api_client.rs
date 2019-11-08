@@ -3,10 +3,9 @@ use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
 use failure::Fallible;
 use futures::channel::{mpsc, oneshot};
-use futures::compat::Compat01As03Sink;
-use futures::task::Context;
-use futures::{Future, Poll, SinkExt};
-use futures01::stream::SplitSink as SplitSink01;
+use futures::stream::SplitSink;
+use futures::task::{Context, Poll};
+use futures::{Future, SinkExt};
 use log::{trace, warn};
 use pin_project::pin_project;
 use serde::de::DeserializeOwned;
@@ -16,23 +15,20 @@ use std::marker::PhantomData;
 use std::pin::Pin;
 use tungstenite::Message;
 
-type SplitWSCompatStream = Compat01As03Sink<SplitSink01<WSStream>, Message>;
-
 pub struct DeribitAPIClient {
-    wstx: SplitWSCompatStream,
+    wstx: SplitSink<WSStream, Message>,
     waiter_tx: mpsc::Sender<(i64, oneshot::Sender<String>)>,
     id: i64,
 }
 
 impl DeribitAPIClient {
     pub(crate) fn new(
-        wstx: SplitWSCompatStream,
+        wstx: SplitSink<WSStream, Message>,
         waiter_tx: mpsc::Sender<(i64, oneshot::Sender<String>)>,
     ) -> DeribitAPIClient {
         DeribitAPIClient {
             wstx: wstx,
             waiter_tx: waiter_tx,
-
             id: 0,
         }
     }

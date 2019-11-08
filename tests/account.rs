@@ -3,7 +3,6 @@ use deribit::{Deribit, DeribitBuilder};
 use dotenv::dotenv;
 use failure::{Error, Fallible};
 use fluid::prelude::*;
-use futures::{FutureExt, TryFutureExt};
 use std::env::var;
 use tokio::runtime::Runtime;
 
@@ -17,6 +16,7 @@ pub struct AccountTest {
 impl Default for AccountTest {
     fn default() -> Self {
         let _ = dotenv();
+        let _ = env_logger::try_init();
         Self {
             key: var("DERIBIT_KEY").unwrap(),
             secret: var("DERIBIT_SECRET").unwrap(),
@@ -31,7 +31,7 @@ impl AccountTest {
     #[fact]
     fn get_account_summary(self) -> Fallible<()> {
         let Self {
-            mut rt,
+            rt,
             drb,
             key,
             secret,
@@ -43,7 +43,6 @@ impl AccountTest {
             let req = GetAccountSummaryRequest::extended(Currency::BTC);
             Ok::<_, Error>(client.call(req).await?.await?)
         };
-        let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
     }
@@ -51,7 +50,7 @@ impl AccountTest {
     #[fact]
     fn get_subaccounts(self) -> Fallible<()> {
         let Self {
-            mut rt,
+            rt,
             drb,
             key,
             secret,
@@ -64,7 +63,6 @@ impl AccountTest {
             let req = GetSubaccountsRequest::with_portfolio();
             Ok::<_, Error>(client.call(req).await?.await?)
         };
-        let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
     }

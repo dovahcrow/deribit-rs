@@ -4,7 +4,7 @@ use deribit::{Deribit, DeribitBuilder};
 use dotenv::dotenv;
 use failure::{Error, Fallible};
 use fluid::prelude::*;
-use futures::{FutureExt, StreamExt, TryFutureExt};
+use futures::StreamExt;
 use std::env::var;
 use tokio::runtime::Runtime;
 
@@ -33,7 +33,7 @@ impl Default for SubscriptionTest {
 impl SubscriptionTest {
     // #[fact]
     // fn announcements(self) -> Fallible<()> {
-    //     let Self { drb, mut rt, .. } = self;
+    //     let Self { drb, rt, .. } = self;
     //     let fut = async {
     //         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -45,7 +45,7 @@ impl SubscriptionTest {
     //     };
 
     //
-    //     let fut = fut.boxed().compat();
+    //
     //     let v = rt.block_on(fut)?;
     //     v.len().should().be_equal_to(1);
     //     Ok(())
@@ -53,7 +53,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn book(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
 
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
@@ -69,7 +69,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(5);
         Ok(())
@@ -77,7 +76,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn grouped_book(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
 
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
@@ -93,7 +92,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(5);
         Ok(())
@@ -101,7 +99,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn deribit_price_index(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -115,7 +113,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(2);
         Ok(())
@@ -123,7 +120,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn deribit_price_ranking(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -137,7 +134,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(2);
         Ok(())
@@ -145,7 +141,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn estimated_expiration_price(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -159,7 +155,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(2);
         Ok(())
@@ -167,7 +162,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn markprice_options(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -181,7 +176,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(2);
         Ok(())
@@ -189,7 +183,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn perpetual(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -203,7 +197,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(2);
         Ok(())
@@ -211,7 +204,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn quote(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -225,7 +218,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(10);
         Ok(())
@@ -233,7 +225,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn ticker(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -255,7 +247,6 @@ impl SubscriptionTest {
             Ok::<Vec<_>, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(5);
         Ok(())
@@ -264,7 +255,7 @@ impl SubscriptionTest {
     #[fact]
     fn trades(self) -> Fallible<()> {
         let Self {
-            mut rt,
+            rt,
             drb,
             key,
             secret,
@@ -297,7 +288,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(2);
         Ok(())
@@ -306,7 +296,7 @@ impl SubscriptionTest {
     #[fact]
     fn user_orders(self) -> Fallible<()> {
         let Self {
-            mut rt,
+            rt,
             drb,
             key,
             secret,
@@ -336,7 +326,6 @@ impl SubscriptionTest {
             id.should().be_equal_to(resp.order.order_id);
             Ok::<_, Error>(v)
         };
-        let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
     }
@@ -344,7 +333,7 @@ impl SubscriptionTest {
     #[fact]
     fn user_portfolio(self) -> Fallible<()> {
         let Self {
-            mut rt,
+            rt,
             drb,
             key,
             secret,
@@ -367,7 +356,6 @@ impl SubscriptionTest {
             Ok::<_, Error>(v)
         };
 
-        let fut = fut.boxed().compat();
         let v = rt.block_on(fut)?;
         v.len().should().be_equal_to(2);
         Ok(())
@@ -375,7 +363,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn sub_unsub(self) -> Fallible<()> {
-        let Self { drb, mut rt, .. } = self;
+        let Self { drb, rt, .. } = self;
         let fut = async {
             let (mut client, _) = drb.connect().await.unwrap();
 
@@ -403,7 +391,6 @@ impl SubscriptionTest {
             client.call(req).await.unwrap();
             Ok::<(), Error>(())
         };
-        let fut = fut.boxed().compat();
         rt.block_on(fut)?;
         Ok(())
     }

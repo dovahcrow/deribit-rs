@@ -7,7 +7,7 @@ use env_logger::init;
 use failure::Fallible;
 use futures::StreamExt;
 
-#[runtime::main(runtime_tokio::Tokio)]
+#[tokio::main]
 async fn main() -> Fallible<()> {
     let _ = dotenv();
     init();

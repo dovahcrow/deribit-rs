@@ -12,9 +12,7 @@ use crate::errors::DeribitError;
 use derive_builder::Builder;
 use failure::Fallible;
 use futures::channel::{mpsc, oneshot};
-use futures::compat::{Future01CompatExt, Sink01CompatExt, Stream01CompatExt};
-use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
-use futures01::Stream as Stream01;
+use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryStreamExt};
 use lazy_static::lazy_static;
 use log::warn;
 use log::{info, trace};
@@ -53,17 +51,21 @@ impl Deribit {
     pub async fn connect(self) -> Fallible<(DeribitAPIClient, DeribitSubscriptionClient)> {
         let ws_url = if self.testnet { WS_URL_TESTNET } else { WS_URL };
         info!("Connecting");
-        let (ws, _) = connect_async(Url::parse(ws_url)?).compat().await?;
+        let (ws, _) = connect_async(Url::parse(ws_url)?).await?;
 
         let (wstx, wsrx) = ws.split();
-        let (wstx, wsrx) = (wstx.sink_compat(), wsrx.compat());
 
         let (stx, srx) = mpsc::channel(self.subscription_buffer_size);
         let (waiter_tx, waiter_rx) = mpsc::channel(10);
         let background = Self::servo(wsrx.err_into(), waiter_rx, stx)
-            .map_err(|e| warn!("[Servo] Exiting because of '{}'", e));
+            .inspect(|r| {
+                if let Err(e) = r {
+                    warn!("[Servo] Exiting because of '{}'", e)
+                }
+            })
+            .then(|_| async { () });
 
-        tokio::spawn(background.boxed().compat());
+        tokio::spawn(background);
 
         Ok((
             DeribitAPIClient::new(wstx, waiter_tx),
@@ -106,17 +108,13 @@ impl Deribit {
                                     info!("[Servo] Orphan response: {:?}", msg);
                                 }
                             } else {
-                                let fut = stx.send(msg).compat();
-                                let fut = Timeout::new(fut, Duration::from_millis(1)).compat();
-                                match fut.await.map_err(|e| e.into_inner()) {
-                                    // Ok(Ok(_)) => {}
-                                    // Ok(Err(ref e)) if e.is_disconnected() => sdropped = true,
-                                    // Ok(Err(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
-                                    // Err(_) => { warn!("[Servo] Subscription channel is full") }
-                                    Ok(_) => {}
-                                    Err(Some(ref e)) if e.is_disconnected() => sdropped = true,
-                                    Err(Some(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") },
-                                    Err(None) => { warn!("[Servo] Subscription channel is full") }
+                                let fut = stx.send(msg);
+                                let fut = Timeout::new(fut, Duration::from_millis(1));
+                                match fut.await {
+                                    Ok(Ok(_)) => {}
+                                    Ok(Err(ref e)) if e.is_disconnected() => sdropped = true,
+                                    Ok(Err(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") }, // MPSC ERROR
+                                    Err(_) => { warn!("[Servo] Subscription channel is full") }, // Elapsed
                                 }
                             }
                         }

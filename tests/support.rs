@@ -1,13 +1,12 @@
 use deribit::models::{GetTimeRequest, HelloRequest, TestRequest};
 use deribit::Deribit;
 use failure::{Error, Fallible};
-use futures::{FutureExt, TryFutureExt};
 use tokio::runtime::Runtime;
 
 #[test]
 fn hello() -> Fallible<()> {
     let drb = Deribit::new();
-    let mut rt = Runtime::new()?;
+    let rt = Runtime::new()?;
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;
@@ -21,7 +20,6 @@ fn hello() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-    let fut = fut.boxed().compat();
     rt.block_on(fut)?;
     Ok(())
 }
@@ -29,7 +27,7 @@ fn hello() -> Fallible<()> {
 #[test]
 fn get_time() -> Fallible<()> {
     let drb = Deribit::new();
-    let mut rt = Runtime::new()?;
+    let rt = Runtime::new()?;
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;
@@ -38,7 +36,6 @@ fn get_time() -> Fallible<()> {
 
         Ok::<_, Error>(())
     };
-    let fut = fut.boxed().compat();
     rt.block_on(fut)?;
     Ok(())
 }
@@ -46,7 +43,7 @@ fn get_time() -> Fallible<()> {
 #[test]
 fn test() -> Fallible<()> {
     let drb = Deribit::new();
-    let mut rt = Runtime::new()?;
+    let rt = Runtime::new()?;
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;
@@ -55,7 +52,6 @@ fn test() -> Fallible<()> {
         };
         Ok::<_, Error>(client.call(req).await?.await?)
     };
-    let fut = fut.boxed().compat();
     assert!(rt.block_on(fut).is_err());
     Ok(())
 }

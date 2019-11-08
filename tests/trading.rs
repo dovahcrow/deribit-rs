@@ -6,12 +6,10 @@ use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use failure::{Error, Fallible};
 use fluid::prelude::*;
-use futures::compat::Future01CompatExt;
-use futures::{FutureExt, TryFutureExt};
 use std::env::var;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use tokio::runtime::Runtime;
-use tokio::timer::Delay;
+use tokio::timer::delay_for;
 
 struct TradingTest;
 
@@ -30,7 +28,7 @@ impl TradingTest {
         let secret = var("DERIBIT_SECRET").unwrap();
 
         let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
+        let rt = Runtime::new()?;
 
         let fut = async move {
             let (mut client, _) = drb.connect().await?;
@@ -40,7 +38,6 @@ impl TradingTest {
             let req = GetOrderStateRequest::new("2320198993");
             Ok::<_, Error>(client.call(req).await?.await?)
         };
-        let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
     }
@@ -52,7 +49,7 @@ impl TradingTest {
         let key = var("DERIBIT_KEY").unwrap();
         let secret = var("DERIBIT_SECRET").unwrap();
         let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
+        let rt = Runtime::new()?;
 
         let fut = async move {
             let (mut client, _) = drb.connect().await?;
@@ -63,9 +60,7 @@ impl TradingTest {
                 .call(BuyRequest::market("BTC-PERPETUAL", 10.))
                 .await?
                 .await?;
-            Delay::new(Instant::now() + Duration::from_secs(1))
-                .compat()
-                .await?;
+            delay_for(Duration::from_secs(1)).await;
 
             client
                 .call(SellRequest::market("BTC-PERPETUAL", 10.))
@@ -73,7 +68,6 @@ impl TradingTest {
                 .await?;
             Ok::<_, Error>(())
         };
-        let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
     }
@@ -85,7 +79,7 @@ impl TradingTest {
         let key = var("DERIBIT_KEY").unwrap();
         let secret = var("DERIBIT_SECRET").unwrap();
         let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
+        let rt = Runtime::new()?;
 
         let fut = async move {
             let (mut client, _) = drb.connect().await?;
@@ -114,7 +108,6 @@ impl TradingTest {
             client.call(CancelRequest::new(&id)).await?.await?;
             Ok::<_, Error>(())
         };
-        let fut = fut.boxed().compat();
         let _ = rt.block_on(fut)?;
         Ok(())
     }

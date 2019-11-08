@@ -150,9 +150,11 @@ while let Some(message) = subscription.next().await {
     - [ ] /private/create_deposit_address
     - [ ] /private/get_current_deposit_address
     - [ ] /private/get_deposits
-    - [ ] /private/get_transfers
+    - [x] /private/get_transfers
     - [ ] /private/get_withdrawals
-    - [ ] /private/withdraw
+    - [x] /private/submit_transfer_to_subaccount
+    - [x] /private/submit_transfer_to_user
+    - [x] /private/withdraw
 - Subscriptions
     - [x] announcements
     - [x] book.{instrument_name}.{group}.{depth}.{interval}

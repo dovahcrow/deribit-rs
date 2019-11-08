@@ -4,7 +4,7 @@ use dotenv::dotenv;
 use failure::Fallible;
 use std::env::var;
 
-#[runtime::main(runtime_tokio::Tokio)]
+#[tokio::main]
 async fn main() -> Fallible<()> {
     let _ = dotenv();
 

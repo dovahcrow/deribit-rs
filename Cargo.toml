@@ -10,26 +10,24 @@ repository = "https://github.com/dovahcrow/deribit-rs"
 readme = "README.md"
 
 [dependencies]
-futures01 = { version = "0.1", package = "futures"}
-futures-preview = { version = "0.3.0-alpha.19", features = ["compat", "async-await"]}
-tokio = "0.1"
-tungstenite = "0.9"
-tokio-tungstenite = "0.9"
+futures = { version = "0.3", features = ["async-await"]}
+tokio = "0.2.0-alpha.6"
+tungstenite = { git = "https://github.com/snapview/tungstenite-rs.git" }
+tokio-tungstenite = { git = "https://github.com/dovahcrow/tokio-tungstenite", version ="0.10.0-alpha.1", branch = "tokio2"}
 url = "2"
 serde = "1"
 serde_json = "1"
 serde_derive = "1"
 failure = "0.1"
 log = "0.4"
-derive_builder = "0.7"
+derive_builder = "0.8"
 pin-project = "0.4"
 shrinkwraprs = "0.2"
 regex = "1"
 lazy_static = "1"
 
 [dev-dependencies]
-env_logger = "0.6"
-dotenv = "0.14"
+env_logger = "0.7"
+dotenv = "0.15"
 fluid = "0.4"
-runtime = "0.3.0-alpha.6"	
-runtime-tokio = "0.3.0-alpha.6"
+

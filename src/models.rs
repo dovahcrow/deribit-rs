@@ -6,6 +6,7 @@ pub mod session_management;
 pub mod subscription;
 pub mod support;
 pub mod trading;
+pub mod wallet;
 
 use crate::errors::DeribitError;
 use failure::{Error, Fallible};
@@ -42,6 +43,11 @@ pub use trading::{
     GetOpenOrdersByCurrencyResponse, GetOpenOrdersByInstrumentRequest,
     GetOpenOrdersByInstrumentResponse, GetOrderStateRequest, GetOrderStateResponse, Order,
     SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
+};
+pub use wallet::{
+    GetTransfersRequest, GetTransfersResponse, SubmitTransferToSubaccountRequest,
+    SubmitTransferToSubaccountResponse, SubmitTransferToUserRequest, SubmitTransferToUserResponse,
+    TransferItem, WithdrawRequest, WithdrawResponse,
 };
 
 pub trait Request {
@@ -199,6 +205,62 @@ pub enum AdvanceOption {
     USD,
     #[serde(rename = "implv")]
     ImplV,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
+pub enum TransferState {
+    #[serde(rename = "prepared")]
+    Prepared,
+    #[serde(rename = "confirmed")]
+    Confirmed,
+    #[serde(rename = "cancelled")]
+    Cancelled,
+    #[serde(rename = "waiting_for_admin")]
+    WaitingForAdmin,
+    #[serde(rename = "rejection_reason")]
+    RejectionReason,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
+pub enum TransferType {
+    #[serde(rename = "user")]
+    User,
+    #[serde(rename = "subaccount")]
+    Subaccount,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub enum Priority {
+    #[serde(rename = "insane")]
+    Insane,
+    #[serde(rename = "extreme_high")]
+    ExtremeHigh,
+    #[serde(rename = "very_high")]
+    VeryHigh,
+    #[serde(rename = "high")]
+    High,
+    #[serde(rename = "mid")]
+    Mid,
+    #[serde(rename = "low")]
+    Low,
+    #[serde(rename = "very_low")]
+    VeryLow,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub enum WithdrawState {
+    #[serde(rename = "unconfirmed")]
+    Unconfirmed,
+    #[serde(rename = "confirmed")]
+    Priority,
+    #[serde(rename = "cancelled")]
+    Cancelled,
+    #[serde(rename = "completed")]
+    Completed,
+    #[serde(rename = "interrupted")]
+    Interrupted,
+    #[serde(rename = "rejected")]
+    Rejected,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

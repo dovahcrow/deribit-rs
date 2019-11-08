@@ -114,7 +114,7 @@ pub struct GetAccountSummaryResponse {
     pub options_delta: f64,
     pub balance: f64,
     pub projected_initial_margin: Option<f64>,
-    pub deposit_address: String,
+    pub deposit_address: Option<String>,
     pub referrer_id: Option<String>,
 }
 
