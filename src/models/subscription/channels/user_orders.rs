@@ -1,5 +1,5 @@
 use crate::models::{AdvanceOption, Direction, OrderState, OrderType, TimeInForce, Trigger};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]

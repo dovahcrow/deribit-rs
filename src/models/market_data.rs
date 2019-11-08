@@ -1,5 +1,5 @@
 use crate::models::{AssetKind, Currency, Request};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
@@ -79,7 +79,6 @@ pub struct GetIndexResponse {
     pub indices: HashMap<Currency, f64>,
 }
 
-
 impl Request for GetIndexRequest {
     const METHOD: &'static str = "public/get_index";
     type Response = GetIndexResponse;
@@ -143,7 +142,6 @@ pub struct GetInstrumentsResponse {
     pub strike: Option<f64>,
     pub tick_size: f64,
 }
-
 
 impl Request for GetInstrumentsRequest {
     const METHOD: &'static str = "public/get_instruments";

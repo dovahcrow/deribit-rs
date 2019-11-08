@@ -1,7 +1,7 @@
 mod channels;
 
 use crate::models::Request;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 pub use channels::AnnouncementsData;
 pub use channels::DeribitPriceIndexData;
@@ -55,7 +55,6 @@ impl Request for PrivateSubscribeRequest {
     const METHOD: &'static str = "private/subscribe";
     type Response = SubscribeResponse;
 }
-
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct PublicUnsubscribeRequest {

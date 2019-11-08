@@ -1,7 +1,7 @@
 use crate::models::{
     Currency, Direction, Priority, Request, TransferState, TransferType, WithdrawState,
 };
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetTransfersRequest {

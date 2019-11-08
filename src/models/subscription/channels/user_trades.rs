@@ -1,5 +1,5 @@
 use crate::models::{Currency, Direction, LiquidationType, LiquidityType, OrderState, OrderType};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 // This is for
 // user.trades.{kind}.{currency}.{interval}.rs

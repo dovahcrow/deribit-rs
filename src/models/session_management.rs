@@ -1,5 +1,5 @@
 use crate::models::Request;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct SetHeartbeatRequest {

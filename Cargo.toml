@@ -15,9 +15,8 @@ tokio = "0.2.0-alpha.6"
 tungstenite = { git = "https://github.com/snapview/tungstenite-rs.git" }
 tokio-tungstenite = { git = "https://github.com/dovahcrow/tokio-tungstenite", version ="0.10.0-alpha.1", branch = "tokio2"}
 url = "2"
-serde = "1"
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
-serde_derive = "1"
 failure = "0.1"
 log = "0.4"
 derive_builder = "0.8"

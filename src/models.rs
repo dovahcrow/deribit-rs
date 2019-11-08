@@ -10,7 +10,7 @@ pub mod wallet;
 
 use crate::errors::DeribitError;
 use failure::{Error, Fallible};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use std::fmt::{Display, Error as FmtError, Formatter};
 use std::result::Result as StdResult;

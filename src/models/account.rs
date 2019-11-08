@@ -1,5 +1,5 @@
 use crate::models::{AssetKind, Currency, Direction, Request};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
