@@ -39,7 +39,7 @@ pub struct GetBookSummaryByCurrencyResponse {
     pub bid_price: Option<f64>,
     pub creation_timestamp: u64,
     pub current_funding: Option<f64>,
-    pub estimated_delivery_price: f64,
+    pub estimated_delivery_price: Option<f64>,
     pub funding_8h: Option<f64>,
     pub high: Option<f64>,
     pub instrument_name: String,

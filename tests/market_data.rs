@@ -9,6 +9,7 @@ use tokio::runtime::Runtime;
 #[test]
 fn get_index() -> Fallible<()> {
     let _ = dotenv();
+    let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
     let rt = Runtime::new()?;
@@ -29,6 +30,7 @@ fn get_index() -> Fallible<()> {
 #[test]
 fn get_instruments() -> Fallible<()> {
     let _ = dotenv();
+    let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();
     let rt = Runtime::new()?;
@@ -49,7 +51,7 @@ fn get_instruments() -> Fallible<()> {
 #[test]
 fn get_book_summary_by_currency() -> Fallible<()> {
     let _ = dotenv();
-
+    let _ = env_logger::try_init();
     let drb = DeribitBuilder::default().build().unwrap();
     let rt = Runtime::new()?;
 

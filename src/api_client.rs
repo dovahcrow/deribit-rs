@@ -6,7 +6,7 @@ use futures::channel::{mpsc, oneshot};
 use futures::stream::SplitSink;
 use futures::task::{Context, Poll};
 use futures::{Future, SinkExt};
-use log::{trace, warn};
+use log::{error, trace};
 use pin_project::pin_project;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -94,7 +94,7 @@ where
             let resp = result?;
             let result: Result<JSONRPCResponse<R>, _> = from_str(&resp);
             if let Err(_) = result.as_ref() {
-                warn!("[API Client] Cannot deserialize RPC response: {}", resp);
+                error!("[API Client] Cannot deserialize RPC response: {}", resp);
             }
             Ok(result?)
         })
