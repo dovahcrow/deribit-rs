@@ -31,7 +31,7 @@ impl AccountTest {
     #[fact]
     fn get_account_summary(self) -> Fallible<()> {
         let Self {
-            rt,
+            mut rt,
             drb,
             key,
             secret,
@@ -50,7 +50,7 @@ impl AccountTest {
     #[fact]
     fn get_subaccounts(self) -> Fallible<()> {
         let Self {
-            rt,
+            mut rt,
             drb,
             key,
             secret,

@@ -20,7 +20,7 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::time::Duration;
 use tokio::net::TcpStream;
-use tokio::timer::Timeout;
+use tokio::time::timeout;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
@@ -109,7 +109,7 @@ impl Deribit {
                                 }
                             } else {
                                 let fut = stx.send(msg);
-                                let fut = Timeout::new(fut, Duration::from_millis(1));
+                                let fut = timeout(Duration::from_millis(1),fut, );
                                 match fut.await {
                                     Ok(Ok(_)) => {}
                                     Ok(Err(ref e)) if e.is_disconnected() => sdropped = true,

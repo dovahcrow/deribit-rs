@@ -33,7 +33,7 @@ impl Default for SubscriptionTest {
 impl SubscriptionTest {
     // #[fact]
     // fn announcements(self) -> Fallible<()> {
-    //     let Self { drb, rt, .. } = self;
+    //     let Self { drb, mut rt, .. } = self;
     //     let fut = async {
     //         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -53,7 +53,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn book(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
 
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
@@ -76,7 +76,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn grouped_book(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
 
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
@@ -99,7 +99,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn deribit_price_index(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -120,7 +120,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn deribit_price_ranking(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -141,7 +141,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn estimated_expiration_price(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -162,7 +162,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn markprice_options(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -183,7 +183,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn perpetual(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -204,7 +204,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn quote(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -225,7 +225,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn ticker(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -255,7 +255,7 @@ impl SubscriptionTest {
     #[fact]
     fn trades(self) -> Fallible<()> {
         let Self {
-            rt,
+            mut rt,
             drb,
             key,
             secret,
@@ -296,7 +296,7 @@ impl SubscriptionTest {
     #[fact]
     fn user_orders(self) -> Fallible<()> {
         let Self {
-            rt,
+            mut rt,
             drb,
             key,
             secret,
@@ -333,7 +333,7 @@ impl SubscriptionTest {
     #[fact]
     fn user_portfolio(self) -> Fallible<()> {
         let Self {
-            rt,
+            mut rt,
             drb,
             key,
             secret,
@@ -363,7 +363,7 @@ impl SubscriptionTest {
 
     #[fact]
     fn sub_unsub(self) -> Fallible<()> {
-        let Self { drb, rt, .. } = self;
+        let Self { drb, mut rt, .. } = self;
         let fut = async {
             let (mut client, _) = drb.connect().await.unwrap();
 

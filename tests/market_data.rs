@@ -12,7 +12,7 @@ fn get_index() -> Fallible<()> {
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let rt = Runtime::new()?;
+    let mut rt = Runtime::new()?;
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -33,7 +33,7 @@ fn get_instruments() -> Fallible<()> {
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();
-    let rt = Runtime::new()?;
+    let mut rt = Runtime::new()?;
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -53,7 +53,7 @@ fn get_book_summary_by_currency() -> Fallible<()> {
     let _ = dotenv();
     let _ = env_logger::try_init();
     let drb = DeribitBuilder::default().build().unwrap();
-    let rt = Runtime::new()?;
+    let mut rt = Runtime::new()?;
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;

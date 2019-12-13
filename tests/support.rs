@@ -6,7 +6,7 @@ use tokio::runtime::Runtime;
 #[test]
 fn hello() -> Fallible<()> {
     let drb = Deribit::new();
-    let rt = Runtime::new()?;
+    let mut rt = Runtime::new()?;
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;
@@ -27,7 +27,7 @@ fn hello() -> Fallible<()> {
 #[test]
 fn get_time() -> Fallible<()> {
     let drb = Deribit::new();
-    let rt = Runtime::new()?;
+    let mut rt = Runtime::new()?;
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;
@@ -43,7 +43,7 @@ fn get_time() -> Fallible<()> {
 #[test]
 fn test() -> Fallible<()> {
     let drb = Deribit::new();
-    let rt = Runtime::new()?;
+    let mut rt = Runtime::new()?;
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;

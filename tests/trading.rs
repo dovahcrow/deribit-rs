@@ -9,7 +9,7 @@ use fluid::prelude::*;
 use std::env::var;
 use std::time::Duration;
 use tokio::runtime::Runtime;
-use tokio::timer::delay_for;
+use tokio::time::delay_for;
 
 struct TradingTest;
 
@@ -28,7 +28,7 @@ impl TradingTest {
         let secret = var("DERIBIT_SECRET").unwrap();
 
         let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let rt = Runtime::new()?;
+        let mut rt = Runtime::new()?;
 
         let fut = async move {
             let (mut client, _) = drb.connect().await?;
@@ -49,7 +49,7 @@ impl TradingTest {
         let key = var("DERIBIT_KEY").unwrap();
         let secret = var("DERIBIT_SECRET").unwrap();
         let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let rt = Runtime::new()?;
+        let mut rt = Runtime::new()?;
 
         let fut = async move {
             let (mut client, _) = drb.connect().await?;
@@ -79,7 +79,7 @@ impl TradingTest {
         let key = var("DERIBIT_KEY").unwrap();
         let secret = var("DERIBIT_SECRET").unwrap();
         let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let rt = Runtime::new()?;
+        let mut rt = Runtime::new()?;
 
         let fut = async move {
             let (mut client, _) = drb.connect().await?;

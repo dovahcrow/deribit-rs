@@ -12,7 +12,7 @@ fn get_transfers() -> Fallible<()> {
     let secret = var("DERIBIT_SECRET").unwrap();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let rt = Runtime::new()?;
+    let mut rt = Runtime::new()?;
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
