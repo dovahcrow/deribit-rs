@@ -21,7 +21,7 @@ failure = "0.1"
 log = "0.4"
 derive_builder = "0.9"
 pin-project = "0.4"
-shrinkwraprs = "0.2"
+shrinkwraprs = "0.3"
 regex = "1"
 lazy_static = "1"
 
