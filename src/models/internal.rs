@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 pub struct JSONRPCRequest<Q: Request> {
     pub id: i64,
     pub method: String,
-    #[serde(skip_serializing_if = "crate::models::Request::without_payload")]
+    #[serde(skip_serializing_if = "crate::models::Request::no_payload")]
     pub params: Q,
 }
 

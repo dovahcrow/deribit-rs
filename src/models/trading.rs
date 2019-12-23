@@ -255,11 +255,8 @@ pub struct CancelAllRequest;
 
 impl Request for CancelAllRequest {
     const METHOD: &'static str = "private/cancel_all";
+    const HAS_PAYLOAD: bool = false;
     type Response = CancelAllResponse;
-    #[inline]
-    fn without_payload(&self) -> bool {
-        true
-    }
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

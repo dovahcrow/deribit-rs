@@ -52,11 +52,11 @@ pub use wallet::{
 
 pub trait Request {
     const METHOD: &'static str;
+    const HAS_PAYLOAD: bool = true;
     type Response;
 
-    #[inline]
-    fn without_payload(&self) -> bool {
-        false
+    fn no_payload(&self) -> bool {
+        !Self::HAS_PAYLOAD
     }
 }
 

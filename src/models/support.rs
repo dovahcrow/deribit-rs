@@ -11,11 +11,8 @@ pub struct GetTimeResponse(pub i64);
 
 impl Request for GetTimeRequest {
     const METHOD: &'static str = "public/get_time";
+    const HAS_PAYLOAD: bool = false;
     type Response = GetTimeResponse;
-    #[inline]
-    fn without_payload(&self) -> bool {
-        true
-    }
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

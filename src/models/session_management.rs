@@ -34,10 +34,6 @@ pub enum DisableHeartbeatResponse {
 
 impl Request for DisableHeartbeatRequest {
     const METHOD: &'static str = "public/disable_heartbeat";
+    const HAS_PAYLOAD: bool = false;
     type Response = DisableHeartbeatResponse;
-
-    #[inline]
-    fn without_payload(&self) -> bool {
-        true
-    }
 }
