@@ -20,10 +20,6 @@ impl Default for GrantType {
 pub struct AuthRequest {
     pub grant_type: GrantType,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub username: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub password: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub client_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub client_secret: Option<String>,
@@ -36,37 +32,37 @@ pub struct AuthRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nonce: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scope: Option<String>,
 }
 
 impl AuthRequest {
-    pub fn credential_auth(key: &str, secret: &str) -> AuthRequest {
+    pub fn credential_auth(id: &str, secret: &str) -> AuthRequest {
         AuthRequest {
             grant_type: GrantType::ClientCredentials,
-            client_id: Some(key.into()),
+            client_id: Some(id.into()),
             client_secret: Some(secret.into()),
             ..Default::default()
         }
     }
 
-    pub fn password_auth(username: &str, password: &str) -> AuthRequest {
-        AuthRequest {
-            grant_type: GrantType::Password,
-            username: Some(username.into()),
-            password: Some(password.into()),
-            ..Default::default()
-        }
-    }
-
-    pub fn signature_auth(key: &str, timestamp: &str, signature: &str) -> AuthRequest {
+    pub fn signature_auth(
+        id: &str,
+        timestamp: &str,
+        signature: &str,
+        nonce: Option<&str>,
+        data: Option<&str>,
+    ) -> AuthRequest {
         AuthRequest {
             grant_type: GrantType::ClientSignature,
-            client_id: Some(key.into()),
+            client_id: Some(id.into()),
             timestamp: Some(timestamp.into()),
-
             signature: Some(signature.into()),
+            nonce: nonce.map(|x| x.into()),
+            data: data.map(|x| x.into()),
             ..Default::default()
         }
     }
@@ -93,4 +89,35 @@ pub struct AuthResponse {
 impl Request for AuthRequest {
     const METHOD: &'static str = "public/auth";
     type Response = AuthResponse;
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct ExchangeTokenRequest {
+    refresh_token: String,
+    subject_id: i64,
+}
+
+impl Request for ExchangeTokenRequest {
+    const METHOD: &'static str = "public/exchange_token";
+    type Response = AuthResponse;
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct ForkTokenRequest {
+    refresh_token: String,
+    session_name: String,
+}
+
+impl Request for ForkTokenRequest {
+    const METHOD: &'static str = "public/fork_token";
+    type Response = AuthResponse;
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct LogoutRequest;
+
+impl Request for LogoutRequest {
+    const METHOD: &'static str = "private/logout";
+    const HAS_PAYLOAD: bool = false;
+    type Response = ();
 }

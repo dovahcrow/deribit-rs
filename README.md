@@ -20,9 +20,7 @@ Deribit API V2 Client for Rust Language
 
 [btc]: https://img.shields.io/keybase/btc/dovahcrow.svg?style=flat-square
 
-This is experimental and currently under heavy development. Use at your own risk.
-
-This library uses Rust nightly features extensively like async/await and futures api. You need a nightly Rust to make it run.
+Use this library for trading at your own risk.
 
 The current plan is to only implement the websocket communication, which includes call api through websocket 
 and websocket subscription. I will first implement these APIs used for my own trading purpose, however, if you want some APIs 
@@ -68,12 +66,15 @@ while let Some(message) = subscription.next().await {
 
 - Authentication
     - [x] /public/auth
-    - [ ] /private/logout
+    - [x] /public/exchange_token
+    - [x] /public/fork_token
+    - [x] /private/logout
 - Session Management
     - [x] /public/set_heartbeat
     - [x] /public/disable_heartbeat
-    - [ ] /private/enable_cancel_on_disconnect
-    - [ ] /private/disable_cancel_on_disconnect
+    - [x] /private/enable_cancel_on_disconnect
+    - [x] /private/disable_cancel_on_disconnect
+    - [x] /private/get_cancel_on_disconnect
 - Supporting
     - [x] /public/get_time
     - [x] /public/hello
@@ -85,21 +86,36 @@ while let Some(message) = subscription.next().await {
     - [x] /private/unsubscribe
 - Account Management
     - [ ] /public/get_announcements
+    - [ ] /private/change_api_key_name
+    - [ ] /private/change_scope_in_api_key
     - [ ] /private/change_subaccount_name
+    - [ ] /private/create_api_key
     - [ ] /private/create_subaccount
+    - [ ] /private/disable_api_key
     - [ ] /private/disable_tfa_for_subaccount
+    - [ ] /private/enable_api_key
     - [x] /private/get_account_summary
     - [ ] /private/get_email_language
     - [ ] /private/get_new_announcements
     - [ ] /private/get_position
     - [x] /private/get_positions
     - [x] /private/get_subaccounts
+    - [ ] /private/list_api_keys
+    - [ ] /private/remove_api_key
+    - [ ] /private/reset_api_key
     - [ ] /private/set_announcement_as_read
+    - [ ] /private/set_api_key_as_default
     - [ ] /private/set_email_for_subaccount
     - [ ] /private/set_email_language 
     - [ ] /private/set_password_for_subaccount
     - [ ] /private/toggle_notifications_from_subaccount
     - [ ] /private/toggle_subaccount_login
+- Block Trading
+    - [ ] /private/execute_block_trade
+    - [ ] /private/get_block_trade
+    - [ ] /private/get_last_block_trades_by_currency
+    - [ ] /private/invalidate_block_trade_signature
+    - [ ] /private/verify_block_trade
 - Trading
     - [x] /private/buy
     - [x] /private/sell
@@ -108,6 +124,7 @@ while let Some(message) = subscription.next().await {
     - [x] /private/cancel_all
     - [x] /private/cancel_all_by_currency
     - [x] /private/cancel_all_by_instrument
+    - [ ] /private/cancel_by_label
     - [ ] /private/close_position
     - [ ] /private/get_margins
     - [x] /private/get_open_orders_by_currency
@@ -124,13 +141,14 @@ while let Some(message) = subscription.next().await {
     - [ ] /private/get_user_trades_by_order
     - [ ] /private/get_settlement_history_by_instrument
     - [ ] /private/get_settlement_history_by_currency
-
 - Market Data
     - [x] /public/get_book_summary_by_currency
     - [ ] /public/get_book_summary_by_instrument
     - [ ] /public/get_contract_size
     - [ ] /public/get_currencies
     - [ ] /public/get_funding_chart_data
+    - [ ] /public/get_funding_rate_history
+    - [ ] /public/get_funding_rate_value
     - [ ] /public/get_historical_volatility
     - [x] /public/get_index
     - [x] /public/get_instruments
@@ -159,14 +177,19 @@ while let Some(message) = subscription.next().await {
     - [x] announcements
     - [x] book.{instrument_name}.{group}.{depth}.{interval}
     - [x] book.{instrument_name}.{interval}
+    - [ ] chart.trades.{instrument_name}.{resolution}
     - [x] deribit_price_index.{index_name}
     - [x] deribit_price_ranking.{index_name}
     - [x] estimated_expiration_price.{index_name}
     - [x] markprice.options.{index_name}
     - [x] perpetual.{instrument_name}.{interval}
+    - [ ] platform_state
     - [x] quote.{instrument_name}
     - [x] ticker.{instrument_name}.{interval}
     - [x] trades.{instrument_name}.{interval}
+    - [ ] trades.{kind}.{currency}.{interval}
+    - [ ] user.changes.{instrument_name}.{interval}
+    - [ ] user.changes.{kind}.{currency}.{interval}
     - [x] user.orders.{instrument_name}.{interval}
     - [x] user.orders.{kind}.{currency}.{interval}
     - [x] user.portfolio.{currency}
