@@ -8,6 +8,10 @@ license = "MIT"
 documentation = "https://docs.rs/deribit"
 repository = "https://github.com/dovahcrow/deribit-rs"
 readme = "README.md"
+categories = ["api-bindings"]
+
+[badges]
+travis-ci = { repository = "dovahcrow/deribit-rs", branch = "master" }
 
 [dependencies]
 futures = { version = "0.3", features = ["async-await"] }
