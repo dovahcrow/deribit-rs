@@ -38,8 +38,8 @@ pub use support::{
 };
 pub use trading::{
     BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
-    CancelAllRequest, CancelAllResponse, CancelOrderType, CancelRequest, CancelResponse,
-    EditRequest, EditResponse, GetOpenOrderType, GetOpenOrdersByCurrencyRequest,
+    CancelAllRequest, CancelAllResponse, CancelByLabelRequest, CancelOrderType, CancelRequest,
+    CancelResponse, EditRequest, EditResponse, GetOpenOrderType, GetOpenOrdersByCurrencyRequest,
     GetOpenOrdersByCurrencyResponse, GetOpenOrdersByInstrumentRequest,
     GetOpenOrdersByInstrumentResponse, GetOrderStateRequest, GetOrderStateResponse, Order,
     SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,

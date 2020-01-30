@@ -1,6 +1,7 @@
 use deribit::models::{
-    AuthRequest, BuyRequest, CancelRequest, Currency, EditRequest, GetOpenOrdersByCurrencyRequest,
-    GetOpenOrdersByInstrumentRequest, GetOrderStateRequest, SellRequest,
+    AuthRequest, BuyRequest, CancelByLabelRequest, CancelRequest, Currency, EditRequest,
+    GetOpenOrdersByCurrencyRequest, GetOpenOrdersByInstrumentRequest, GetOrderStateRequest,
+    SellRequest,
 };
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
@@ -106,6 +107,35 @@ impl TradingTest {
                 .await?
                 .await?;
             client.call(CancelRequest::new(&id)).await?.await?;
+            Ok::<_, Error>(())
+        };
+        let _ = rt.block_on(fut)?;
+        Ok(())
+    }
+
+    #[fact]
+    fn buy_and_cancel_by_label(self) -> Fallible<()> {
+        let _ = dotenv();
+
+        let key = var("DERIBIT_KEY").unwrap();
+        let secret = var("DERIBIT_SECRET").unwrap();
+        let drb = DeribitBuilder::default().testnet(true).build().unwrap();
+        let mut rt = Runtime::new()?;
+
+        let fut = async move {
+            let (mut client, _) = drb.connect().await?;
+            let req = AuthRequest::credential_auth(&key, &secret);
+            let _ = client.call(req).await?.await?;
+
+            let mut req = BuyRequest::limit("BTC-PERPETUAL", 10., 10.);
+            req.label = Some("happy".to_string());
+
+            client.call(req).await?.await?.0.order.order_id;
+
+            client
+                .call(CancelByLabelRequest::new("happy"))
+                .await?
+                .await?;
             Ok::<_, Error>(())
         };
         let _ = rt.block_on(fut)?;

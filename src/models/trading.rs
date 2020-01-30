@@ -286,6 +286,24 @@ impl Request for CancelAllByCurrencyRequest {
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 pub struct CancelAllResponse(usize);
 
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+pub struct CancelByLabelRequest {
+    label: String,
+}
+
+impl CancelByLabelRequest {
+    pub fn new<S: Into<String>>(label: S) -> Self {
+        Self {
+            label: label.into(),
+        }
+    }
+}
+
+impl Request for CancelByLabelRequest {
+    const METHOD: &'static str = "private/cancel_by_label";
+    type Response = CancelAllResponse;
+}
+
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetOrderStateRequest {
     order_id: String,
