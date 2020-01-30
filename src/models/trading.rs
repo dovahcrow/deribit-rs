@@ -85,7 +85,7 @@ impl Request for EditRequest {
     type Response = EditResponse;
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Default, Debug)]
 pub struct TradeRequest {
     pub instrument_name: String,
     pub amount: f64,
