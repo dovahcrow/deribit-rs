@@ -1,5 +1,5 @@
+use crate::errors::Result;
 use crate::models::SubscriptionMessage;
-use failure::Fallible;
 use futures::channel::mpsc;
 use futures::task::{Context, Poll};
 use futures::Stream;
@@ -28,7 +28,7 @@ impl DeribitSubscriptionClient {
 }
 
 impl Stream for DeribitSubscriptionClient {
-    type Item = Fallible<SubscriptionMessage>;
+    type Item = Result<SubscriptionMessage>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
         let pin = Pin::new(&mut self.rx);
@@ -57,7 +57,7 @@ pub struct DeribitSubscriptionLimitedClient<D> {
 }
 
 impl<D: DeserializeOwned> Stream for DeribitSubscriptionLimitedClient<D> {
-    type Item = Fallible<SubscriptionMessage<D>>;
+    type Item = Result<SubscriptionMessage<D>>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
         let this = self.project();

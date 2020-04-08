@@ -1,6 +1,6 @@
 [package]
 name = "deribit"
-version = "0.1.11"
+version = "0.2.0"
 authors = ["Weiyüen Wu <doomsplayer@gmail.com>"]
 edition = "2018"
 description = "Rust client for deribit. Please look at tests/examples for detail usage at current stage."
@@ -21,7 +21,6 @@ tokio-tungstenite = { version = "0.10", features = ["tls"]}
 url = "2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
-failure = "0.1"
 log = "0.4"
 derive_builder = "0.9"
 pin-project = "0.4"
@@ -29,8 +28,9 @@ shrinkwraprs = "0.3"
 regex = "1"
 lazy_static = "1"
 
+fehler = "1"
+thiserror = "1"
+
 [dev-dependencies]
 env_logger = "0.7"
 dotenv = "0.15"
-fluid = "0.4"
-

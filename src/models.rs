@@ -9,7 +9,7 @@ pub mod trading;
 pub mod wallet;
 
 use crate::errors::DeribitError;
-use failure::{Error, Fallible};
+use fehler::throws;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use std::fmt::{Display, Error as FmtError, Formatter};
@@ -83,10 +83,11 @@ impl std::fmt::Display for Currency {
 }
 
 impl std::str::FromStr for Currency {
-    type Err = Error;
-    fn from_str(s: &str) -> Fallible<Currency> {
+    type Err = DeribitError;
+    #[throws(DeribitError)]
+    fn from_str(s: &str) -> Currency {
         from_str(&format!(r#""{}""#, s))
-            .map_err(|_| DeribitError::UnknownCurrency(s.to_string()).into())
+            .map_err(|_| DeribitError::UnknownCurrency(s.to_string()))?
     }
 }
 
@@ -100,10 +101,11 @@ pub enum AssetKind {
 }
 
 impl std::str::FromStr for AssetKind {
-    type Err = Error;
-    fn from_str(s: &str) -> Fallible<AssetKind> {
+    type Err = DeribitError;
+    #[throws(DeribitError)]
+    fn from_str(s: &str) -> AssetKind {
         from_str(&format!(r#""{}""#, s))
-            .map_err(|_| DeribitError::UnknownAssetKind(s.to_string()).into())
+            .map_err(|_| DeribitError::UnknownAssetKind(s.to_string()))?
     }
 }
 
@@ -290,13 +292,13 @@ impl<L, R> Either<L, R> {
             Either::Left(l) => Either::Left(l),
         }
     }
-    pub fn left_result(self) -> Result<L, R> {
+    pub fn left_result(self) -> StdResult<L, R> {
         match self {
             Either::Left(l) => Ok(l),
             Either::Right(r) => Err(r),
         }
     }
-    pub fn right_result(self) -> Result<R, L> {
+    pub fn right_result(self) -> StdResult<R, L> {
         match self {
             Either::Left(l) => Err(l),
             Either::Right(r) => Ok(r),

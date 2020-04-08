@@ -3,142 +3,130 @@ use deribit::models::{
     GetOpenOrdersByCurrencyRequest, GetOpenOrdersByInstrumentRequest, GetOrderStateRequest,
     SellRequest,
 };
-use deribit::DeribitBuilder;
+use deribit::{DeribitBuilder, DeribitError};
 use dotenv::dotenv;
-use failure::{Error, Fallible};
-use fluid::prelude::*;
+use fehler::throws;
 use std::env::var;
 use std::time::Duration;
 use tokio::runtime::Runtime;
 use tokio::time::delay_for;
 
-struct TradingTest;
+#[test]
+#[throws(DeribitError)]
+fn get_order_state() {
+    let _ = dotenv();
+    let key = var("DERIBIT_KEY").unwrap();
+    let secret = var("DERIBIT_SECRET").unwrap();
 
-impl Default for TradingTest {
-    fn default() -> Self {
-        let _ = dotenv();
-        TradingTest
-    }
+    let drb = DeribitBuilder::default().testnet(true).build().unwrap();
+    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = AuthRequest::credential_auth(&key, &secret);
+        let _ = client.call(req).await?.await?;
+
+        let req = GetOrderStateRequest::new("2320198993");
+        Ok::<_, DeribitError>(client.call(req).await?.await?)
+    };
+    let _ = rt.block_on(fut)?;
 }
 
-#[session]
-impl TradingTest {
-    #[fact]
-    fn get_order_state(self) -> Fallible<()> {
-        let key = var("DERIBIT_KEY").unwrap();
-        let secret = var("DERIBIT_SECRET").unwrap();
+#[test]
+#[throws(DeribitError)]
+fn buy_and_sell() {
+    let _ = dotenv();
 
-        let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
+    let key = var("DERIBIT_KEY").unwrap();
+    let secret = var("DERIBIT_SECRET").unwrap();
+    let drb = DeribitBuilder::default().testnet(true).build().unwrap();
+    let mut rt = Runtime::new().expect("cannot create tokio runtime");
 
-        let fut = async move {
-            let (mut client, _) = drb.connect().await?;
-            let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = client.call(req).await?.await?;
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = AuthRequest::credential_auth(&key, &secret);
+        let _ = client.call(req).await?.await?;
 
-            let req = GetOrderStateRequest::new("2320198993");
-            Ok::<_, Error>(client.call(req).await?.await?)
-        };
-        let _ = rt.block_on(fut)?;
-        Ok(())
-    }
+        client
+            .call(BuyRequest::market("BTC-PERPETUAL", 10.))
+            .await?
+            .await?;
+        delay_for(Duration::from_secs(1)).await;
 
-    #[fact]
-    fn buy_and_sell(self) -> Fallible<()> {
-        let _ = dotenv();
+        client
+            .call(SellRequest::market("BTC-PERPETUAL", 10.))
+            .await?
+            .await?;
+        Ok::<_, DeribitError>(())
+    };
+    let _ = rt.block_on(fut)?;
+}
 
-        let key = var("DERIBIT_KEY").unwrap();
-        let secret = var("DERIBIT_SECRET").unwrap();
-        let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
+#[test]
+#[throws(DeribitError)]
+fn buy_and_edit_and_inspect_and_cancel() {
+    let _ = dotenv();
 
-        let fut = async move {
-            let (mut client, _) = drb.connect().await?;
-            let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = client.call(req).await?.await?;
+    let key = var("DERIBIT_KEY").unwrap();
+    let secret = var("DERIBIT_SECRET").unwrap();
+    let drb = DeribitBuilder::default().testnet(true).build().unwrap();
+    let mut rt = Runtime::new().expect("cannot create tokio runtime");
 
-            client
-                .call(BuyRequest::market("BTC-PERPETUAL", 10.))
-                .await?
-                .await?;
-            delay_for(Duration::from_secs(1)).await;
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = AuthRequest::credential_auth(&key, &secret);
+        let _ = client.call(req).await?.await?;
 
-            client
-                .call(SellRequest::market("BTC-PERPETUAL", 10.))
-                .await?
-                .await?;
-            Ok::<_, Error>(())
-        };
-        let _ = rt.block_on(fut)?;
-        Ok(())
-    }
+        let id = client
+            .call(BuyRequest::limit("BTC-PERPETUAL", 10., 10.))
+            .await?
+            .await?
+            .0
+            .order
+            .order_id;
 
-    #[fact]
-    fn buy_and_edit_and_inspect_and_cancel(self) -> Fallible<()> {
-        let _ = dotenv();
+        client.call(EditRequest::new(&id, 12., 10.)).await?.await?;
+        client
+            .call(GetOpenOrdersByCurrencyRequest::by_currency(Currency::BTC))
+            .await?
+            .await?;
+        client
+            .call(GetOpenOrdersByInstrumentRequest::by_instrument(
+                "BTC-PERPETUAL",
+            ))
+            .await?
+            .await?;
+        client.call(CancelRequest::new(&id)).await?.await?;
+        Ok::<_, DeribitError>(())
+    };
+    let _ = rt.block_on(fut)?;
+}
 
-        let key = var("DERIBIT_KEY").unwrap();
-        let secret = var("DERIBIT_SECRET").unwrap();
-        let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
+#[test]
+#[throws(DeribitError)]
+fn buy_and_cancel_by_label() {
+    let _ = dotenv();
 
-        let fut = async move {
-            let (mut client, _) = drb.connect().await?;
-            let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = client.call(req).await?.await?;
+    let key = var("DERIBIT_KEY").unwrap();
+    let secret = var("DERIBIT_SECRET").unwrap();
+    let drb = DeribitBuilder::default().testnet(true).build().unwrap();
+    let mut rt = Runtime::new().expect("cannot create tokio runtime");
 
-            let id = client
-                .call(BuyRequest::limit("BTC-PERPETUAL", 10., 10.))
-                .await?
-                .await?
-                .0
-                .order
-                .order_id;
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = AuthRequest::credential_auth(&key, &secret);
+        let _ = client.call(req).await?.await?;
 
-            client.call(EditRequest::new(&id, 12., 10.)).await?.await?;
-            client
-                .call(GetOpenOrdersByCurrencyRequest::by_currency(Currency::BTC))
-                .await?
-                .await?;
-            client
-                .call(GetOpenOrdersByInstrumentRequest::by_instrument(
-                    "BTC-PERPETUAL",
-                ))
-                .await?
-                .await?;
-            client.call(CancelRequest::new(&id)).await?.await?;
-            Ok::<_, Error>(())
-        };
-        let _ = rt.block_on(fut)?;
-        Ok(())
-    }
+        let mut req = BuyRequest::limit("BTC-PERPETUAL", 10., 10.);
+        req.label = Some("happy".to_string());
 
-    #[fact]
-    fn buy_and_cancel_by_label(self) -> Fallible<()> {
-        let _ = dotenv();
+        client.call(req).await?.await?.0.order.order_id;
 
-        let key = var("DERIBIT_KEY").unwrap();
-        let secret = var("DERIBIT_SECRET").unwrap();
-        let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-        let mut rt = Runtime::new()?;
-
-        let fut = async move {
-            let (mut client, _) = drb.connect().await?;
-            let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = client.call(req).await?.await?;
-
-            let mut req = BuyRequest::limit("BTC-PERPETUAL", 10., 10.);
-            req.label = Some("happy".to_string());
-
-            client.call(req).await?.await?.0.order.order_id;
-
-            client
-                .call(CancelByLabelRequest::new("happy"))
-                .await?
-                .await?;
-            Ok::<_, Error>(())
-        };
-        let _ = rt.block_on(fut)?;
-        Ok(())
-    }
+        client
+            .call(CancelByLabelRequest::new("happy"))
+            .await?
+            .await?;
+        Ok::<_, DeribitError>(())
+    };
+    let _ = rt.block_on(fut)?;
 }

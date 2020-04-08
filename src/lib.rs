@@ -6,11 +6,11 @@ pub mod models;
 mod subscription_client;
 
 pub use crate::api_client::{DeribitAPICallRawResult, DeribitAPICallResult, DeribitAPIClient};
+pub use crate::errors::{DeribitError, Result};
 pub use crate::subscription_client::{DeribitSubscriptionClient, DeribitSubscriptionLimitedClient};
 
-use crate::errors::DeribitError;
 use derive_builder::Builder;
-use failure::Fallible;
+use fehler::throws;
 use futures::channel::{mpsc, oneshot};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryStreamExt};
 use lazy_static::lazy_static;
@@ -48,7 +48,8 @@ impl Deribit {
         DeribitBuilder::default().build().unwrap()
     }
 
-    pub async fn connect(self) -> Fallible<(DeribitAPIClient, DeribitSubscriptionClient)> {
+    #[throws(DeribitError)]
+    pub async fn connect(self) -> (DeribitAPIClient, DeribitSubscriptionClient) {
         let ws_url = if self.testnet { WS_URL_TESTNET } else { WS_URL };
         info!("Connecting");
         let (ws, _) = connect_async(Url::parse(ws_url)?).await?;
@@ -67,17 +68,18 @@ impl Deribit {
 
         tokio::spawn(background);
 
-        Ok((
+        (
             DeribitAPIClient::new(wstx, waiter_tx),
             DeribitSubscriptionClient::new(srx),
-        ))
+        )
     }
 
+    #[throws(DeribitError)]
     async fn servo(
-        ws: impl Stream<Item = Fallible<Message>> + Unpin,
+        ws: impl Stream<Item = Result<Message>> + Unpin,
         mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<String>)>,
         mut stx: mpsc::Sender<String>,
-    ) -> Fallible<()> {
+    ) {
         let mut ws = ws.fuse();
         let mut waiters: HashMap<i64, oneshot::Sender<String>> = HashMap::new();
 
@@ -151,6 +153,6 @@ impl Deribit {
             };
         }
         info!("Servo exit with all receiver dropped");
-        Ok(()) // Exit with all receiver dropped
+        // Exit with all receiver dropped
     }
 }

@@ -1,18 +1,19 @@
 use deribit::models::{
     Currency, GetBookSummaryByCurrencyRequest, GetIndexRequest, GetInstrumentsRequest,
 };
-use deribit::DeribitBuilder;
+use deribit::{DeribitBuilder, DeribitError};
 use dotenv::dotenv;
-use failure::{Error, Fallible};
+use fehler::throws;
 use tokio::runtime::Runtime;
 
 #[test]
-fn get_index() -> Fallible<()> {
+#[throws(DeribitError)]
+fn get_index() {
     let _ = dotenv();
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let mut rt = Runtime::new()?;
+    let mut rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -21,19 +22,19 @@ fn get_index() -> Fallible<()> {
         let req = GetIndexRequest::new(Currency::ETH);
         let _ = client.call(req).await?.await?;
 
-        Ok::<_, Error>(())
+        Ok::<_, DeribitError>(())
     };
     let _ = rt.block_on(fut)?;
-    Ok(())
 }
 
 #[test]
-fn get_instruments() -> Fallible<()> {
+#[throws(DeribitError)]
+fn get_instruments() {
     let _ = dotenv();
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();
-    let mut rt = Runtime::new()?;
+    let mut rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -42,18 +43,18 @@ fn get_instruments() -> Fallible<()> {
         let req = GetInstrumentsRequest::expired(Currency::ETH);
         let _ = client.call(req).await?.await?;
 
-        Ok::<_, Error>(())
+        Ok::<_, DeribitError>(())
     };
     let _ = rt.block_on(fut)?;
-    Ok(())
 }
 
 #[test]
-fn get_book_summary_by_currency() -> Fallible<()> {
+#[throws(DeribitError)]
+fn get_book_summary_by_currency() {
     let _ = dotenv();
     let _ = env_logger::try_init();
     let drb = DeribitBuilder::default().build().unwrap();
-    let mut rt = Runtime::new()?;
+    let mut rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -64,8 +65,7 @@ fn get_book_summary_by_currency() -> Fallible<()> {
         let req = GetBookSummaryByCurrencyRequest::options(Currency::ETH);
         let _ = client.call(req).await?.await?;
 
-        Ok::<_, Error>(())
+        Ok::<_, DeribitError>(())
     };
     let _ = rt.block_on(fut)?;
-    Ok(())
 }

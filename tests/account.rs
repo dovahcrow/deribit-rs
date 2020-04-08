@@ -1,8 +1,7 @@
 use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubaccountsRequest};
-use deribit::{Deribit, DeribitBuilder};
+use deribit::{Deribit, DeribitBuilder, DeribitError};
 use dotenv::dotenv;
-use failure::{Error, Fallible};
-use fluid::prelude::*;
+use fehler::throws;
 use std::env::var;
 use tokio::runtime::Runtime;
 
@@ -26,44 +25,41 @@ impl Default for AccountTest {
     }
 }
 
-#[session]
-impl AccountTest {
-    #[fact]
-    fn get_account_summary(self) -> Fallible<()> {
-        let Self {
-            mut rt,
-            drb,
-            key,
-            secret,
-        } = self;
-        let fut = async move {
-            let (mut client, _) = drb.connect().await?;
-            let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = client.call(req).await?.await?;
-            let req = GetAccountSummaryRequest::extended(Currency::BTC);
-            Ok::<_, Error>(client.call(req).await?.await?)
-        };
-        let _ = rt.block_on(fut)?;
-        Ok(())
-    }
+#[test]
+#[throws(DeribitError)]
+fn get_account_summary() {
+    let AccountTest {
+        mut rt,
+        drb,
+        key,
+        secret,
+    } = AccountTest::default();
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = AuthRequest::credential_auth(&key, &secret);
+        let _ = client.call(req).await?.await?;
+        let req = GetAccountSummaryRequest::extended(Currency::BTC);
+        Ok::<_, DeribitError>(client.call(req).await?.await?)
+    };
+    let _ = rt.block_on(fut)?;
+}
 
-    #[fact]
-    fn get_subaccounts(self) -> Fallible<()> {
-        let Self {
-            mut rt,
-            drb,
-            key,
-            secret,
-        } = self;
-        let fut = async move {
-            let (mut client, _) = drb.connect().await?;
-            let req = AuthRequest::credential_auth(&key, &secret);
-            let _ = client.call(req).await?.await?;
+#[test]
+#[throws(DeribitError)]
+fn get_subaccounts() {
+    let AccountTest {
+        mut rt,
+        drb,
+        key,
+        secret,
+    } = AccountTest::default();
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = AuthRequest::credential_auth(&key, &secret);
+        let _ = client.call(req).await?.await?;
 
-            let req = GetSubaccountsRequest::with_portfolio();
-            Ok::<_, Error>(client.call(req).await?.await?)
-        };
-        let _ = rt.block_on(fut)?;
-        Ok(())
-    }
+        let req = GetSubaccountsRequest::with_portfolio();
+        Ok::<_, DeribitError>(client.call(req).await?.await?)
+    };
+    let _ = rt.block_on(fut)?;
 }

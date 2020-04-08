@@ -1,7 +1,7 @@
-use crate::errors::DeribitError;
+use crate::errors::{DeribitError, Result};
 use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
-use failure::Fallible;
+use fehler::throws;
 use futures::channel::{mpsc, oneshot};
 use futures::stream::SplitSink;
 use futures::task::{Context, Poll};
@@ -13,6 +13,7 @@ use serde::Serialize;
 use serde_json::{from_str, to_string};
 use std::marker::PhantomData;
 use std::pin::Pin;
+use std::result::Result as StdResult;
 use tungstenite::Message;
 
 pub struct DeribitAPIClient {
@@ -33,10 +34,8 @@ impl DeribitAPIClient {
         }
     }
 
-    pub async fn call_raw<'a, R>(
-        &'a mut self,
-        request: R,
-    ) -> Fallible<DeribitAPICallRawResult<R::Response>>
+    #[throws(DeribitError)]
+    pub async fn call_raw<'a, R>(&'a mut self, request: R) -> DeribitAPICallRawResult<R::Response>
     where
         R: Request + Serialize + 'a,
     {
@@ -52,18 +51,16 @@ impl DeribitAPIClient {
         trace!("[API Client] Request: {}", payload);
         self.wstx.send(Message::Text(payload)).await?;
         self.waiter_tx.send((req.id, waiter_tx)).await?;
-        Ok(DeribitAPICallRawResult::new(waiter_rx))
+        DeribitAPICallRawResult::new(waiter_rx)
     }
 
-    pub async fn call<'a, R>(
-        &'a mut self,
-        request: R,
-    ) -> Fallible<DeribitAPICallResult<R::Response>>
+    #[throws(DeribitError)]
+    pub async fn call<'a, R>(&'a mut self, request: R) -> DeribitAPICallResult<R::Response>
     where
         R: Request + Serialize + 'a,
     {
         let resp: DeribitAPICallRawResult<R::Response> = self.call_raw(request).await?;
-        Ok(DeribitAPICallResult::new(resp))
+        DeribitAPICallResult::new(resp)
     }
 }
 
@@ -87,12 +84,12 @@ impl<R> Future for DeribitAPICallRawResult<R>
 where
     R: DeserializeOwned,
 {
-    type Output = Fallible<JSONRPCResponse<R>>;
-    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<JSONRPCResponse<R>>> {
+    type Output = Result<JSONRPCResponse<R>>;
+    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<JSONRPCResponse<R>>> {
         let this = self.project();
         this.rx.poll(cx).map(|result| {
             let resp = result?;
-            let result: Result<JSONRPCResponse<R>, _> = from_str(&resp);
+            let result: StdResult<JSONRPCResponse<R>, _> = from_str(&resp);
             if let Err(_) = result.as_ref() {
                 error!("[API Client] Cannot deserialize RPC response: {}", resp);
             }
@@ -117,8 +114,8 @@ impl<R> Future for DeribitAPICallResult<R>
 where
     R: DeserializeOwned,
 {
-    type Output = Fallible<R>;
-    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Fallible<R>> {
+    type Output = Result<R>;
+    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<R>> {
         let this = self.project();
         match this.inner.poll(cx) {
             Poll::Ready(Ok(resp)) => Poll::Ready(resp.result.left_result().map_err(|e| {

@@ -1,11 +1,12 @@
 use deribit::models::{AuthRequest, BuyRequest, SellRequest};
-use deribit::DeribitBuilder;
+use deribit::{DeribitBuilder, DeribitError};
 use dotenv::dotenv;
-use failure::Fallible;
+use fehler::throws;
 use std::env::var;
 
+#[throws(DeribitError)]
 #[tokio::main]
-async fn main() -> Fallible<()> {
+async fn main() {
     let _ = dotenv();
 
     let key = var("DERIBIT_KEY").unwrap();
@@ -25,6 +26,4 @@ async fn main() -> Fallible<()> {
     let req = SellRequest::market("BTC-PERPETUAL", 10f64);
     let resp = client.call(req).await?;
     println!("{:?}", resp.await?);
-
-    Ok(())
 }
