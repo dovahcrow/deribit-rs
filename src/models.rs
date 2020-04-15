@@ -26,7 +26,8 @@ pub use internal::{
 };
 pub use market_data::{
     GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest,
-    GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
+    GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse, GetBookSummaryByInstrumentRequest,
+    GetBookSummaryByInstrumentResponse, TickerRequest, TickerResponse
 };
 pub use session_management::{SetHeartbeatRequest, SetHeartbeatResponse};
 pub use subscription::{

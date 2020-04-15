@@ -11,7 +11,7 @@ pub struct TickerData {
     pub best_bid_price: Option<f64>,
     pub bid_iv: Option<f64>,
     pub current_funding: Option<f64>,
-    pub delivery_price: Option<f64>,
+    pub estimated_delivery_price: Option<f64>,
     pub funding_8h: Option<f64>,
     pub greeks: Option<Greeks>,
     pub index_price: f64,
