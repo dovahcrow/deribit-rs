@@ -1,11 +1,12 @@
 use deribit::models::{HeartbeatType, SetHeartbeatRequest, SubscriptionParams, TestRequest};
-use deribit::{DeribitBuilder, DeribitError};
+use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
+use failure::Error;
 use futures::StreamExt;
 
 #[tokio::main]
-async fn main() -> Result<(), DeribitError> {
+async fn main() -> Result<(), Error> {
     let _ = dotenv();
     init();
 

@@ -10,6 +10,7 @@ pub use crate::errors::{DeribitError, Result};
 pub use crate::subscription_client::{DeribitSubscriptionClient, DeribitSubscriptionLimitedClient};
 
 use derive_builder::Builder;
+use failure::Error;
 use fehler::throws;
 use futures::channel::{mpsc, oneshot};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryStreamExt};
@@ -48,7 +49,7 @@ impl Deribit {
         DeribitBuilder::default().build().unwrap()
     }
 
-    #[throws(DeribitError)]
+    #[throws(Error)]
     pub async fn connect(self) -> (DeribitAPIClient, DeribitSubscriptionClient) {
         let ws_url = if self.testnet { WS_URL_TESTNET } else { WS_URL };
         info!("Connecting");
@@ -74,7 +75,7 @@ impl Deribit {
         )
     }
 
-    #[throws(DeribitError)]
+    #[throws(Error)]
     async fn servo(
         ws: impl Stream<Item = Result<Message>> + Unpin,
         mut waiter_rx: mpsc::Receiver<(i64, oneshot::Sender<String>)>,

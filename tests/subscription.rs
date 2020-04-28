@@ -2,6 +2,7 @@ use deribit::models::subscription::{PrivateSubscribeRequest, PublicSubscribeRequ
 use deribit::models::{AuthRequest, BuyRequest, CancelRequest, SellRequest};
 use deribit::{Deribit, DeribitBuilder, DeribitError};
 use dotenv::dotenv;
+use failure::Error;
 use fehler::throws;
 use futures::StreamExt;
 use std::env::var;
@@ -28,7 +29,7 @@ impl Default for SubscriptionTest {
 }
 
 // #[test]
-// #[throws(DeribitError)]
+// #[throws(Error)]
 // fn announcements() {
 //     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
 //     let fut = async {
@@ -38,7 +39,7 @@ impl Default for SubscriptionTest {
 //         let _ = client.call(req).await.unwrap();
 
 //         let v = subscription.take(1).collect::<Vec<_>>().await;
-//         Ok::<_, DeribitError>(v)
+//         Ok::<_, Error>(v)
 //     };
 
 //
@@ -48,7 +49,7 @@ impl Default for SubscriptionTest {
 // }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn book() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
 
@@ -63,7 +64,7 @@ fn book() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(5).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -71,7 +72,7 @@ fn book() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn grouped_book() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
 
@@ -86,7 +87,7 @@ fn grouped_book() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(5).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -94,7 +95,7 @@ fn grouped_book() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn deribit_price_index() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -107,7 +108,7 @@ fn deribit_price_index() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(2).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -115,7 +116,7 @@ fn deribit_price_index() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn deribit_price_ranking() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -128,7 +129,7 @@ fn deribit_price_ranking() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(2).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -136,7 +137,7 @@ fn deribit_price_ranking() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn estimated_expiration_price() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -149,7 +150,7 @@ fn estimated_expiration_price() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(2).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -157,7 +158,7 @@ fn estimated_expiration_price() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn markprice_options() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -170,7 +171,7 @@ fn markprice_options() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(2).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -178,7 +179,7 @@ fn markprice_options() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn perpetual() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -191,7 +192,7 @@ fn perpetual() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(2).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -199,7 +200,7 @@ fn perpetual() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn quote() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -212,7 +213,7 @@ fn quote() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(10).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -220,7 +221,7 @@ fn quote() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn ticker() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -249,7 +250,7 @@ fn ticker() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn trades() {
     let SubscriptionTest {
         mut rt,
@@ -282,7 +283,7 @@ fn trades() {
             .await?
             .await?;
         let v = subscription.take(2).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -290,7 +291,7 @@ fn trades() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn user_orders() {
     let SubscriptionTest {
         mut rt,
@@ -321,13 +322,13 @@ fn user_orders() {
         let req = CancelRequest::new(&id);
         let resp = client.call(req).await?.await?;
         assert_eq!(id, resp.order.order_id);
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
     let _ = rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn user_portfolio() {
     let SubscriptionTest {
         mut rt,
@@ -350,7 +351,7 @@ fn user_portfolio() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(2).collect::<Vec<_>>().await;
-        Ok::<_, DeribitError>(v)
+        Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
@@ -358,7 +359,7 @@ fn user_portfolio() {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn sub_unsub() {
     let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
     let fut = async {

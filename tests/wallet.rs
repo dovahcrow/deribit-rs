@@ -1,12 +1,13 @@
 use deribit::models::{AuthRequest, Currency, GetTransfersRequest};
-use deribit::{DeribitBuilder, DeribitError};
+use deribit::DeribitBuilder;
 use dotenv::dotenv;
+use failure::Error;
 use fehler::throws;
 use std::env::var;
 use tokio::runtime::Runtime;
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_transfers() {
     let _ = dotenv();
     let key = var("DERIBIT_KEY").unwrap();
@@ -21,7 +22,7 @@ fn get_transfers() {
         let _ = client.call(req).await?.await?;
 
         let req = GetTransfersRequest::with_currency(Currency::BTC);
-        Ok::<_, DeribitError>(client.call(req).await?.await?)
+        Ok::<_, Error>(client.call(req).await?.await?)
     };
     let _ = rt.block_on(fut)?;
 }

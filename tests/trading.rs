@@ -3,8 +3,9 @@ use deribit::models::{
     GetOpenOrdersByCurrencyRequest, GetOpenOrdersByInstrumentRequest, GetOrderStateRequest,
     SellRequest,
 };
-use deribit::{DeribitBuilder, DeribitError};
+use deribit::DeribitBuilder;
 use dotenv::dotenv;
+use failure::Error;
 use fehler::throws;
 use std::env::var;
 use std::time::Duration;
@@ -12,7 +13,7 @@ use tokio::runtime::Runtime;
 use tokio::time::delay_for;
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_order_state() {
     let _ = dotenv();
     let key = var("DERIBIT_KEY").unwrap();
@@ -27,13 +28,13 @@ fn get_order_state() {
         let _ = client.call(req).await?.await?;
 
         let req = GetOrderStateRequest::new("2320198993");
-        Ok::<_, DeribitError>(client.call(req).await?.await?)
+        Ok::<_, Error>(client.call(req).await?.await?)
     };
     let _ = rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn buy_and_sell() {
     let _ = dotenv();
 
@@ -57,13 +58,13 @@ fn buy_and_sell() {
             .call(SellRequest::market("BTC-PERPETUAL", 10.))
             .await?
             .await?;
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     let _ = rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn buy_and_edit_and_inspect_and_cancel() {
     let _ = dotenv();
 
@@ -97,13 +98,13 @@ fn buy_and_edit_and_inspect_and_cancel() {
             .await?
             .await?;
         client.call(CancelRequest::new(&id)).await?.await?;
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     let _ = rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn buy_and_cancel_by_label() {
     let _ = dotenv();
 
@@ -126,7 +127,7 @@ fn buy_and_cancel_by_label() {
             .call(CancelByLabelRequest::new("happy"))
             .await?
             .await?;
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     let _ = rt.block_on(fut)?;
 }

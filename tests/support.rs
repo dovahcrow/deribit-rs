@@ -1,10 +1,11 @@
 use deribit::models::{GetTimeRequest, HelloRequest, TestRequest};
-use deribit::{Deribit, DeribitError};
+use deribit::Deribit;
+use failure::Error;
 use fehler::throws;
 use tokio::runtime::Runtime;
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn hello() {
     let drb = Deribit::new();
     let mut rt = Runtime::new().expect("cannot create tokio runtime");
@@ -19,13 +20,13 @@ fn hello() {
 
         let _ = client.call(req).await?.await?;
 
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_time() {
     let drb = Deribit::new();
     let mut rt = Runtime::new().expect("cannot create tokio runtime");
@@ -35,13 +36,13 @@ fn get_time() {
 
         let _ = client.call(GetTimeRequest).await?.await;
 
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn test() {
     let drb = Deribit::new();
     let mut rt = Runtime::new().expect("cannot create tokio runtime");
@@ -51,7 +52,7 @@ fn test() {
         let req = TestRequest {
             expected_result: Some("exception".into()),
         };
-        Ok::<_, DeribitError>(client.call(req).await?.await?)
+        Ok::<_, Error>(client.call(req).await?.await?)
     };
     assert!(rt.block_on(fut).is_err());
 }

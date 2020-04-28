@@ -1,6 +1,7 @@
 use crate::errors::{DeribitError, Result};
 use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
+use failure::Error;
 use fehler::throws;
 use futures::channel::{mpsc, oneshot};
 use futures::stream::SplitSink;
@@ -34,7 +35,7 @@ impl DeribitAPIClient {
         }
     }
 
-    #[throws(DeribitError)]
+    #[throws(Error)]
     pub async fn call_raw<'a, R>(&'a mut self, request: R) -> DeribitAPICallRawResult<R::Response>
     where
         R: Request + Serialize + 'a,
@@ -54,7 +55,7 @@ impl DeribitAPIClient {
         DeribitAPICallRawResult::new(waiter_rx)
     }
 
-    #[throws(DeribitError)]
+    #[throws(Error)]
     pub async fn call<'a, R>(&'a mut self, request: R) -> DeribitAPICallResult<R::Response>
     where
         R: Request + Serialize + 'a,

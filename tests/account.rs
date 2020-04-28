@@ -1,6 +1,7 @@
 use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubaccountsRequest};
-use deribit::{Deribit, DeribitBuilder, DeribitError};
+use deribit::{Deribit, DeribitBuilder};
 use dotenv::dotenv;
+use failure::Error;
 use fehler::throws;
 use std::env::var;
 use tokio::runtime::Runtime;
@@ -26,7 +27,7 @@ impl Default for AccountTest {
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_account_summary() {
     let AccountTest {
         mut rt,
@@ -39,13 +40,13 @@ fn get_account_summary() {
         let req = AuthRequest::credential_auth(&key, &secret);
         let _ = client.call(req).await?.await?;
         let req = GetAccountSummaryRequest::extended(Currency::BTC);
-        Ok::<_, DeribitError>(client.call(req).await?.await?)
+        Ok::<_, Error>(client.call(req).await?.await?)
     };
     let _ = rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_subaccounts() {
     let AccountTest {
         mut rt,
@@ -59,7 +60,7 @@ fn get_subaccounts() {
         let _ = client.call(req).await?.await?;
 
         let req = GetSubaccountsRequest::with_portfolio();
-        Ok::<_, DeribitError>(client.call(req).await?.await?)
+        Ok::<_, Error>(client.call(req).await?.await?)
     };
     let _ = rt.block_on(fut)?;
 }

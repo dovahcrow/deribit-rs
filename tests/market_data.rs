@@ -1,13 +1,14 @@
 use deribit::models::{
     Currency, GetBookSummaryByCurrencyRequest, GetIndexRequest, GetInstrumentsRequest,
 };
-use deribit::{DeribitBuilder, DeribitError};
+use deribit::DeribitBuilder;
 use dotenv::dotenv;
+use failure::Error;
 use fehler::throws;
 use tokio::runtime::Runtime;
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_index() {
     let _ = dotenv();
     let _ = env_logger::try_init();
@@ -22,13 +23,13 @@ fn get_index() {
         let req = GetIndexRequest::new(Currency::ETH);
         let _ = client.call(req).await?.await?;
 
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     let _ = rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_instruments() {
     let _ = dotenv();
     let _ = env_logger::try_init();
@@ -43,13 +44,13 @@ fn get_instruments() {
         let req = GetInstrumentsRequest::expired(Currency::ETH);
         let _ = client.call(req).await?.await?;
 
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     let _ = rt.block_on(fut)?;
 }
 
 #[test]
-#[throws(DeribitError)]
+#[throws(Error)]
 fn get_book_summary_by_currency() {
     let _ = dotenv();
     let _ = env_logger::try_init();
@@ -65,7 +66,7 @@ fn get_book_summary_by_currency() {
         let req = GetBookSummaryByCurrencyRequest::options(Currency::ETH);
         let _ = client.call(req).await?.await?;
 
-        Ok::<_, DeribitError>(())
+        Ok::<_, Error>(())
     };
     let _ = rt.block_on(fut)?;
 }

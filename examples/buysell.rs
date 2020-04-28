@@ -1,10 +1,11 @@
 use deribit::models::{AuthRequest, BuyRequest, SellRequest};
-use deribit::{DeribitBuilder, DeribitError};
+use deribit::DeribitBuilder;
 use dotenv::dotenv;
+use failure::Error;
 use fehler::throws;
 use std::env::var;
 
-#[throws(DeribitError)]
+#[throws(Error)]
 #[tokio::main]
 async fn main() {
     let _ = dotenv();
