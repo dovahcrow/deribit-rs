@@ -33,6 +33,7 @@ impl Request for HelloRequest {
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct TestRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub expected_result: Option<String>,
 }
 
