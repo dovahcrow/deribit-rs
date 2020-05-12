@@ -17,6 +17,7 @@ pub struct UserTradesData {
     pub label: Option<String>,
     pub liquidity: LiquidityType,
     pub liquidation: Option<LiquidationType>,
+    pub mark_price: Option<f64>,
     pub matching_id: Option<String>,
     pub order_id: String,
     pub order_type: OrderType,
