@@ -21,6 +21,7 @@ pub struct UserTradesData {
     pub matching_id: Option<String>,
     pub order_id: String,
     pub order_type: OrderType,
+    pub original_order_type: Option<String>,
     pub price: f64,
     pub self_trade: bool,
     pub state: OrderState,
