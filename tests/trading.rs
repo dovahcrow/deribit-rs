@@ -79,14 +79,17 @@ fn buy_and_edit_and_inspect_and_cancel() {
         let _ = client.call(req).await?.await?;
 
         let id = client
-            .call(BuyRequest::limit("BTC-PERPETUAL", 10., 10.))
+            .call(BuyRequest::limit("BTC-PERPETUAL", 1000., 10.))
             .await?
             .await?
             .0
             .order
             .order_id;
 
-        client.call(EditRequest::new(&id, 12., 10.)).await?.await?;
+        client
+            .call(EditRequest::new(&id, 1200., 10.))
+            .await?
+            .await?;
         client
             .call(GetOpenOrdersByCurrencyRequest::by_currency(Currency::BTC))
             .await?
@@ -118,7 +121,7 @@ fn buy_and_cancel_by_label() {
         let req = AuthRequest::credential_auth(&key, &secret);
         let _ = client.call(req).await?.await?;
 
-        let mut req = BuyRequest::limit("BTC-PERPETUAL", 10., 10.);
+        let mut req = BuyRequest::limit("BTC-PERPETUAL", 1000., 10.);
         req.label = Some("happy".to_string());
 
         client.call(req).await?.await?.0.order.order_id;
