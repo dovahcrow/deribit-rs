@@ -1,5 +1,8 @@
 use deribit::models::subscription::{PrivateSubscribeRequest, PublicSubscribeRequest};
-use deribit::models::{AuthRequest, BuyRequest, CancelRequest, SellRequest};
+use deribit::models::{
+    AuthRequest, BuyRequest, CancelRequest, SellRequest, SubscriptionData, SubscriptionMessage,
+    SubscriptionParams,
+};
 use deribit::{Deribit, DeribitBuilder, DeribitError};
 use dotenv::dotenv;
 use failure::Error;
@@ -7,6 +10,7 @@ use fehler::throws;
 use futures::StreamExt;
 use std::env::var;
 use tokio::runtime::Runtime;
+use tokio::time::{delay_for, Duration};
 
 struct SubscriptionTest {
     rt: Runtime,
@@ -64,11 +68,25 @@ fn book() {
         let _ = client.call(req).await.unwrap();
 
         let v = subscription.take(5).collect::<Vec<_>>().await;
+
         Ok::<_, Error>(v)
     };
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 5);
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::Book(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -92,6 +110,19 @@ fn grouped_book() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 5);
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::GroupedBook(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -113,6 +144,19 @@ fn deribit_price_index() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 2);
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::DeribitPriceIndex(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -134,6 +178,19 @@ fn deribit_price_ranking() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 2);
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::DeribitPriceRanking(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -155,6 +212,20 @@ fn estimated_expiration_price() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 2);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::EstimatedExpirationPrice(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -176,6 +247,20 @@ fn markprice_options() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 2);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::MarkPriceOption(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -197,6 +282,20 @@ fn perpetual() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 2);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::Perpetual(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -218,6 +317,20 @@ fn quote() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 10);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::Quote(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -247,6 +360,19 @@ fn ticker() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 5);
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::Ticker(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -288,6 +414,20 @@ fn trades() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 2);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::Trades(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -313,6 +453,8 @@ fn user_orders() {
         };
         let _ = client.call(req).await?.await?;
 
+        delay_for(Duration::from_secs(1)).await;
+
         let req = BuyRequest::limit("BTC-PERPETUAL", 100f64, 10f64);
 
         let resp = client.call(req).await?.await?;
@@ -324,7 +466,21 @@ fn user_orders() {
         assert_eq!(id, resp.order.order_id);
         Ok::<_, Error>(v)
     };
-    let _ = rt.block_on(fut)?;
+    let v = rt.block_on(fut)?;
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::UserOrders(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]
@@ -356,6 +512,78 @@ fn user_portfolio() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 2);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::UserPortfolio(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
+}
+
+#[test]
+#[throws(Error)]
+fn user_trades() {
+    let SubscriptionTest {
+        mut rt,
+        drb,
+        key,
+        secret,
+    } = SubscriptionTest::default();
+
+    let fut = async move {
+        let (mut client, subscription) = drb.connect().await.unwrap();
+        let _ = client
+            .call(AuthRequest::credential_auth(&key, &secret))
+            .await?
+            .await?;
+
+        let req = PrivateSubscribeRequest {
+            channels: vec![
+                "user.trades.BTC-PERPETUAL.raw".into(),
+                "user.trades.ETH-PERPETUAL.raw".into(),
+            ],
+        };
+        let _ = client.call(req).await?.await?;
+
+        delay_for(Duration::from_secs(1)).await;
+
+        client
+            .call(BuyRequest::market("BTC-PERPETUAL", 10.))
+            .await?
+            .await?;
+
+        client
+            .call(SellRequest::market("BTC-PERPETUAL", 10.))
+            .await?
+            .await?;
+        let v = subscription.take(2).collect::<Vec<_>>().await;
+        Ok::<_, Error>(v)
+    };
+
+    let v = rt.block_on(fut)?;
+    assert_eq!(v.len(), 2);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::UserTrades(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
 }
 
 #[test]

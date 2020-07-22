@@ -1,8 +1,10 @@
 use crate::models::{Direction, LiquidationType};
 use serde::{Deserialize, Serialize};
 
+/// Attention: if this is used along with UserTrades,
+/// please put this after UserTrades otherwise all UserTrades
+/// will be deserialize to Trades since they Trades is a subset of UserTrades
 #[derive(Deserialize, Serialize, Debug, Clone)]
-#[serde(deny_unknown_fields)]
 pub struct TradesData {
     pub amount: f64,
     pub direction: Direction,

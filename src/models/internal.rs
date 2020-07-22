@@ -113,11 +113,11 @@ pub enum SubscriptionData {
     Perpetual(PerpetualData),
     Quote(QuoteData),
     Ticker(TickerData),
-    Trades(Vec<TradesData>),
     UserOrders(UserOrdersData),
     UserOrdersBatch(Vec<UserOrdersData>),
     UserPortfolio(UserPortfolioData),
     UserTrades(Vec<UserTradesData>),
+    Trades(Vec<TradesData>), // This should be put after user trades otherwise all usertrades will be deserialized to trades
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

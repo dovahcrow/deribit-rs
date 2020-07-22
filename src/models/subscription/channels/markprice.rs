@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-#[serde(deny_unknown_fields)]
+
 pub struct MarkPriceOptionData {
     pub synthetic_future: Option<SyntheticFuture>,
     pub instrument_name: String,
@@ -10,7 +10,7 @@ pub struct MarkPriceOptionData {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-#[serde(deny_unknown_fields)]
+
 pub struct SyntheticFuture {
     pub mark_price: f64,
     pub instrument_name: String,
