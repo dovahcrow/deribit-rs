@@ -25,8 +25,9 @@ pub struct UserPortfolioData {
     pub options_vega: f64,
     pub options_value: f64,
     pub portfolio_margining_enabled: bool,
-    pub projected_initial_margin: Option<f64>, //for portfolio margining users
-    pub projected_maintenance_margin: Option<f64>, //for portfolio margining users
+    pub projected_initial_margin: f64, //for portfolio margining users
+    pub projected_delta_total: f64,
+    pub projected_maintenance_margin: f64, //for portfolio margining users
     pub session_funding: f64,
     pub session_rpl: f64,
     pub session_upl: f64,
