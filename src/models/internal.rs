@@ -111,8 +111,8 @@ pub enum SubscriptionData {
     GroupedBook(GroupedBookData),
     MarkPriceOption(Vec<MarkPriceOptionData>),
     Perpetual(PerpetualData),
-    Quote(QuoteData),
     Ticker(TickerData),
+    Quote(QuoteData), // This should be put after Ticker otherwise all Tickers will be deserialized to Quotes
     UserOrders(UserOrdersData),
     UserOrdersBatch(Vec<UserOrdersData>),
     UserPortfolio(UserPortfolioData),

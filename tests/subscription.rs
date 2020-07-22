@@ -360,6 +360,7 @@ fn ticker() {
 
     let v = rt.block_on(fut)?;
     assert_eq!(v.len(), 5);
+
     for v in v {
         match v {
             Ok(SubscriptionMessage {

@@ -1,8 +1,10 @@
 use crate::models::OrderState;
 use serde::{Deserialize, Serialize};
 
+/// Attention: if this is used along with Tickers,
+/// please put this after Tickers otherwise all Tickers
+/// will be deserialize to Quotes since the Quotes is a subset of Tickers
 #[derive(Deserialize, Serialize, Debug, Clone)]
-
 pub struct TickerData {
     pub ask_iv: Option<f64>,
     pub best_ask_amount: f64,

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 // user.trades.{instrument_name}.{interval}
 /// Attention: if this is used along with UserTrades,
 /// please put this after UserTrades otherwise all UserTrades
-/// will be deserialize to Trades since they Trades is a subset of UserTrades
+/// will be deserialize to Trades since the Trades is a subset of UserTrades
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserTradesData {
     pub amount: f64,
