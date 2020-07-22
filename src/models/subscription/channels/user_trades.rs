@@ -23,6 +23,7 @@ pub struct UserTradesData {
     pub order_type: OrderType,
     pub original_order_type: Option<String>,
     pub price: f64,
+    pub profit_loss: f64,
     pub self_trade: bool,
     pub state: OrderState,
     pub tick_direction: i64,
