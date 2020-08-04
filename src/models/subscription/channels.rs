@@ -11,6 +11,7 @@ mod trades;
 mod user_orders;
 mod user_portfolio;
 mod user_trades;
+mod user_changes;
 
 pub use announcements::AnnouncementsData;
 pub use book::{BookData, Delta, GroupedBookData, OrderBookDelta};
@@ -25,3 +26,4 @@ pub use trades::TradesData;
 pub use user_orders::UserOrdersData;
 pub use user_portfolio::UserPortfolioData;
 pub use user_trades::UserTradesData;
+pub use user_changes::UserChangesData;

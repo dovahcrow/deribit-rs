@@ -14,6 +14,7 @@ pub use channels::TradesData;
 pub use channels::UserOrdersData;
 pub use channels::UserPortfolioData;
 pub use channels::UserTradesData;
+pub use channels::UserChangesData;
 pub use channels::{BookData, Delta, GroupedBookData, OrderBookDelta};
 pub use channels::{Greeks, Stats, TickerData};
 

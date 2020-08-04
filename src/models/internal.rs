@@ -1,7 +1,7 @@
 use super::subscription::{
     AnnouncementsData, BookData, DeribitPriceIndexData, DeribitPriceRankingData,
     EstimatedExpirationPriceData, GroupedBookData, MarkPriceOptionData, PerpetualData, QuoteData,
-    TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData,
+    TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData, UserChangesData,
 };
 use crate::models::{Either, Request};
 use serde::{Deserialize, Serialize};
@@ -113,6 +113,7 @@ pub enum SubscriptionData {
     Perpetual(PerpetualData),
     Ticker(TickerData),
     Quote(QuoteData), // This should be put after Ticker otherwise all Tickers will be deserialized to Quotes
+    UserChanges(UserChangesData),
     UserOrders(UserOrdersData),
     UserOrdersBatch(Vec<UserOrdersData>),
     UserPortfolio(UserPortfolioData),
