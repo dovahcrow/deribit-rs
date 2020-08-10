@@ -45,7 +45,7 @@ pub enum CancelOnDisconnectScope {
     Account,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
 pub struct EnableCancelOnDisconnectRequest {
     scope: Option<CancelOnDisconnectScope>,
 }

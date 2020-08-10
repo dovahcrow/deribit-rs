@@ -1,7 +1,4 @@
-use crate::models::{
-    AdvanceOption, AssetKind, Currency, Direction, Either, LiquidityType, OrderState, OrderType,
-    Request, TimeInForce, Trigger,
-};
+use crate::models::{AdvanceOption, AssetKind, Currency, Direction, Either, LiquidityType, OrderState, OrderType, Request, TimeInForce, Trigger};
 use serde::Deserializer;
 use serde::{Deserialize, Serialize};
 use shrinkwraprs::Shrinkwrap;
@@ -15,10 +12,16 @@ pub struct BuyRequest(pub TradeRequest);
 pub struct BuyResponse(pub TradeResponse);
 
 impl BuyRequest {
-    pub fn market(instrument_name: &str, amount: f64) -> BuyRequest {
+    pub fn market<I>(instrument_name: I, amount: f64) -> BuyRequest
+    where
+        I: Into<String>,
+    {
         BuyRequest(TradeRequest::market(instrument_name, amount))
     }
-    pub fn limit(instrument_name: &str, price: f64, amount: f64) -> BuyRequest {
+    pub fn limit<I>(instrument_name: I, price: f64, amount: f64) -> BuyRequest
+    where
+        I: Into<String>,
+    {
         BuyRequest(TradeRequest::limit(instrument_name, amount, price))
     }
 }
@@ -37,10 +40,16 @@ pub struct SellRequest(pub TradeRequest);
 pub struct SellResponse(pub TradeResponse);
 
 impl SellRequest {
-    pub fn market(instrument_name: &str, amount: f64) -> SellRequest {
+    pub fn market<I>(instrument_name: I, amount: f64) -> SellRequest
+    where
+        I: Into<String>,
+    {
         SellRequest(TradeRequest::market(instrument_name, amount))
     }
-    pub fn limit(instrument_name: &str, price: f64, amount: f64) -> SellRequest {
+    pub fn limit<I>(instrument_name: I, price: f64, amount: f64) -> SellRequest
+    where
+        I: Into<String>,
+    {
         SellRequest(TradeRequest::limit(instrument_name, amount, price))
     }
 }
@@ -108,7 +117,10 @@ pub struct TradeRequest {
 }
 
 impl TradeRequest {
-    pub fn market(instrument_name: &str, amount: f64) -> TradeRequest {
+    pub fn market<I>(instrument_name: I, amount: f64) -> TradeRequest
+    where
+        I: Into<String>,
+    {
         TradeRequest {
             instrument_name: instrument_name.into(),
             amount: amount,
@@ -125,7 +137,10 @@ impl TradeRequest {
         }
     }
 
-    pub fn limit(instrument_name: &str, amount: f64, price: f64) -> TradeRequest {
+    pub fn limit<I>(instrument_name: I, amount: f64, price: f64) -> TradeRequest
+    where
+        I: Into<String>,
+    {
         TradeRequest {
             instrument_name: instrument_name.into(),
             amount: amount,
@@ -232,9 +247,7 @@ pub struct CancelRequest {
 
 impl CancelRequest {
     pub fn new(order_id: &str) -> Self {
-        Self {
-            order_id: order_id.into(),
-        }
+        Self { order_id: order_id.into() }
     }
 }
 
@@ -293,9 +306,7 @@ pub struct CancelByLabelRequest {
 
 impl CancelByLabelRequest {
     pub fn new<S: Into<String>>(label: S) -> Self {
-        Self {
-            label: label.into(),
-        }
+        Self { label: label.into() }
     }
 }
 
@@ -311,9 +322,7 @@ pub struct GetOrderStateRequest {
 
 impl GetOrderStateRequest {
     pub fn new(order_id: &str) -> Self {
-        Self {
-            order_id: order_id.into(),
-        }
+        Self { order_id: order_id.into() }
     }
 }
 
@@ -352,10 +361,7 @@ pub struct GetOpenOrdersByCurrencyRequest {
 
 impl GetOpenOrdersByCurrencyRequest {
     pub fn by_currency(currency: Currency) -> Self {
-        Self {
-            currency,
-            ..Default::default()
-        }
+        Self { currency, ..Default::default() }
     }
 }
 
