@@ -20,8 +20,8 @@ pub use authentication::{AuthRequest, AuthResponse, GrantType};
 pub use internal::{HeartbeatType, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion, SubscriptionData, SubscriptionMessage, SubscriptionParams};
 pub use market_data::{GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest, GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse};
 pub use session_management::{
-    DisableCancelOnDisconnectRequest, DisableCancelOnDisconnectResponse, EnableCancelOnDisconnectRequest, GetCancelOnDisconnectRequest, GetCancelOnDisconnectResponse,
-    SetHeartbeatRequest, SetHeartbeatResponse,
+    CancelOnDisconnectScope, DisableCancelOnDisconnectRequest, DisableCancelOnDisconnectResponse, EnableCancelOnDisconnectRequest, GetCancelOnDisconnectRequest,
+    GetCancelOnDisconnectResponse, SetHeartbeatRequest, SetHeartbeatResponse,
 };
 pub use subscription::{PrivateSubscribeRequest, PrivateUnsubscribeRequest, PublicSubscribeRequest, PublicUnsubscribeRequest, SubscribeResponse};
 pub use support::{GetTimeRequest, GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse};

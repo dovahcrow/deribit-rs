@@ -22,7 +22,7 @@ impl BuyRequest {
     where
         I: Into<String>,
     {
-        BuyRequest(TradeRequest::limit(instrument_name, amount, price))
+        BuyRequest(TradeRequest::limit(instrument_name, price, amount))
     }
 }
 
@@ -50,7 +50,7 @@ impl SellRequest {
     where
         I: Into<String>,
     {
-        SellRequest(TradeRequest::limit(instrument_name, amount, price))
+        SellRequest(TradeRequest::limit(instrument_name, price, amount))
     }
 }
 
@@ -137,7 +137,7 @@ impl TradeRequest {
         }
     }
 
-    pub fn limit<I>(instrument_name: I, amount: f64, price: f64) -> TradeRequest
+    pub fn limit<I>(instrument_name: I, price: f64, amount: f64) -> TradeRequest
     where
         I: Into<String>,
     {

@@ -47,7 +47,17 @@ pub enum CancelOnDisconnectScope {
 
 #[derive(Deserialize, Serialize, Clone, Debug, Default)]
 pub struct EnableCancelOnDisconnectRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
     scope: Option<CancelOnDisconnectScope>,
+}
+
+impl EnableCancelOnDisconnectRequest {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn with_scope(scope: CancelOnDisconnectScope) -> Self {
+        Self { scope: Some(scope) }
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
@@ -57,15 +67,24 @@ pub enum EnableCancelOnDisconnectResponse {
 }
 
 impl Request for EnableCancelOnDisconnectRequest {
-    const METHOD: &'static str = "public/enable_cancel_on_disconnect";
+    const METHOD: &'static str = "private/enable_cancel_on_disconnect";
     type Response = EnableCancelOnDisconnectResponse;
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
 pub struct DisableCancelOnDisconnectRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
     scope: Option<CancelOnDisconnectScope>,
 }
 
+impl DisableCancelOnDisconnectRequest {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn with_scope(scope: CancelOnDisconnectScope) -> Self {
+        Self { scope: Some(scope) }
+    }
+}
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
 pub enum DisableCancelOnDisconnectResponse {
@@ -73,13 +92,23 @@ pub enum DisableCancelOnDisconnectResponse {
 }
 
 impl Request for DisableCancelOnDisconnectRequest {
-    const METHOD: &'static str = "public/disable_cancel_on_disconnect";
+    const METHOD: &'static str = "private/disable_cancel_on_disconnect";
     type Response = DisableCancelOnDisconnectRequest;
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
 pub struct GetCancelOnDisconnectRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
     scope: Option<CancelOnDisconnectScope>,
+}
+
+impl GetCancelOnDisconnectRequest {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn with_scope(scope: CancelOnDisconnectScope) -> Self {
+        Self { scope: Some(scope) }
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
@@ -89,6 +118,6 @@ pub struct GetCancelOnDisconnectResponse {
 }
 
 impl Request for GetCancelOnDisconnectRequest {
-    const METHOD: &'static str = "public/get_cancel_on_disconnect";
+    const METHOD: &'static str = "private/get_cancel_on_disconnect";
     type Response = GetCancelOnDisconnectResponse;
 }
