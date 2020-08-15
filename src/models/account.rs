@@ -93,7 +93,7 @@ pub struct GetAccountSummaryResponse {
     pub options_session_upl: f64,
     pub id: Option<u64>,
     pub options_vega: f64,
-    pub session_funding: f64,
+    pub session_funding: Option<f64>,
     pub currency: Currency,
     pub r#type: Option<String>,
     pub futures_session_rpl: f64,
