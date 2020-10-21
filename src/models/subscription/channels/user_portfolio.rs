@@ -2,7 +2,6 @@ use crate::models::Currency;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-
 pub struct UserPortfolioData {
     pub available_funds: f64,
     pub available_withdrawal_funds: f64,
@@ -28,7 +27,6 @@ pub struct UserPortfolioData {
     pub projected_initial_margin: f64, //for portfolio margining users
     pub projected_delta_total: f64,
     pub projected_maintenance_margin: f64, //for portfolio margining users
-    pub session_funding: f64,
     pub session_rpl: f64,
     pub session_upl: f64,
     pub total_pl: f64,

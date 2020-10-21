@@ -1,6 +1,7 @@
 use deribit::models::{AuthRequest, Currency, GetPositionsRequest, PrivateSubscribeRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
+use env_logger::init;
 use failure::Error;
 use futures::StreamExt;
 use std::env::var;
@@ -8,6 +9,7 @@ use std::env::var;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let _ = dotenv();
+    init();
 
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
