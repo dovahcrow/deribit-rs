@@ -15,23 +15,42 @@ use serde_json::from_str;
 use std::fmt::{Display, Error as FmtError, Formatter};
 use std::result::Result as StdResult;
 
-pub use account::{GetAccountSummaryRequest, GetAccountSummaryResponse, GetPositionsRequest, GetPositionsResponse, GetSubaccountsRequest, GetSubaccountsResponse};
-pub use authentication::{AuthRequest, AuthResponse, GrantType};
-pub use internal::{HeartbeatType, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion, SubscriptionData, SubscriptionMessage, SubscriptionParams};
-pub use market_data::{GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest, GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse};
-pub use session_management::{
-    CancelOnDisconnectScope, DisableCancelOnDisconnectRequest, DisableCancelOnDisconnectResponse, EnableCancelOnDisconnectRequest, GetCancelOnDisconnectRequest,
-    GetCancelOnDisconnectResponse, SetHeartbeatRequest, SetHeartbeatResponse,
+pub use account::{
+    GetAccountSummaryRequest, GetAccountSummaryResponse, GetPositionsRequest, GetPositionsResponse,
+    GetSubaccountsRequest, GetSubaccountsResponse,
 };
-pub use subscription::{PrivateSubscribeRequest, PrivateUnsubscribeRequest, PublicSubscribeRequest, PublicUnsubscribeRequest, SubscribeResponse};
-pub use support::{GetTimeRequest, GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse};
+pub use authentication::{AuthRequest, AuthResponse, GrantType};
+pub use internal::{
+    HeartbeatType, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion, SubscriptionData,
+    SubscriptionMessage, SubscriptionParams,
+};
+pub use market_data::{
+    GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest,
+    GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
+};
+pub use session_management::{
+    CancelOnDisconnectScope, DisableCancelOnDisconnectRequest, DisableCancelOnDisconnectResponse,
+    EnableCancelOnDisconnectRequest, GetCancelOnDisconnectRequest, GetCancelOnDisconnectResponse,
+    SetHeartbeatRequest, SetHeartbeatResponse,
+};
+pub use subscription::{
+    PrivateSubscribeRequest, PrivateUnsubscribeRequest, PublicSubscribeRequest,
+    PublicUnsubscribeRequest, SubscribeResponse,
+};
+pub use support::{
+    GetTimeRequest, GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse,
+};
 pub use trading::{
-    BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest, CancelAllRequest, CancelAllResponse, CancelByLabelRequest, CancelOrderType, CancelRequest,
-    CancelResponse, EditRequest, EditResponse, GetOpenOrderType, GetOpenOrdersByCurrencyRequest, GetOpenOrdersByCurrencyResponse, GetOpenOrdersByInstrumentRequest,
-    GetOpenOrdersByInstrumentResponse, GetOrderStateRequest, GetOrderStateResponse, Order, SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
+    BuyRequest, BuyResponse, CancelAllByCurrencyRequest, CancelAllByInstrumentRequest,
+    CancelAllRequest, CancelAllResponse, CancelByLabelRequest, CancelOrderType, CancelRequest,
+    CancelResponse, EditRequest, EditResponse, GetOpenOrderType, GetOpenOrdersByCurrencyRequest,
+    GetOpenOrdersByCurrencyResponse, GetOpenOrdersByInstrumentRequest,
+    GetOpenOrdersByInstrumentResponse, GetOrderStateRequest, GetOrderStateResponse, Order,
+    SellRequest, SellResponse, Trade, TradeRequest, TradeResponse,
 };
 pub use wallet::{
-    GetTransfersRequest, GetTransfersResponse, SubmitTransferToSubaccountRequest, SubmitTransferToSubaccountResponse, SubmitTransferToUserRequest, SubmitTransferToUserResponse,
+    GetTransfersRequest, GetTransfersResponse, SubmitTransferToSubaccountRequest,
+    SubmitTransferToSubaccountResponse, SubmitTransferToUserRequest, SubmitTransferToUserResponse,
     TransferItem, WithdrawRequest, WithdrawResponse,
 };
 
@@ -53,6 +72,8 @@ pub enum Currency {
     ETH,
     #[serde(alias = "usd")]
     USD,
+    #[serde(alias = "usdt")]
+    USDT,
 }
 
 impl Default for Currency {
@@ -71,7 +92,8 @@ impl std::str::FromStr for Currency {
     type Err = DeribitError;
     #[throws(DeribitError)]
     fn from_str(s: &str) -> Currency {
-        from_str(&format!(r#""{}""#, s)).map_err(|_| DeribitError::UnknownCurrency(s.to_string()))?
+        from_str(&format!(r#""{}""#, s))
+            .map_err(|_| DeribitError::UnknownCurrency(s.to_string()))?
     }
 }
 
@@ -88,7 +110,8 @@ impl std::str::FromStr for AssetKind {
     type Err = DeribitError;
     #[throws(DeribitError)]
     fn from_str(s: &str) -> AssetKind {
-        from_str(&format!(r#""{}""#, s)).map_err(|_| DeribitError::UnknownAssetKind(s.to_string()))?
+        from_str(&format!(r#""{}""#, s))
+            .map_err(|_| DeribitError::UnknownAssetKind(s.to_string()))?
     }
 }
 
