@@ -3,23 +3,26 @@ use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
 use failure::Error;
 use fehler::throws;
-use futures::channel::{mpsc, oneshot};
-use futures::stream::SplitSink;
-use futures::task::{Context, Poll};
-use futures::{Future, SinkExt};
+use futures::{
+    channel::{mpsc, oneshot},
+    stream::SplitSink,
+    task::{Context, Poll},
+    {Future, SinkExt},
+};
 use log::{error, trace};
 use pin_project::pin_project;
-use serde::de::DeserializeOwned;
-use serde::Serialize;
+use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{from_str, to_string};
-use std::marker::PhantomData;
-use std::pin::Pin;
-use std::result::Result as StdResult;
+use std::{
+    convert::Into, marker::PhantomData, pin::Pin, result::Result as StdResult, time::Duration,
+};
+use tokio::time::{timeout, Elapsed, Timeout};
 use tungstenite::Message;
 
 pub struct DeribitAPIClient {
     wstx: SplitSink<WSStream, Message>,
     waiter_tx: mpsc::Sender<(i64, oneshot::Sender<String>)>,
+    timeout: Duration,
     id: i64,
 }
 
@@ -27,10 +30,12 @@ impl DeribitAPIClient {
     pub(crate) fn new(
         wstx: SplitSink<WSStream, Message>,
         waiter_tx: mpsc::Sender<(i64, oneshot::Sender<String>)>,
+        timeout: Duration,
     ) -> DeribitAPIClient {
         DeribitAPIClient {
             wstx: wstx,
             waiter_tx: waiter_tx,
+            timeout: timeout,
             id: 0,
         }
     }
@@ -52,7 +57,7 @@ impl DeribitAPIClient {
         trace!("[API Client] Request: {}", payload);
         self.wstx.send(Message::Text(payload)).await?;
         self.waiter_tx.send((req.id, waiter_tx)).await?;
-        DeribitAPICallRawResult::new(waiter_rx)
+        DeribitAPICallRawResult::new(waiter_rx, self.timeout)
     }
 
     #[throws(Error)]
@@ -68,14 +73,14 @@ impl DeribitAPIClient {
 #[pin_project]
 pub struct DeribitAPICallRawResult<R> {
     #[pin]
-    rx: oneshot::Receiver<String>,
+    rx: Timeout<oneshot::Receiver<String>>,
     _ty: PhantomData<R>,
 }
 
 impl<R> DeribitAPICallRawResult<R> {
-    pub(crate) fn new(rx: oneshot::Receiver<String>) -> Self {
+    pub(crate) fn new(rx: oneshot::Receiver<String>, expiry: Duration) -> Self {
         DeribitAPICallRawResult {
-            rx: rx,
+            rx: timeout(expiry, rx),
             _ty: PhantomData,
         }
     }
@@ -88,20 +93,26 @@ where
     type Output = Result<JSONRPCResponse<R>>;
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<JSONRPCResponse<R>>> {
         let this = self.project();
-        this.rx.poll(cx).map(|result| {
-            let resp = result?;
-            let result: StdResult<JSONRPCResponse<R>, _> = from_str(&resp);
-            if let Err(_) = result.as_ref() {
-                error!("[API Client] Cannot deserialize RPC response: {}", resp);
+        match this.rx.poll(cx) {
+            Poll::Ready(Ok(ret)) => Poll::Ready(match ret {
+                Ok(resp) => {
+                    let result: StdResult<JSONRPCResponse<R>, _> = from_str(&resp);
+                    if let Err(_) = result.as_ref() {
+                        error!("[API Client] Cannot deserialize RPC response: {}", resp);
+                    }
+                    result.map_err(Into::into)
+                }
+                Err(err) => Err(err.into()),
+            }),
+            Poll::Ready(Err(Elapsed { .. })) => {
+                Poll::Ready(Err(DeribitError::RequestTimeout.into()))
             }
-            Ok(result?)
-        })
+            Poll::Pending => Poll::Pending,
+        }
     }
 }
 
-#[pin_project]
 pub struct DeribitAPICallResult<R> {
-    #[pin]
     inner: DeribitAPICallRawResult<R>,
 }
 
@@ -116,9 +127,9 @@ where
     R: DeserializeOwned,
 {
     type Output = Result<R>;
-    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<R>> {
-        let this = self.project();
-        match this.inner.poll(cx) {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<R>> {
+        let inner = Pin::new(&mut self.inner);
+        match inner.poll(cx) {
             Poll::Ready(Ok(resp)) => Poll::Ready(resp.result.left_result().map_err(|e| {
                 DeribitError::RemoteError {
                     code: e.code,

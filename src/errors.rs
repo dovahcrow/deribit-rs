@@ -20,6 +20,8 @@ pub enum DeribitError {
     UnknownAssetKind(String),
     #[error("Websocket disconnected")]
     WebsocketDisconnected,
+    #[error("Request timed out")]
+    RequestTimeout,
     // #[error("oneshot channel canceled on the other side: {0}")]
     // CanceledError(#[from] Canceled),
     // #[error("cannot parse url: {0}")]
@@ -31,5 +33,5 @@ pub enum DeribitError {
     // #[error("JSON serialization error: {0}")]
     // JsonError(#[from] JsonError),
     // #[error("IO error: {0}")]
-    // IOError(#[from] std::io::Error),
+    // IOError(#[from] std::io::Error)
 }

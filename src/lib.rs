@@ -18,8 +18,7 @@ use lazy_static::lazy_static;
 use log::warn;
 use log::{info, trace};
 use regex::Regex;
-use std::collections::HashMap;
-use std::time::Duration;
+use std::{collections::HashMap, time::Duration, u64};
 use tokio::net::TcpStream;
 use tokio::time::timeout;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
@@ -42,6 +41,8 @@ pub struct Deribit {
     testnet: bool,
     #[builder(default = "10")]
     subscription_buffer_size: usize,
+    #[builder(setter(into, strip_option))]
+    timeout: Option<Duration>,
 }
 
 impl Deribit {
@@ -70,7 +71,11 @@ impl Deribit {
         tokio::spawn(background);
 
         (
-            DeribitAPIClient::new(wstx, waiter_tx),
+            DeribitAPIClient::new(
+                wstx,
+                waiter_tx,
+                self.timeout.unwrap_or(Duration::from_secs(u64::MAX)),
+            ),
             DeribitSubscriptionClient::new(srx),
         )
     }
