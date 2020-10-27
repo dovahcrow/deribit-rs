@@ -1,4 +1,7 @@
-use crate::models::{AdvanceOption, AssetKind, Currency, Direction, Either, LiquidityType, OrderState, OrderType, Request, TimeInForce, Trigger};
+use crate::models::{
+    AdvanceOption, AssetKind, Currency, Direction, Either, LiquidityType, OrderState, OrderType,
+    Request, TimeInForce, Trigger,
+};
 use serde::Deserializer;
 use serde::{Deserialize, Serialize};
 use shrinkwraprs::Shrinkwrap;
@@ -67,9 +70,15 @@ pub struct EditRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_only: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub reduce_only: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_post_only: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advanced: Option<AdvanceOption>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stop_price: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mmp: Option<bool>,
 }
 
 impl EditRequest {
@@ -79,8 +88,11 @@ impl EditRequest {
             amount: amount,
             price: price,
             post_only: None,
+            reduce_only: None,
+            reject_post_only: None,
             advanced: None,
             stop_price: None,
+            mmp: None,
         }
     }
 }
@@ -137,6 +149,10 @@ impl TradeRequest {
         }
     }
 
+    #[deprecated(
+        since = "0.3.0",
+        note = "Previously the signature is fn(_: &str, amount: f64, price: f64), after 0.3.0 the signature changed to fn(_: &str, price: f64, amount: f64)."
+    )]
     pub fn limit<I>(instrument_name: I, price: f64, amount: f64) -> TradeRequest
     where
         I: Into<String>,
@@ -247,7 +263,9 @@ pub struct CancelRequest {
 
 impl CancelRequest {
     pub fn new(order_id: &str) -> Self {
-        Self { order_id: order_id.into() }
+        Self {
+            order_id: order_id.into(),
+        }
     }
 }
 
@@ -306,7 +324,9 @@ pub struct CancelByLabelRequest {
 
 impl CancelByLabelRequest {
     pub fn new<S: Into<String>>(label: S) -> Self {
-        Self { label: label.into() }
+        Self {
+            label: label.into(),
+        }
     }
 }
 
@@ -322,7 +342,9 @@ pub struct GetOrderStateRequest {
 
 impl GetOrderStateRequest {
     pub fn new(order_id: &str) -> Self {
-        Self { order_id: order_id.into() }
+        Self {
+            order_id: order_id.into(),
+        }
     }
 }
 
@@ -361,7 +383,10 @@ pub struct GetOpenOrdersByCurrencyRequest {
 
 impl GetOpenOrdersByCurrencyRequest {
     pub fn by_currency(currency: Currency) -> Self {
-        Self { currency, ..Default::default() }
+        Self {
+            currency,
+            ..Default::default()
+        }
     }
 }
 

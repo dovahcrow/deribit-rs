@@ -20,7 +20,6 @@ Deribit API V2 Client for Rust Language
 
 [btc]: https://img.shields.io/keybase/btc/dovahcrow.svg?style=flat-square
 
-# IMPORTANT: Previously TradeRequest::limit has the signature fn(instrument_name: &str, amount: f64, price: f64), to keep it consistent with the rest of API, in 0.3.0 the signature is fn(instrument_name: &str, price: f64, amount: f64),
 Use this library for trading at your own risk.
 
 The current plan is to only implement the websocket communication, which includes call api through websocket 
