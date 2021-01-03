@@ -2,7 +2,6 @@ use crate::models::{AdvanceOption, Direction, OrderState, OrderType, TimeInForce
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-
 pub struct UserOrdersData {
     pub advanced: Option<AdvanceOption>,
     pub amount: f64,
@@ -17,7 +16,7 @@ pub struct UserOrdersData {
     pub is_liquidation: bool,
     pub label: String,
     pub last_update_timestamp: u64,
-    pub max_show: u64,
+    pub max_show: f64,
     pub order_id: String,
     pub order_state: OrderState,
     pub order_type: OrderType,
@@ -30,5 +29,6 @@ pub struct UserOrdersData {
     pub trigger: Option<Trigger>,
     pub triggered: Option<bool>,
     pub usd: Option<f64>,
-    pub replaced: Option<bool>, // TODO: Remove the Option when necessary
+    pub replaced: bool, // TODO: Remove the Option when necessary
+    pub web: bool,
 }
