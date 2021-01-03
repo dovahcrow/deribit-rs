@@ -16,6 +16,7 @@ pub use channels::UserPortfolioData;
 pub use channels::UserTradesData;
 pub use channels::{BookData, Delta, GroupedBookData, OrderBookDelta};
 pub use channels::{Greeks, Stats, TickerData};
+pub use channels::{InstrumentState, InstrumentStateData};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct PublicSubscribeRequest {

@@ -1,7 +1,8 @@
 use super::subscription::{
     AnnouncementsData, BookData, DeribitPriceIndexData, DeribitPriceRankingData,
-    EstimatedExpirationPriceData, GroupedBookData, MarkPriceOptionData, PerpetualData, QuoteData,
-    TickerData, TradesData, UserOrdersData, UserPortfolioData, UserTradesData,
+    EstimatedExpirationPriceData, GroupedBookData, InstrumentStateData, MarkPriceOptionData,
+    PerpetualData, QuoteData, TickerData, TradesData, UserOrdersData, UserPortfolioData,
+    UserTradesData,
 };
 use crate::models::{Either, Request};
 use serde::{Deserialize, Serialize};
@@ -109,6 +110,7 @@ pub enum SubscriptionData {
     DeribitPriceRanking(Vec<DeribitPriceRankingData>),
     EstimatedExpirationPrice(EstimatedExpirationPriceData),
     GroupedBook(GroupedBookData),
+    InstrumentState(InstrumentStateData),
     MarkPriceOption(Vec<MarkPriceOptionData>),
     Perpetual(PerpetualData),
     Ticker(TickerData),

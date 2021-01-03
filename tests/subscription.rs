@@ -620,3 +620,38 @@ fn sub_unsub() {
     };
     rt.block_on(fut)?;
 }
+
+// This will block forever if there's no new instruments added / closed.
+#[test]
+#[ignore]
+#[throws(Error)]
+fn instrument_state() {
+    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let fut = async {
+        let (mut client, subscription) = drb.connect().await.unwrap();
+
+        let req = PublicSubscribeRequest::new(&["instrument.state.any.BTC".into()]);
+        let resp = client.call(req).await.unwrap().await.unwrap();
+        println!("{:?}", resp);
+
+        let v = subscription.take(2).collect::<Vec<_>>().await;
+        Ok::<_, Error>(v)
+    };
+
+    let v = rt.block_on(fut)?;
+    assert_eq!(v.len(), 2);
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params:
+                    SubscriptionParams::Subscription {
+                        data: SubscriptionData::InstrumentState(..),
+                        ..
+                    },
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
+}
