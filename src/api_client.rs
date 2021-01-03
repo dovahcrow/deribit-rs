@@ -16,7 +16,7 @@ use serde_json::{from_str, to_string};
 use std::{
     convert::Into, marker::PhantomData, pin::Pin, result::Result as StdResult, time::Duration,
 };
-use tokio::time::{timeout, Elapsed, Timeout};
+use tokio::time::{error::Elapsed, timeout, Timeout};
 use tungstenite::Message;
 
 pub struct DeribitAPIClient {

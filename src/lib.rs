@@ -125,7 +125,7 @@ impl Deribit {
                                 match fut.await {
                                     Ok(Ok(_)) => {}
                                     Ok(Err(ref e)) if e.is_disconnected() => sdropped = true,
-                                    Ok(Err(e)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") }, // MPSC ERROR
+                                    Ok(Err(_)) => { unreachable!("[Servo] futures::mpsc won't complain channel is full") }, // MPSC ERROR
                                     Err(_) => { warn!("[Servo] Subscription channel is full") }, // Elapsed
                                 }
                             }

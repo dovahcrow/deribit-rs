@@ -8,7 +8,7 @@ use tokio::runtime::Runtime;
 #[throws(Error)]
 fn hello() {
     let drb = Deribit::new();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;
@@ -29,7 +29,7 @@ fn hello() {
 #[throws(Error)]
 fn get_time() {
     let drb = Deribit::new();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;
@@ -45,7 +45,7 @@ fn get_time() {
 #[throws(Error)]
 fn test() {
     let drb = Deribit::new();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;

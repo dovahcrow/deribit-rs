@@ -10,7 +10,7 @@ use fehler::throws;
 use futures::StreamExt;
 use std::env::var;
 use tokio::runtime::Runtime;
-use tokio::time::{delay_for, Duration};
+use tokio::time::{sleep, Duration};
 
 struct SubscriptionTest {
     rt: Runtime,
@@ -55,7 +55,7 @@ impl Default for SubscriptionTest {
 #[test]
 #[throws(Error)]
 fn book() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
 
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
@@ -92,7 +92,7 @@ fn book() {
 #[test]
 #[throws(Error)]
 fn grouped_book() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
 
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
@@ -128,7 +128,7 @@ fn grouped_book() {
 #[test]
 #[throws(Error)]
 fn deribit_price_index() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -162,7 +162,7 @@ fn deribit_price_index() {
 #[test]
 #[throws(Error)]
 fn deribit_price_ranking() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -196,7 +196,7 @@ fn deribit_price_ranking() {
 #[test]
 #[throws(Error)]
 fn estimated_expiration_price() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -231,7 +231,7 @@ fn estimated_expiration_price() {
 #[test]
 #[throws(Error)]
 fn markprice_options() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -266,7 +266,7 @@ fn markprice_options() {
 #[test]
 #[throws(Error)]
 fn perpetual() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -301,7 +301,7 @@ fn perpetual() {
 #[test]
 #[throws(Error)]
 fn quote() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -336,7 +336,7 @@ fn quote() {
 #[test]
 #[throws(Error)]
 fn ticker() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 
@@ -380,7 +380,7 @@ fn ticker() {
 #[throws(Error)]
 fn trades() {
     let SubscriptionTest {
-        mut rt,
+        rt,
         drb,
         key,
         secret,
@@ -435,7 +435,7 @@ fn trades() {
 #[throws(Error)]
 fn user_orders() {
     let SubscriptionTest {
-        mut rt,
+        rt,
         drb,
         key,
         secret,
@@ -454,7 +454,7 @@ fn user_orders() {
         };
         let _ = client.call(req).await?.await?;
 
-        delay_for(Duration::from_secs(1)).await;
+        sleep(Duration::from_secs(1)).await;
 
         let req = BuyRequest::limit("BTC-PERPETUAL", 100f64, 10f64);
 
@@ -488,7 +488,7 @@ fn user_orders() {
 #[throws(Error)]
 fn user_portfolio() {
     let SubscriptionTest {
-        mut rt,
+        rt,
         drb,
         key,
         secret,
@@ -533,7 +533,7 @@ fn user_portfolio() {
 #[throws(Error)]
 fn user_trades() {
     let SubscriptionTest {
-        mut rt,
+        rt,
         drb,
         key,
         secret,
@@ -554,7 +554,7 @@ fn user_trades() {
         };
         let _ = client.call(req).await?.await?;
 
-        delay_for(Duration::from_secs(1)).await;
+        sleep(Duration::from_secs(1)).await;
 
         client
             .call(BuyRequest::market("BTC-PERPETUAL", 10.))
@@ -590,7 +590,7 @@ fn user_trades() {
 #[test]
 #[throws(Error)]
 fn sub_unsub() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, _) = drb.connect().await.unwrap();
 
@@ -626,7 +626,7 @@ fn sub_unsub() {
 #[ignore]
 #[throws(Error)]
 fn instrument_state() {
-    let SubscriptionTest { drb, mut rt, .. } = SubscriptionTest::default();
+    let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
         let (mut client, subscription) = drb.connect().await.unwrap();
 

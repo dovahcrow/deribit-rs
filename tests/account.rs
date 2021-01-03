@@ -30,7 +30,7 @@ impl Default for AccountTest {
 #[throws(Error)]
 fn get_account_summary() {
     let AccountTest {
-        mut rt,
+        rt,
         drb,
         key,
         secret,
@@ -49,7 +49,7 @@ fn get_account_summary() {
 #[throws(Error)]
 fn get_subaccounts() {
     let AccountTest {
-        mut rt,
+        rt,
         drb,
         key,
         secret,

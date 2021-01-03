@@ -13,7 +13,7 @@ fn timeout() {
         .build()
         .unwrap();
 
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async {
         let (mut client, _) = drb.connect().await?;

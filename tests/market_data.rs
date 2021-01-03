@@ -14,7 +14,7 @@ fn get_index() {
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -35,7 +35,7 @@ fn get_instruments() {
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -55,7 +55,7 @@ fn get_book_summary_by_currency() {
     let _ = dotenv();
     let _ = env_logger::try_init();
     let drb = DeribitBuilder::default().build().unwrap();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;

@@ -10,7 +10,7 @@ use fehler::throws;
 use std::env::var;
 use std::time::Duration;
 use tokio::runtime::Runtime;
-use tokio::time::delay_for;
+use tokio::time::sleep;
 
 #[test]
 #[throws(Error)]
@@ -20,7 +20,7 @@ fn get_order_state() {
     let secret = var("DERIBIT_SECRET").unwrap();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -41,7 +41,7 @@ fn buy_and_sell() {
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -52,7 +52,7 @@ fn buy_and_sell() {
             .call(BuyRequest::market("BTC-PERPETUAL", 10.))
             .await?
             .await?;
-        delay_for(Duration::from_secs(1)).await;
+        sleep(Duration::from_secs(1)).await;
 
         client
             .call(SellRequest::market("BTC-PERPETUAL", 10.))
@@ -71,7 +71,7 @@ fn buy_and_edit_and_inspect_and_cancel() {
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;
@@ -114,7 +114,7 @@ fn buy_and_cancel_by_label() {
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
-    let mut rt = Runtime::new().expect("cannot create tokio runtime");
+    let rt = Runtime::new().expect("cannot create tokio runtime");
 
     let fut = async move {
         let (mut client, _) = drb.connect().await?;

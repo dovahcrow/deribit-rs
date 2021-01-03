@@ -15,15 +15,15 @@ travis-ci = { repository = "dovahcrow/deribit-rs", branch = "master" }
 
 [dependencies]
 futures = { version = "0.3", features = ["async-await"] }
-tokio = { version = "0.2", features = ["time", "macros"] }
+tokio = { version = "0.3", features = ["time", "macros", "rt"] }
 tungstenite = "0.11"
-tokio-tungstenite = { version = "0.11", features = ["tls"]}
+tokio-tungstenite = { version = "0.12", features = ["tls"]}
 url = "2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 log = "0.4"
 derive_builder = "0.9"
-pin-project = "0.4"
+pin-project = "1"
 shrinkwraprs = "0.3"
 regex = "1"
 lazy_static = "1"
@@ -34,5 +34,8 @@ failure = "0.1"
 # anyhow = "1"
 
 [dev-dependencies]
-env_logger = "0.7"
+env_logger = "0.8"
 dotenv = "0.15"
+[dev-dependencies.tokio]
+version = "0.3"
+features = ["time", "macros", "rt-multi-thread"]
