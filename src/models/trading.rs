@@ -149,10 +149,6 @@ impl TradeRequest {
         }
     }
 
-    #[deprecated(
-        since = "0.3.0",
-        note = "Previously the signature is fn(_: &str, amount: f64, price: f64), after 0.3.0 the signature changed to fn(_: &str, price: f64, amount: f64)."
-    )]
     pub fn limit<I>(instrument_name: I, price: f64, amount: f64) -> TradeRequest
     where
         I: Into<String>,

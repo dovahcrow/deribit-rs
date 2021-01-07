@@ -15,11 +15,11 @@ travis-ci = { repository = "dovahcrow/deribit-rs", branch = "master" }
 
 [dependencies]
 futures = { version = "0.3", features = ["async-await"] }
-tokio = { version = "0.3", features = ["time", "macros", "rt"] }
-tungstenite = "0.11"
-tokio-tungstenite = { version = "0.12", features = ["tls"]}
+tokio = { version = "1", features = ["time", "macros", "rt", "net"] }
+tungstenite = { version = "0.11.1", default-features = false, git = "https://github.com/snapview/tungstenite-rs.git", rev = "208061ba284eaf95a54c1b9b6968f570004c90de" }
+tokio-tungstenite = { features = ["tls"], git = "https://github.com/dnaka91/tokio-tungstenite", branch = "tokio-1.0" }
 url = "2"
-serde = { version = "1.0", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 log = "0.4"
 derive_builder = "0.9"
@@ -36,6 +36,7 @@ failure = "0.1"
 [dev-dependencies]
 env_logger = "0.8"
 dotenv = "0.15"
+
 [dev-dependencies.tokio]
-version = "0.3"
-features = ["time", "macros", "rt-multi-thread"]
+version = "1"
+features = ["time", "macros", "rt-multi-thread", "net"]

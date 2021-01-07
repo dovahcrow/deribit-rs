@@ -111,8 +111,9 @@ where
         }
     }
 }
-
+#[pin_project]
 pub struct DeribitAPICallResult<R> {
+    #[pin]
     inner: DeribitAPICallRawResult<R>,
 }
 
@@ -127,9 +128,9 @@ where
     R: DeserializeOwned,
 {
     type Output = Result<R>;
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<R>> {
-        let inner = Pin::new(&mut self.inner);
-        match inner.poll(cx) {
+    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<R>> {
+        let this = self.project();
+        match this.inner.poll(cx) {
             Poll::Ready(Ok(resp)) => Poll::Ready(resp.result.left_result().map_err(|e| {
                 DeribitError::RemoteError {
                     code: e.code,
