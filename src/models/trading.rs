@@ -168,6 +168,51 @@ impl TradeRequest {
             advanced: None,
         }
     }
+
+    pub fn stop_market<I>(instrument_name: I, stop_price: f64, amount: f64) -> TradeRequest
+    where
+        I: Into<String>,
+    {
+        TradeRequest {
+            instrument_name: instrument_name.into(),
+            amount: amount,
+            r#type: OrderType::StopMarket,
+            label: None,
+            price: None,
+            time_in_force: TimeInForce::GoodTilCancelled,
+            max_show: None,
+            post_only: false,
+            reduce_only: false,
+            stop_price: Some(stop_price),
+            trigger: Some(Trigger::LastPrice),
+            advanced: None,
+        }
+    }
+
+    pub fn stop_limit<I>(
+        instrument_name: I,
+        stop_price: f64,
+        price: f64,
+        amount: f64,
+    ) -> TradeRequest
+    where
+        I: Into<String>,
+    {
+        TradeRequest {
+            instrument_name: instrument_name.into(),
+            amount: amount,
+            r#type: OrderType::StopLimit,
+            label: None,
+            price: Some(price),
+            time_in_force: TimeInForce::GoodTilCancelled,
+            max_show: None,
+            post_only: false,
+            reduce_only: false,
+            stop_price: Some(stop_price),
+            trigger: Some(Trigger::LastPrice),
+            advanced: None,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
