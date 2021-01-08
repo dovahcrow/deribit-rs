@@ -220,7 +220,6 @@ pub struct TradeResponse {
     pub trades: Vec<Trade>,
     pub order: Order,
 }
-
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Trade {
     pub amount: f64,
@@ -249,11 +248,11 @@ pub struct Order {
     pub advanced: Option<AdvanceOption>,
     pub amount: f64,
     pub api: bool,
-    pub average_price: f64,
-    pub commission: f64,
+    pub average_price: Option<f64>,
+    pub commission: Option<f64>,
     pub creation_timestamp: u64,
     pub direction: Direction,
-    pub filled_amount: f64,
+    pub filled_amount: Option<f64>,
     pub implv: Option<f64>,
     pub instrument_name: String,
     pub is_liquidation: bool,
