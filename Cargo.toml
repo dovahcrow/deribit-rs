@@ -17,7 +17,7 @@ travis-ci = { repository = "dovahcrow/deribit-rs", branch = "master" }
 futures = { version = "0.3", features = ["async-await"] }
 tokio = { version = "1", features = ["time", "macros", "rt", "net"] }
 tungstenite = "0.12"
-tokio-tungstenite = { features = ["tls"], git = "https://github.com/dnaka91/tokio-tungstenite", branch = "tokio-1.0" }
+tokio-tungstenite = { features = ["tls"], version = "0.13" }
 url = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
