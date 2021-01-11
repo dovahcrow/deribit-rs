@@ -1,7 +1,7 @@
 [package]
 name = "deribit"
-version = "0.3.0"
-authors = ["Weiyüen Wu <doomsplayer@gmail.com>"]
+version = "0.3.1"
+authors = ["Weiyuan Wu <youngw@sfu.ca>"]
 edition = "2018"
 description = "Rust client for deribit. Please look at tests/examples for detail usage at current stage."
 license = "MIT"
