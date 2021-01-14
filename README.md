@@ -1,6 +1,6 @@
 Deribit API V2 Client for Rust Language
 =================
-[CI](https://github.com/dovahcrow/treerite/workflows/deribit-rs%20CI/badge.svg) [![Latest Version]][crates.io] [![Rustc Version nightly]][rustc] [![license]][license-content] [![keybase logo]][keybase] ![btc]
+[CI](https://github.com/dovahcrow/deribit-rs/workflows/CI/badge.svg) [![Latest Version]][crates.io] [![Rustc Version nightly]][rustc] [![license]][license-content] [![keybase logo]][keybase] ![btc]
 
 [Latest Version]: https://img.shields.io/crates/v/deribit.svg?style=flat-square
 [crates.io]: https://crates.io/crates/deribit

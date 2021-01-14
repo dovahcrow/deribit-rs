@@ -1,4 +1,4 @@
-name: deribit-rs CI
+name: CI
 
 on: [push]
 
