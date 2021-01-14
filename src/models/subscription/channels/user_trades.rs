@@ -1,12 +1,10 @@
 use crate::models::{Currency, Direction, LiquidationType, LiquidityType, OrderState, OrderType};
-use serde::{Deserialize, Serialize};
+use fehler::throw;
+use serde::{
+    de::{Error, Unexpected},
+    Deserialize, Deserializer, Serialize, Serializer,
+};
 
-// This is for
-// user.trades.{kind}.{currency}.{interval}.rs
-// user.trades.{instrument_name}.{interval}
-/// Attention: if this is used along with UserTrades,
-/// please put this after UserTrades otherwise all UserTrades
-/// will be deserialize to Trades since the Trades is a subset of UserTrades
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserTradesData {
     pub amount: f64,
@@ -34,4 +32,62 @@ pub struct UserTradesData {
     pub trade_seq: i64,
     pub reduce_only: bool,
     pub post_only: bool,
+}
+
+#[derive(Debug, Clone)]
+pub enum UserTradesChannel {
+    ByInstrument {
+        instrument_name: String,
+        interval: String,
+    },
+    ByKind {
+        kind: String,
+        currency: String,
+        interval: String,
+    },
+}
+
+impl<'de> Deserialize<'de> for UserTradesChannel {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = <&str as Deserialize<'de>>::deserialize(deserializer)?;
+        let segments: Vec<_> = s.split(".").collect();
+        match segments.as_slice() {
+            ["user", "trades", instrument_name, interval] => Ok(UserTradesChannel::ByInstrument {
+                instrument_name: instrument_name.to_string(),
+                interval: interval.to_string(),
+            }),
+            ["user", "trades", kind, currency, interval] => Ok(UserTradesChannel::ByKind {
+                kind: kind.to_string(),
+                currency: currency.to_string(),
+                interval: interval.to_string(),
+            }),
+            _ => throw!(D::Error::invalid_value(
+                Unexpected::Str(s),
+                &"user.trades.{instrument_name}.{interval} or trades.{kind}.{currency}.{interval}"
+            )),
+        }
+    }
+}
+impl Serialize for UserTradesChannel {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            UserTradesChannel::ByInstrument {
+                instrument_name,
+                interval,
+            } => serializer.serialize_str(&format!("user.trades.{}.{}", instrument_name, interval)),
+            UserTradesChannel::ByKind {
+                kind,
+                currency,
+                interval,
+            } => {
+                serializer.serialize_str(&format!("user.trades.{}.{}.{}", kind, currency, interval))
+            }
+        }
+    }
 }

@@ -1,5 +1,9 @@
 use crate::models::Currency;
-use serde::{Deserialize, Serialize};
+use fehler::throw;
+use serde::{
+    de::{Error, Unexpected},
+    Deserialize, Deserializer, Serialize, Serializer,
+};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserPortfolioData {
@@ -30,4 +34,31 @@ pub struct UserPortfolioData {
     pub session_rpl: f64,
     pub session_upl: f64,
     pub total_pl: f64,
+}
+
+#[derive(Debug, Clone)]
+pub struct UserPortfolioChannel(String);
+impl<'de> Deserialize<'de> for UserPortfolioChannel {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = <&str as Deserialize<'de>>::deserialize(deserializer)?;
+        let segments: Vec<_> = s.split(".").collect();
+        match segments.as_slice() {
+            ["user", "portfolio", currency] => Ok(UserPortfolioChannel(currency.to_string())),
+            _ => throw!(D::Error::invalid_value(
+                Unexpected::Str(s),
+                &"user.portfolio.{currency}"
+            )),
+        }
+    }
+}
+impl Serialize for UserPortfolioChannel {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&format!("user.portfolio.{}", self.0))
+    }
 }

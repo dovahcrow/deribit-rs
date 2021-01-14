@@ -1,5 +1,9 @@
 use crate::models::{AdvanceOption, Direction, OrderState, OrderType, TimeInForce, Trigger};
-use serde::{Deserialize, Serialize};
+use fehler::throw;
+use serde::{
+    de::{Error, Unexpected},
+    Deserialize, Deserializer, Serialize, Serializer,
+};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserOrdersData {
@@ -31,4 +35,62 @@ pub struct UserOrdersData {
     pub usd: Option<f64>,
     pub replaced: bool, // TODO: Remove the Option when necessary
     pub web: bool,
+}
+
+#[derive(Debug, Clone)]
+pub enum UserOrdersChannel {
+    ByInstrument {
+        instrument_name: String,
+        interval: String,
+    },
+    ByKind {
+        kind: String,
+        currency: String,
+        interval: String,
+    },
+}
+
+impl<'de> Deserialize<'de> for UserOrdersChannel {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = <&str as Deserialize<'de>>::deserialize(deserializer)?;
+        let segments: Vec<_> = s.split(".").collect();
+        match segments.as_slice() {
+            ["user", "orders", instrument_name, interval] => Ok(UserOrdersChannel::ByInstrument {
+                instrument_name: instrument_name.to_string(),
+                interval: interval.to_string(),
+            }),
+            ["user", "orders", kind, currency, interval] => Ok(UserOrdersChannel::ByKind {
+                kind: kind.to_string(),
+                currency: currency.to_string(),
+                interval: interval.to_string(),
+            }),
+            _ => throw!(D::Error::invalid_value(
+                Unexpected::Str(s),
+                &"user.orders.{instrument_name}.{interval} or user.orders.{kind}.{currency}.{interval}"
+            )),
+        }
+    }
+}
+impl Serialize for UserOrdersChannel {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            UserOrdersChannel::ByInstrument {
+                instrument_name,
+                interval,
+            } => serializer.serialize_str(&format!("user.orders.{}.{}", instrument_name, interval)),
+            UserOrdersChannel::ByKind {
+                kind,
+                currency,
+                interval,
+            } => {
+                serializer.serialize_str(&format!("user.orders.{}.{}.{}", kind, currency, interval))
+            }
+        }
+    }
 }

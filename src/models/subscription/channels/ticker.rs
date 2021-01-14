@@ -1,5 +1,9 @@
 use crate::models::OrderState;
-use serde::{Deserialize, Serialize};
+use fehler::throw;
+use serde::{
+    de::{Error, Unexpected},
+    Deserialize, Deserializer, Serialize, Serializer,
+};
 
 /// Attention: if this is used along with Tickers,
 /// please put this after Tickers otherwise all Tickers
@@ -47,4 +51,34 @@ pub struct Stats {
     pub high: Option<f64>,
     pub low: Option<f64>,
     pub volume: Option<f64>,
+}
+
+#[derive(Debug, Clone)]
+pub struct TickerChannel(String, String);
+impl<'de> Deserialize<'de> for TickerChannel {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = <&str as Deserialize<'de>>::deserialize(deserializer)?;
+        let segments: Vec<_> = s.split(".").collect();
+        match segments.as_slice() {
+            ["ticker", instrument_name, interval] => Ok(TickerChannel(
+                instrument_name.to_string(),
+                interval.to_string(),
+            )),
+            _ => throw!(D::Error::invalid_value(
+                Unexpected::Str(s),
+                &"ticker.{instrument_name}.{interval}"
+            )),
+        }
+    }
+}
+impl Serialize for TickerChannel {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&format!("ticker.{}.{}", self.0, self.1))
+    }
 }

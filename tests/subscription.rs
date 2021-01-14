@@ -77,11 +77,7 @@ fn book() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::Book(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::Book(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -113,11 +109,7 @@ fn grouped_book() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::GroupedBook(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::GroupedBook(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -147,11 +139,7 @@ fn deribit_price_index() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::DeribitPriceIndex(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::DeribitPriceIndex(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -181,11 +169,7 @@ fn deribit_price_ranking() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::DeribitPriceRanking(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::DeribitPriceRanking(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -217,10 +201,7 @@ fn estimated_expiration_price() {
         match v {
             Ok(SubscriptionMessage {
                 params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::EstimatedExpirationPrice(..),
-                        ..
-                    },
+                    SubscriptionParams::Subscription(SubscriptionData::EstimatedExpirationPrice(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -251,11 +232,7 @@ fn markprice_options() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::MarkPriceOption(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::MarkPriceOption(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -286,11 +263,7 @@ fn perpetual() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::Perpetual(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::Perpetual(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -321,11 +294,7 @@ fn quote() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::Quote(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::Quote(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -364,14 +333,11 @@ fn ticker() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::Ticker(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::Ticker(..)),
                 ..
             }) => {}
-            _ => panic!(),
+            Ok(other) => panic!("{:?}", other),
+            Err(e) => panic!("Error {}", e),
         }
     }
 }
@@ -419,11 +385,7 @@ fn trades() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::Trades(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::Trades(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -460,6 +422,7 @@ fn user_orders() {
 
         let resp = client.call(req).await?.await?;
         let id = resp.0.order.order_id;
+        sleep(Duration::from_secs(1)).await;
 
         let v = subscription.take(1).collect::<Vec<_>>().await;
         let req = CancelRequest::new(&id);
@@ -472,11 +435,7 @@ fn user_orders() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::UserOrders(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::UserOrders(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -517,11 +476,7 @@ fn user_portfolio() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::UserPortfolio(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::UserPortfolio(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -575,11 +530,7 @@ fn user_trades() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::UserTrades(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::UserTrades(..)),
                 ..
             }) => {}
             _ => panic!(),
@@ -644,11 +595,7 @@ fn instrument_state() {
     for v in v {
         match v {
             Ok(SubscriptionMessage {
-                params:
-                    SubscriptionParams::Subscription {
-                        data: SubscriptionData::InstrumentState(..),
-                        ..
-                    },
+                params: SubscriptionParams::Subscription(SubscriptionData::InstrumentState(..)),
                 ..
             }) => {}
             _ => panic!(),

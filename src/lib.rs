@@ -106,6 +106,7 @@ impl Deribit {
                     match msg? {
                         Message::Text(msg) => {
                             if let Some(cap) = RE.captures(&msg) { // TODO: If deribit returns unordered keys, then this will fail.
+                                // is a API call response
                                 let id_str = cap.get(1).expect("No captured group in a capture result, this cannot happen").as_str();
                                 let id = id_str.parse().expect("Cannot parse integer while it is deemed as integer by regex, this cannot happen");
                                 let waiter = match waiters.remove(&id) {
@@ -120,6 +121,7 @@ impl Deribit {
                                     info!("[Servo] Orphan response: {:?}", msg);
                                 }
                             } else {
+                                // is a subscription messasge
                                 let fut = stx.send(msg);
                                 let fut = timeout(Duration::from_millis(1),fut, );
                                 match fut.await {

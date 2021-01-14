@@ -1,6 +1,6 @@
 pub mod account;
 pub mod authentication;
-pub mod internal;
+pub mod jsonrpc;
 pub mod market_data;
 pub mod session_management;
 pub mod subscription;
@@ -20,10 +20,7 @@ pub use account::{
     GetSubaccountsRequest, GetSubaccountsResponse,
 };
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
-pub use internal::{
-    HeartbeatType, JSONRPCRequest, JSONRPCResponse, JSONRPCVersion, SubscriptionData,
-    SubscriptionMessage, SubscriptionParams,
-};
+pub use jsonrpc::{JSONRPCRequest, JSONRPCResponse, JSONRPCVersion};
 pub use market_data::{
     GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest,
     GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
@@ -34,8 +31,9 @@ pub use session_management::{
     SetHeartbeatRequest, SetHeartbeatResponse,
 };
 pub use subscription::{
-    PrivateSubscribeRequest, PrivateUnsubscribeRequest, PublicSubscribeRequest,
-    PublicUnsubscribeRequest, SubscribeResponse,
+    HeartbeatType, PrivateSubscribeRequest, PrivateUnsubscribeRequest, PublicSubscribeRequest,
+    PublicUnsubscribeRequest, SubscribeResponse, SubscriptionData, SubscriptionMessage,
+    SubscriptionParams, WithChannel,
 };
 pub use support::{
     GetTimeRequest, GetTimeResponse, HelloRequest, HelloResponse, TestRequest, TestResponse,

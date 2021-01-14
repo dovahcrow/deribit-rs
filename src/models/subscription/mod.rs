@@ -1,22 +1,24 @@
 mod channels;
 
+use crate::models::jsonrpc::JSONRPCVersion;
 use crate::models::Request;
+pub use channels::{AnnouncementsChannel, AnnouncementsData};
+pub use channels::{
+    BookChannel, BookData, Delta, GroupedBookChannel, GroupedBookData, OrderBookDelta,
+};
+pub use channels::{DeribitPriceIndexChannel, DeribitPriceIndexData};
+pub use channels::{DeribitPriceRankingChannel, DeribitPriceRankingData};
+pub use channels::{EstimatedExpirationPriceChannel, EstimatedExpirationPriceData};
+pub use channels::{Greeks, Stats, TickerChannel, TickerData};
+pub use channels::{InstrumentState, InstrumentStateChannel, InstrumentStateData};
+pub use channels::{MarkPriceOptionChannel, MarkPriceOptionData};
+pub use channels::{PerpetualChannel, PerpetualData};
+pub use channels::{QuoteChannel, QuoteData};
+pub use channels::{TradesChannel, TradesData};
+pub use channels::{UserOrdersChannel, UserOrdersData};
+pub use channels::{UserPortfolioChannel, UserPortfolioData};
+pub use channels::{UserTradesChannel, UserTradesData};
 use serde::{Deserialize, Serialize};
-
-pub use channels::AnnouncementsData;
-pub use channels::DeribitPriceIndexData;
-pub use channels::DeribitPriceRankingData;
-pub use channels::EstimatedExpirationPriceData;
-pub use channels::MarkPriceOptionData;
-pub use channels::PerpetualData;
-pub use channels::QuoteData;
-pub use channels::TradesData;
-pub use channels::UserOrdersData;
-pub use channels::UserPortfolioData;
-pub use channels::UserTradesData;
-pub use channels::{BookData, Delta, GroupedBookData, OrderBookDelta};
-pub use channels::{Greeks, Stats, TickerData};
-pub use channels::{InstrumentState, InstrumentStateData};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct PublicSubscribeRequest {
@@ -94,4 +96,102 @@ impl Request for PublicUnsubscribeRequest {
 impl Request for PrivateUnsubscribeRequest {
     const METHOD: &'static str = "private/unsubscribe";
     type Response = UnsubscribeResponse;
+}
+
+// Subscription messages
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct SubscriptionMessage<D = SubscriptionData> {
+    pub jsonrpc: JSONRPCVersion,
+    pub method: SubscriptionMethod,
+    pub params: SubscriptionParams<D>,
+}
+
+impl SubscriptionMessage {
+    pub fn is_subscription(&self) -> bool {
+        self.method.is_subscription()
+    }
+    pub fn is_heartbeat(&self) -> bool {
+        self.method.is_heartbeat()
+    }
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, Copy)]
+#[serde(rename_all = "lowercase")]
+pub enum SubscriptionMethod {
+    Subscription,
+    Heartbeat,
+}
+
+impl SubscriptionMethod {
+    pub fn is_subscription(self) -> bool {
+        match self {
+            SubscriptionMethod::Subscription => true,
+            SubscriptionMethod::Heartbeat => false,
+        }
+    }
+    pub fn is_heartbeat(&self) -> bool {
+        match self {
+            SubscriptionMethod::Subscription => false,
+            SubscriptionMethod::Heartbeat => true,
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum SubscriptionParams<D = SubscriptionData> {
+    Subscription(D),
+    Heartbeat { r#type: HeartbeatType },
+}
+
+impl SubscriptionParams {
+    pub fn is_subscription(&self) -> bool {
+        match self {
+            SubscriptionParams::Subscription { .. } => true,
+            SubscriptionParams::Heartbeat { .. } => false,
+        }
+    }
+    pub fn is_heartbeat(&self) -> bool {
+        match self {
+            SubscriptionParams::Subscription { .. } => false,
+            SubscriptionParams::Heartbeat { .. } => true,
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
+pub enum HeartbeatType {
+    Heartbeat,
+    TestRequest,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct WithChannel<C, D> {
+    channel: C,
+    data: D,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(untagged)]
+pub enum SubscriptionData {
+    Announcements(WithChannel<AnnouncementsChannel, AnnouncementsData>),
+    Book(WithChannel<BookChannel, BookData>),
+    DeribitPriceIndex(WithChannel<DeribitPriceIndexChannel, DeribitPriceIndexData>),
+    DeribitPriceRanking(WithChannel<DeribitPriceRankingChannel, Vec<DeribitPriceRankingData>>),
+    EstimatedExpirationPrice(
+        WithChannel<EstimatedExpirationPriceChannel, EstimatedExpirationPriceData>,
+    ),
+    GroupedBook(WithChannel<GroupedBookChannel, GroupedBookData>),
+    InstrumentState(WithChannel<InstrumentStateChannel, InstrumentStateData>),
+    MarkPriceOption(WithChannel<MarkPriceOptionChannel, Vec<MarkPriceOptionData>>),
+    Perpetual(WithChannel<PerpetualChannel, PerpetualData>),
+    Quote(WithChannel<QuoteChannel, QuoteData>),
+    Ticker(WithChannel<TickerChannel, TickerData>),
+    Trades(WithChannel<TradesChannel, Vec<TradesData>>), // This should be put after user trades otherwise all usertrades will be deserialized to trades
+    UserOrders(WithChannel<UserOrdersChannel, UserOrdersData>),
+    UserOrdersBatch(WithChannel<UserOrdersChannel, Vec<UserOrdersData>>),
+    UserPortfolio(WithChannel<UserPortfolioChannel, UserPortfolioData>),
+    UserTrades(WithChannel<UserTradesChannel, Vec<UserTradesData>>),
 }
