@@ -9,5 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: icepuma/rust-action@master
+        env:
+          DERIBIT_KEY: ${{ secrets.DERIBIT_KEY }}
+          DERIBIT_SECRET: ${{ secrets.DERIBIT_SECRET }}
+          RUST_BACKTRACE: 1
+          RUST_LOG: deribit=warn
         with:
           args: cargo test
