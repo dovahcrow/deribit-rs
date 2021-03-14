@@ -169,8 +169,8 @@ pub enum HeartbeatType {
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WithChannel<C, D> {
-    channel: C,
-    data: D,
+    pub channel: C,
+    pub data: D,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
