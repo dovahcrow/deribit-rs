@@ -575,7 +575,6 @@ fn sub_unsub() {
 // This will block forever if there's no new instruments added / closed.
 #[test]
 #[ignore]
-#[throws(Error)]
 fn instrument_state() {
     let SubscriptionTest { drb, rt, .. } = SubscriptionTest::default();
     let fut = async {
@@ -589,7 +588,7 @@ fn instrument_state() {
         Ok::<_, Error>(v)
     };
 
-    let v = rt.block_on(fut)?;
+    let v = rt.block_on(fut).unwrap();
     assert_eq!(v.len(), 2);
 
     for v in v {

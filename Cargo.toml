@@ -1,42 +1,42 @@
 [package]
-name = "deribit"
-version = "0.3.1"
 authors = ["Weiyuan Wu <youngw@sfu.ca>"]
-edition = "2018"
-description = "Rust client for deribit. Please look at tests/examples for detail usage at current stage."
-license = "MIT"
-documentation = "https://docs.rs/deribit"
-repository = "https://github.com/dovahcrow/deribit-rs"
-readme = "README.md"
 categories = ["api-bindings"]
+description = "Rust client for deribit. Please look at tests/examples for detail usage at current stage."
+documentation = "https://docs.rs/deribit"
+edition = "2018"
+license = "MIT"
+name = "deribit"
+readme = "README.md"
+repository = "https://github.com/dovahcrow/deribit-rs"
+version = "0.3.2"
 
 [badges]
-travis-ci = { repository = "dovahcrow/deribit-rs", branch = "master" }
+travis-ci = {repository = "dovahcrow/deribit-rs", branch = "master"}
 
 [dependencies]
-futures = { version = "0.3", features = ["async-await"] }
-tokio = { version = "1", features = ["time", "macros", "rt", "net"] }
-tungstenite = "0.12"
-tokio-tungstenite = { features = ["tls"], version = "0.13" }
-url = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-log = "0.4"
 derive_builder = "0.9"
-pin-project = "1"
-shrinkwraprs = "0.3"
-regex = "1"
+futures = {version = "0.3", features = ["async-await"]}
 lazy_static = "1"
+log = "0.4"
+pin-project = "1"
+regex = "1"
+serde = {version = "1", features = ["derive"]}
+serde_json = "1"
+shrinkwraprs = "0.3"
+tokio = {version = "1", features = ["time", "macros", "rt", "net"]}
+tokio-tungstenite = {features = ["rustls-tls"], version = "0.14"}
+tungstenite = {version = "0.13", features = ["rustls-tls"], default-features = false}
+url = "2"
 
+failure = "0.1"
 fehler = "1"
 thiserror = "1"
-failure = "0.1"
 # anyhow = "1"
 
 [dev-dependencies]
-env_logger = "0.8"
 dotenv = "0.15"
+env_logger = "0.8"
 
 [dev-dependencies.tokio]
-version = "1"
 features = ["time", "macros", "rt-multi-thread", "net"]
+version = "1"

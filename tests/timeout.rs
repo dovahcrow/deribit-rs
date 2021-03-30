@@ -1,12 +1,10 @@
 use deribit::{models::HelloRequest, Deribit};
 use failure::Error;
-use fehler::throws;
 use std::time::Duration;
 use tokio::runtime::Runtime;
 
 #[test]
 #[should_panic]
-#[throws(Error)]
 fn timeout() {
     let drb = Deribit::builder()
         .timeout(Duration::from_millis(1))
@@ -27,5 +25,5 @@ fn timeout() {
 
         Ok::<_, Error>(())
     };
-    rt.block_on(fut)?;
+    rt.block_on(fut).unwrap();
 }
