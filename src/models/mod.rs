@@ -22,8 +22,9 @@ pub use account::{
 pub use authentication::{AuthRequest, AuthResponse, GrantType};
 pub use jsonrpc::{JSONRPCRequest, JSONRPCResponse, JSONRPCVersion};
 pub use market_data::{
-    GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetIndexRequest,
-    GetIndexResponse, GetInstrumentsRequest, GetInstrumentsResponse,
+    GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetFundingRateValueRequest,
+    GetFundingRateValueResponse, GetIndexRequest, GetIndexResponse, GetInstrumentsRequest,
+    GetInstrumentsResponse,
 };
 pub use session_management::{
     CancelOnDisconnectScope, DisableCancelOnDisconnectRequest, DisableCancelOnDisconnectResponse,

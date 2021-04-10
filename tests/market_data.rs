@@ -1,5 +1,7 @@
+use chrono::{Duration, Utc};
 use deribit::models::{
-    Currency, GetBookSummaryByCurrencyRequest, GetIndexRequest, GetInstrumentsRequest,
+    Currency, GetBookSummaryByCurrencyRequest, GetFundingRateValueRequest, GetIndexRequest,
+    GetInstrumentsRequest,
 };
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
@@ -65,6 +67,29 @@ fn get_book_summary_by_currency() {
         let _ = client.call(req).await?.await?;
         let req = GetBookSummaryByCurrencyRequest::options(Currency::ETH);
         let _ = client.call(req).await?.await?;
+
+        Ok::<_, Error>(())
+    };
+    let _ = rt.block_on(fut)?;
+}
+
+#[test]
+#[throws(Error)]
+fn get_funding_rate_value() {
+    let _ = dotenv();
+    let _ = env_logger::try_init();
+
+    let drb = DeribitBuilder::default().build().unwrap();
+    let rt = Runtime::new().expect("cannot create tokio runtime");
+
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = GetFundingRateValueRequest::new(
+            "BTC-PERPETUAL",
+            Utc::now() - Duration::seconds(60),
+            Utc::now(),
+        );
+        let resp = client.call(req).await?.await?;
 
         Ok::<_, Error>(())
     };

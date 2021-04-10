@@ -1,4 +1,5 @@
 use crate::models::{AssetKind, Currency, Request};
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -146,4 +147,28 @@ pub struct GetInstrumentsResponse {
 impl Request for GetInstrumentsRequest {
     const METHOD: &'static str = "public/get_instruments";
     type Response = Vec<GetInstrumentsResponse>;
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
+pub struct GetFundingRateValueRequest {
+    pub instrument_name: String,
+    pub start_timestamp: u64,
+    pub end_timestamp: u64,
+}
+
+impl GetFundingRateValueRequest {
+    pub fn new(instrument_name: &str, start: DateTime<Utc>, end: DateTime<Utc>) -> Self {
+        Self {
+            instrument_name: instrument_name.to_string(),
+            start_timestamp: start.timestamp_millis() as u64,
+            end_timestamp: end.timestamp_millis() as u64,
+        }
+    }
+}
+
+pub type GetFundingRateValueResponse = f64;
+
+impl Request for GetFundingRateValueRequest {
+    const METHOD: &'static str = "public/get_funding_rate_value";
+    type Response = GetFundingRateValueResponse;
 }

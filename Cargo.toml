@@ -14,7 +14,10 @@ version = "0.3.2"
 travis-ci = {repository = "dovahcrow/deribit-rs", branch = "master"}
 
 [dependencies]
+chrono = "0.4"
 derive_builder = "0.9"
+failure = "0.1"
+fehler = "1"
 futures = {version = "0.3", features = ["async-await"]}
 lazy_static = "1"
 log = "0.4"
@@ -23,14 +26,11 @@ regex = "1"
 serde = {version = "1", features = ["derive"]}
 serde_json = "1"
 shrinkwraprs = "0.3"
+thiserror = "1"
 tokio = {version = "1", features = ["time", "macros", "rt", "net"]}
 tokio-tungstenite = {features = ["rustls-tls"], version = "0.14"}
 tungstenite = {version = "0.13", features = ["rustls-tls"], default-features = false}
 url = "2"
-
-failure = "0.1"
-fehler = "1"
-thiserror = "1"
 # anyhow = "1"
 
 [dev-dependencies]
