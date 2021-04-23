@@ -395,6 +395,56 @@ fn trades() {
 
 #[test]
 #[throws(Error)]
+fn user_changes() {
+    let SubscriptionTest {
+        rt,
+        drb,
+        key,
+        secret,
+    } = SubscriptionTest::default();
+
+    let fut = async move {
+        let (mut client, subscription) = drb.connect().await?;
+
+        let _ = client
+            .call(AuthRequest::credential_auth(&key, &secret))
+            .await?
+            .await?;
+
+        let req = PrivateSubscribeRequest {
+            channels: vec!["user.changes.BTC-PERPETUAL.raw".into()],
+        };
+        let _ = client.call(req).await?.await?;
+
+        sleep(Duration::from_secs(1)).await;
+
+        let req = BuyRequest::limit("BTC-PERPETUAL", 100f64, 10f64);
+
+        let resp = client.call(req).await?.await?;
+        let id = resp.0.order.order_id;
+        sleep(Duration::from_secs(1)).await;
+
+        let v = subscription.take(1).collect::<Vec<_>>().await;
+        let req = CancelRequest::new(&id);
+        let resp = client.call(req).await?.await?;
+        assert_eq!(id, resp.order.order_id);
+        Ok::<_, Error>(v)
+    };
+    let v = rt.block_on(fut)?;
+
+    for v in v {
+        match v {
+            Ok(SubscriptionMessage {
+                params: SubscriptionParams::Subscription(SubscriptionData::UserChanges(..)),
+                ..
+            }) => {}
+            _ => panic!(),
+        }
+    }
+}
+
+#[test]
+#[throws(Error)]
 fn user_orders() {
     let SubscriptionTest {
         rt,
