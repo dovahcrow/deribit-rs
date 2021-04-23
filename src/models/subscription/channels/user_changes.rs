@@ -73,7 +73,7 @@ pub struct UserOrdersData {
     pub trigger: Option<Trigger>,
     pub triggered: Option<bool>,
     pub usd: Option<f64>,
-    pub replaced: bool, // TODO: Remove the Option when necessary
+    pub replaced: bool,
     pub web: bool,
 }
 
