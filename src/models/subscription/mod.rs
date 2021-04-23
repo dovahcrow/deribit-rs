@@ -15,6 +15,7 @@ pub use channels::{MarkPriceOptionChannel, MarkPriceOptionData};
 pub use channels::{PerpetualChannel, PerpetualData};
 pub use channels::{QuoteChannel, QuoteData};
 pub use channels::{TradesChannel, TradesData};
+pub use channels::{UserChangesChannel, UserChangesData};
 pub use channels::{UserOrdersChannel, UserOrdersData};
 pub use channels::{UserPortfolioChannel, UserPortfolioData};
 pub use channels::{UserTradesChannel, UserTradesData};
