@@ -184,8 +184,8 @@ while let Some(message) = subscription.next().await {
     - [x] ticker.{instrument_name}.{interval}
     - [x] trades.{instrument_name}.{interval}
     - [ ] trades.{kind}.{currency}.{interval}
-    - [ ] user.changes.{instrument_name}.{interval}
-    - [ ] user.changes.{kind}.{currency}.{interval}
+    - [x] user.changes.{instrument_name}.{interval}
+    - [x] user.changes.{kind}.{currency}.{interval}
     - [x] user.orders.{instrument_name}.{interval}
     - [x] user.orders.{kind}.{currency}.{interval}
     - [x] user.portfolio.{currency}
