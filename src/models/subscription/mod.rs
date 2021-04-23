@@ -191,6 +191,7 @@ pub enum SubscriptionData {
     Quote(WithChannel<QuoteChannel, QuoteData>),
     Ticker(WithChannel<TickerChannel, TickerData>),
     Trades(WithChannel<TradesChannel, Vec<TradesData>>), // This should be put after user trades otherwise all usertrades will be deserialized to trades
+    UserChanges(WithChannel<UserChangesChannel, UserChangesData>),
     UserOrders(WithChannel<UserOrdersChannel, UserOrdersData>),
     UserOrdersBatch(WithChannel<UserOrdersChannel, Vec<UserOrdersData>>),
     UserPortfolio(WithChannel<UserPortfolioChannel, UserPortfolioData>),

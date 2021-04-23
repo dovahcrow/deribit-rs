@@ -11,9 +11,9 @@ use serde::{
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UserChangesData {
-    pub trades: UserTradesData,
-    pub positions: UserPositionsData,
-    pub orders: UserOrdersData,
+    pub trades: Vec<UserTradesData>,
+    pub positions: Vec<UserPositionsData>,
+    pub orders: Vec<UserOrdersData>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -90,9 +90,11 @@ pub struct UserPositionsData {
     pub initial_margin: f64,
     pub instrument_name: String,
     pub kind: AssetKind,
+    pub leverage: f64,
     pub maintenance_margin: f64,
     pub mark_price: f64,
     pub open_orders_margin: f64,
+    pub realized_funding: f64,
     pub realized_profit_loss: f64,
     pub settlement_price: f64,
     pub size: f64,
@@ -121,18 +123,18 @@ impl<'de> Deserialize<'de> for UserChangesChannel {
         let s = <&str as Deserialize<'de>>::deserialize(deserializer)?;
         let segments: Vec<_> = s.split(".").collect();
         match segments.as_slice() {
-            ["user", "orders", instrument_name, interval] => Ok(UserChangesChannel::ByInstrument {
+            ["user", "changes", instrument_name, interval] => Ok(UserChangesChannel::ByInstrument {
                 instrument_name: instrument_name.to_string(),
                 interval: interval.to_string(),
             }),
-            ["user", "orders", kind, currency, interval] => Ok(UserChangesChannel::ByKind {
+            ["user", "changes", kind, currency, interval] => Ok(UserChangesChannel::ByKind {
                 kind: kind.to_string(),
                 currency: currency.to_string(),
                 interval: interval.to_string(),
             }),
             _ => throw!(D::Error::invalid_value(
                 Unexpected::Str(s),
-                &"user.orders.{instrument_name}.{interval} or user.orders.{kind}.{currency}.{interval}"
+                &"user.changes.{instrument_name}.{interval} or user.changes.{kind}.{currency}.{interval}"
             )),
         }
     }
@@ -146,14 +148,15 @@ impl Serialize for UserChangesChannel {
             UserChangesChannel::ByInstrument {
                 instrument_name,
                 interval,
-            } => serializer.serialize_str(&format!("user.orders.{}.{}", instrument_name, interval)),
+            } => {
+                serializer.serialize_str(&format!("user.changes.{}.{}", instrument_name, interval))
+            }
             UserChangesChannel::ByKind {
                 kind,
                 currency,
                 interval,
-            } => {
-                serializer.serialize_str(&format!("user.orders.{}.{}.{}", kind, currency, interval))
-            }
+            } => serializer
+                .serialize_str(&format!("user.changes.{}.{}.{}", kind, currency, interval)),
         }
     }
 }
