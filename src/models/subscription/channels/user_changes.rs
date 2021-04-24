@@ -1,3 +1,5 @@
+use super::user_orders::UserOrdersData;
+use super::user_trades::UserTradesData;
 use crate::models::{
     AdvanceOption, AssetKind, Currency, Direction, LiquidationType, LiquidityType, OrderState,
     OrderType, TimeInForce, Trigger,
@@ -14,67 +16,6 @@ pub struct UserChangesData {
     pub trades: Vec<UserTradesData>,
     pub positions: Vec<UserPositionsData>,
     pub orders: Vec<UserOrdersData>,
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct UserTradesData {
-    pub amount: f64,
-    pub direction: Direction,
-    pub fee: f64,
-    pub fee_currency: Currency,
-    pub index_price: f64,
-    pub instrument_name: String,
-    pub iv: Option<f64>,
-    pub label: Option<String>,
-    pub liquidity: LiquidityType,
-    pub liquidation: Option<LiquidationType>,
-    pub mark_price: Option<f64>,
-    pub matching_id: Option<String>,
-    pub order_id: String,
-    pub order_type: OrderType,
-    pub original_order_type: Option<String>,
-    pub price: f64,
-    pub profit_loss: f64,
-    pub self_trade: bool,
-    pub state: OrderState,
-    pub tick_direction: i64,
-    pub timestamp: u64,
-    pub trade_id: String,
-    pub trade_seq: i64,
-    pub reduce_only: bool,
-    pub post_only: bool,
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct UserOrdersData {
-    pub advanced: Option<AdvanceOption>,
-    pub amount: f64,
-    pub api: bool,
-    pub average_price: f64,
-    pub commission: f64,
-    pub creation_timestamp: u64,
-    pub direction: Direction,
-    pub filled_amount: f64,
-    pub implv: Option<f64>,
-    pub instrument_name: String,
-    pub is_liquidation: bool,
-    pub label: String,
-    pub last_update_timestamp: u64,
-    pub max_show: f64,
-    pub order_id: String,
-    pub order_state: OrderState,
-    pub order_type: OrderType,
-    pub post_only: bool,
-    pub price: f64,
-    pub profit_loss: f64,
-    pub reduce_only: bool,
-    pub stop_price: Option<f64>,
-    pub time_in_force: TimeInForce,
-    pub trigger: Option<Trigger>,
-    pub triggered: Option<bool>,
-    pub usd: Option<f64>,
-    pub replaced: bool,
-    pub web: bool,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
