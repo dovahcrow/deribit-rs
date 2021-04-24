@@ -1,5 +1,4 @@
-use super::user_orders::UserOrdersData;
-use super::user_trades::UserTradesData;
+use crate::models::subscription::{UserOrdersData, UserTradesData};
 use crate::models::{
     AdvanceOption, AssetKind, Currency, Direction, LiquidationType, LiquidityType, OrderState,
     OrderType, TimeInForce, Trigger,
