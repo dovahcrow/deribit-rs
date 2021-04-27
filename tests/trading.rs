@@ -27,7 +27,7 @@ fn get_order_state() {
         let req = AuthRequest::credential_auth(&key, &secret);
         let _ = client.call(req).await?.await?;
 
-        let req = GetOrderStateRequest::new("2320198993");
+        let req = GetOrderStateRequest::new("5703080407");
         Ok::<_, Error>(client.call(req).await?.await?)
     };
     let _ = rt.block_on(fut)?;
