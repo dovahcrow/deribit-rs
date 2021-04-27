@@ -2,6 +2,7 @@ use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubacc
 use deribit::{Deribit, DeribitBuilder};
 use dotenv::dotenv;
 use failure::Error;
+use fehler::throw;
 use fehler::throws;
 use std::env::var;
 use tokio::runtime::Runtime;
@@ -43,7 +44,10 @@ fn get_account_summary() {
         Ok::<_, Error>(client.call(req).await?.await?)
     };
     let resp = rt.block_on(fut);
-    println!("{:?}", resp);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
 }
 
 #[test]
@@ -64,5 +68,8 @@ fn get_subaccounts() {
         Ok::<_, Error>(client.call(req).await?.await?)
     };
     let resp = rt.block_on(fut);
-    println!("{:?}", resp);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
 }

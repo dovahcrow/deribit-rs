@@ -6,7 +6,7 @@ use deribit::models::{
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use failure::Error;
-use fehler::throws;
+use fehler::{throw, throws};
 use tokio::runtime::Runtime;
 
 #[test]
@@ -27,7 +27,11 @@ fn get_index() {
 
         Ok::<_, Error>(())
     };
-    let _ = rt.block_on(fut)?;
+    let resp = rt.block_on(fut);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
 }
 
 #[test]
@@ -48,7 +52,11 @@ fn get_instruments() {
 
         Ok::<_, Error>(())
     };
-    let _ = rt.block_on(fut)?;
+    let resp = rt.block_on(fut);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
 }
 
 #[test]
@@ -70,7 +78,11 @@ fn get_book_summary_by_currency() {
 
         Ok::<_, Error>(())
     };
-    let _ = rt.block_on(fut)?;
+    let resp = rt.block_on(fut);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
 }
 
 #[test]
@@ -93,5 +105,9 @@ fn get_funding_rate_value() {
 
         Ok::<_, Error>(())
     };
-    let _ = rt.block_on(fut)?;
+    let resp = rt.block_on(fut);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
 }
