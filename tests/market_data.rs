@@ -89,7 +89,7 @@ fn get_funding_rate_value() {
             Utc::now() - Duration::seconds(60),
             Utc::now(),
         );
-        let resp = client.call(req).await?.await?;
+        let _ = client.call(req).await?.await?;
 
         Ok::<_, Error>(())
     };

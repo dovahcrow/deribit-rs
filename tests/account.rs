@@ -42,7 +42,8 @@ fn get_account_summary() {
         let req = GetAccountSummaryRequest::extended(Currency::BTC);
         Ok::<_, Error>(client.call(req).await?.await?)
     };
-    let _ = rt.block_on(fut)?;
+    let resp = rt.block_on(fut);
+    println!("{:?}", resp);
 }
 
 #[test]
@@ -62,5 +63,6 @@ fn get_subaccounts() {
         let req = GetSubaccountsRequest::with_portfolio();
         Ok::<_, Error>(client.call(req).await?.await?)
     };
-    let _ = rt.block_on(fut)?;
+    let resp = rt.block_on(fut);
+    println!("{:?}", resp);
 }

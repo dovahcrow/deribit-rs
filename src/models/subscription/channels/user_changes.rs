@@ -1,8 +1,5 @@
 use crate::models::subscription::{UserOrdersData, UserTradesData};
-use crate::models::{
-    AdvanceOption, AssetKind, Currency, Direction, LiquidationType, LiquidityType, OrderState,
-    OrderType, TimeInForce, Trigger,
-};
+use crate::models::{AssetKind, Direction};
 
 use fehler::throw;
 use serde::{
