@@ -14,11 +14,18 @@ jobs:
     environment: CI
     steps:
       - uses: actions/checkout@v2
-      - uses: icepuma/rust-action@master
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+            components: rustfmt
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test -- --test-threads=1
         env:
           DERIBIT_KEY: ${{ secrets.DERIBIT_KEY }}
           DERIBIT_SECRET: ${{ secrets.DERIBIT_SECRET }}
           RUST_BACKTRACE: 1
           RUST_LOG: deribit=warn
-        with:
-          args: cargo test
