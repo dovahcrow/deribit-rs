@@ -185,13 +185,13 @@ pub struct GetOrderBookRequest {
 impl GetOrderBookRequest {
     pub fn new(instrument_name: &str) -> Self {
         Self {
-            instrument_name: instrument_name.to_owned(),
+            instrument_name: instrument_name.to_string(),
             ..Default::default()
         }
     }
     pub fn with_depth(instrument_name: &str, depth: u64) -> Self {
         Self {
-            instrument_name: instrument_name.to_owned(),
+            instrument_name: instrument_name.to_string(),
             depth: Some(depth),
         }
     }
@@ -215,7 +215,7 @@ pub struct GetOrderBookResponse {
     current_funding: Option<f64>,
     delivery_price: Option<f64>,
     funding_8h: Option<f64>,
-    greeks: Vec<Greeks>,
+    greeks: Option<Greeks>,
     index_price: f64,
     instrument_name: String,
     interest_rate: Option<f64>,
