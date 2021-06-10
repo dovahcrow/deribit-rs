@@ -3,6 +3,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use super::subscription::{Greeks, Stats};
+
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct GetBookSummaryByCurrencyRequest {
     pub currency: Currency,
@@ -171,4 +173,76 @@ pub type GetFundingRateValueResponse = f64;
 impl Request for GetFundingRateValueRequest {
     const METHOD: &'static str = "public/get_funding_rate_value";
     type Response = GetFundingRateValueResponse;
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
+pub struct GetOrderBookRequest {
+    instrument_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    depth: Option<u64>,
+}
+
+impl GetOrderBookRequest {
+    pub fn new(instrument_name: &str) -> Self {
+        Self {
+            instrument_name: instrument_name.to_string(),
+            ..Default::default()
+        }
+    }
+    pub fn with_depth(instrument_name: &str, depth: u64) -> Self {
+        Self {
+            instrument_name: instrument_name.to_string(),
+            depth: Some(depth),
+        }
+    }
+}
+
+impl Request for GetOrderBookRequest {
+    const METHOD: &'static str = "public/get_order_book";
+    type Response = GetOrderBookResponse;
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct GetOrderBookResponse {
+    ask_iv: Option<f64>,
+    asks: Vec<Ask>,
+    best_ask_amount: f64,
+    best_ask_price: Option<f64>,
+    best_bid_amount: f64,
+    best_bid_price: Option<f64>,
+    bid_iv: Option<f64>,
+    bids: Vec<Bid>,
+    current_funding: Option<f64>,
+    delivery_price: Option<f64>,
+    funding_8h: Option<f64>,
+    greeks: Option<Greeks>,
+    index_price: f64,
+    instrument_name: String,
+    interest_rate: Option<f64>,
+    last_price: f64,
+    mark_iv: Option<f64>,
+    mark_price: f64,
+    max_price: f64,
+    min_price: f64,
+    open_interest: f64,
+    settlement_price: Option<f64>,
+    state: State,
+    stats: Stats,
+    timestamp: u64,
+    underlying_index: Option<f64>,
+    underlying_price: Option<f64>
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct Ask(f64, f64);
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct Bid(f64, f64);
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub enum State {
+    #[serde(alias = "open")]
+    Open,
+    #[serde(alias = "closed")]
+    Closed,
 }

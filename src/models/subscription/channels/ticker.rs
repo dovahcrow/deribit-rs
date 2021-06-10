@@ -51,6 +51,7 @@ pub struct Stats {
     pub high: Option<f64>,
     pub low: Option<f64>,
     pub volume: Option<f64>,
+    pub price_change: Option<f64>,
 }
 
 #[derive(Debug, Clone)]

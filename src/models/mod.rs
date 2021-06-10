@@ -24,7 +24,7 @@ pub use jsonrpc::{JSONRPCRequest, JSONRPCResponse, JSONRPCVersion};
 pub use market_data::{
     GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetFundingRateValueRequest,
     GetFundingRateValueResponse, GetIndexRequest, GetIndexResponse, GetInstrumentsRequest,
-    GetInstrumentsResponse,
+    GetInstrumentsResponse, GetOrderBookRequest, GetOrderBookResponse
 };
 pub use session_management::{
     CancelOnDisconnectScope, DisableCancelOnDisconnectRequest, DisableCancelOnDisconnectResponse,

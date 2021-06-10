@@ -1,8 +1,5 @@
 use chrono::{Duration, Utc};
-use deribit::models::{
-    Currency, GetBookSummaryByCurrencyRequest, GetFundingRateValueRequest, GetIndexRequest,
-    GetInstrumentsRequest,
-};
+use deribit::models::{Currency, GetBookSummaryByCurrencyRequest, GetFundingRateValueRequest, GetIndexRequest, GetInstrumentsRequest, GetOrderBookRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use failure::Error;
@@ -111,3 +108,30 @@ fn get_funding_rate_value() {
         throw!(err);
     }
 }
+
+
+#[test]
+#[throws(Error)]
+fn get_order_book() {
+    let _ = dotenv();
+    let _ = env_logger::try_init();
+
+    let drb = DeribitBuilder::default().build().unwrap();
+    let rt = Runtime::new().expect("cannot create tokio runtime");
+
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = GetOrderBookRequest::new(
+            "BTC-PERPETUAL"
+        );
+        let ret = client.call(req).await?.await?;
+        println!("{:#?}", ret);
+        Ok::<_, Error>(())
+    };
+    let resp = rt.block_on(fut);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
+}
+
