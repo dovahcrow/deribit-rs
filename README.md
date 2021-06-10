@@ -154,7 +154,7 @@ while let Some(message) = subscription.next().await {
     - [ ] /public/get_last_trades_by_currency_and_time
     - [ ] /public/get_last_trades_by_instrument
     - [ ] /public/get_last_trades_by_instrument_and_time
-    - [ ] /public/get_order_book
+    - [x] /public/get_order_book
     - [ ] /public/get_trade_volumes
     - [ ] /public/get_tradingview_chart_data
     - [ ] /public/ticker
