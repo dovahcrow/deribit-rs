@@ -38,6 +38,12 @@ impl Serialize for DeribitPriceRankingChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("deribit_price_ranking.{}", self.0))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for DeribitPriceRankingChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "deribit_price_ranking.{}", self.0)
     }
 }

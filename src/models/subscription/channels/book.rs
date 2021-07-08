@@ -51,7 +51,13 @@ impl Serialize for BookChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("book.{}.{}", self.0, self.1))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for BookChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "book.{}.{}", self.0, self.1)
     }
 }
 
@@ -93,6 +99,12 @@ impl Serialize for GroupedBookChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("book.{}.{}.{}.{}", self.0, self.1, self.2, self.3))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for GroupedBookChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "book.{}.{}.{}.{}", self.0, self.1, self.2, self.3)
     }
 }

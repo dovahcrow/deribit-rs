@@ -37,6 +37,12 @@ impl Serialize for QuoteChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("quote.{}", self.0))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for QuoteChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "quote.{}", self.0)
     }
 }

@@ -44,6 +44,12 @@ impl Serialize for MarkPriceOptionChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("markprice.options.{}", self.0))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for MarkPriceOptionChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "markprice.options.{}", self.0)
     }
 }

@@ -80,6 +80,12 @@ impl Serialize for TickerChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("ticker.{}.{}", self.0, self.1))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for TickerChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "ticker.{}.{}", self.0, self.1)
     }
 }

@@ -79,17 +79,23 @@ impl Serialize for UserOrdersChannel {
     where
         S: Serializer,
     {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for UserOrdersChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             UserOrdersChannel::ByInstrument {
                 instrument_name,
                 interval,
-            } => serializer.serialize_str(&format!("user.orders.{}.{}", instrument_name, interval)),
+            } => write!(f, "user.orders.{}.{}", instrument_name, interval),
             UserOrdersChannel::ByKind {
                 kind,
                 currency,
                 interval,
             } => {
-                serializer.serialize_str(&format!("user.orders.{}.{}.{}", kind, currency, interval))
+                write!(f, "user.orders.{}.{}.{}", kind, currency, interval)
             }
         }
     }

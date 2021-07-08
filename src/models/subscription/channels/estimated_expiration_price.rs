@@ -36,6 +36,12 @@ impl Serialize for EstimatedExpirationPriceChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("estimated_expiration_price.{}", self.0))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for EstimatedExpirationPriceChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "estimated_expiration_price.{}", self.0)
     }
 }

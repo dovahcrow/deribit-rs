@@ -59,6 +59,12 @@ impl Serialize for UserPortfolioChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("user.portfolio.{}", self.0))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for UserPortfolioChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "user.portfolio.{}", self.0)
     }
 }

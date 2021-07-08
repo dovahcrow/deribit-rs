@@ -36,6 +36,12 @@ impl Serialize for DeribitPriceIndexChannel {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&format!("deribit_price_index.{}", self.0))
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for DeribitPriceIndexChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "deribit_price_index.{}", self.0)
     }
 }

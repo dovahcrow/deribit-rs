@@ -41,3 +41,9 @@ impl Serialize for AnnouncementsChannel {
         serializer.serialize_str("announcements")
     }
 }
+
+impl std::fmt::Display for AnnouncementsChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "announcements")
+    }
+}

@@ -81,19 +81,22 @@ impl Serialize for UserChangesChannel {
     where
         S: Serializer,
     {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for UserChangesChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             UserChangesChannel::ByInstrument {
                 instrument_name,
                 interval,
-            } => {
-                serializer.serialize_str(&format!("user.changes.{}.{}", instrument_name, interval))
-            }
+            } => write!(f, "user.changes.{}.{}", instrument_name, interval),
             UserChangesChannel::ByKind {
                 kind,
                 currency,
                 interval,
-            } => serializer
-                .serialize_str(&format!("user.changes.{}.{}.{}", kind, currency, interval)),
+            } => write!(f, "user.changes.{}.{}.{}", kind, currency, interval),
         }
     }
 }

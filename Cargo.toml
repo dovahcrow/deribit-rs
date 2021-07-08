@@ -15,7 +15,7 @@ travis-ci = {repository = "dovahcrow/deribit-rs", branch = "master"}
 
 [dependencies]
 chrono = "0.4"
-derive_builder = "0.9"
+derive_builder = "0.10"
 failure = "0.1"
 fehler = "1"
 futures = {version = "0.3", features = ["async-await"]}

@@ -65,16 +65,22 @@ impl Serialize for TradesChannel {
     where
         S: Serializer,
     {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for TradesChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             TradesChannel::ByInstrument {
                 instrument_name,
                 interval,
-            } => serializer.serialize_str(&format!("trades.{}.{}", instrument_name, interval)),
+            } => write!(f, "trades.{}.{}", instrument_name, interval),
             TradesChannel::ByKind {
                 kind,
                 currency,
                 interval,
-            } => serializer.serialize_str(&format!("trades.{}.{}.{}", kind, currency, interval)),
+            } => write!(f, "trades.{}.{}.{}", kind, currency, interval),
         }
     }
 }
