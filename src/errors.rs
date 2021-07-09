@@ -7,7 +7,7 @@ use thiserror::Error;
 // use url::ParseError;
 
 // pub type Result<R> = StdResult<R, DeribitError>;
-pub type Result<T> = failure::Fallible<T>;
+pub type Result<T> = anyhow::Result<T>;
 #[derive(Error, Debug)]
 pub enum DeribitError {
     #[error("Deribit remote error {{code: {code}, message: {message}}}")]

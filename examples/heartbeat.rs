@@ -1,8 +1,8 @@
+use anyhow::Error;
 use deribit::models::{HeartbeatType, SetHeartbeatRequest, SubscriptionParams, TestRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
-use failure::Error;
 use futures::StreamExt;
 
 #[tokio::main]

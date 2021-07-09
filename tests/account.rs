@@ -1,7 +1,7 @@
+use anyhow::Error;
 use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubaccountsRequest};
 use deribit::{Deribit, DeribitBuilder};
 use dotenv::dotenv;
-use failure::Error;
 use fehler::throw;
 use fehler::throws;
 use std::env::var;

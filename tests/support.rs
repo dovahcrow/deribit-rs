@@ -1,6 +1,6 @@
+use anyhow::Error;
 use deribit::models::{GetTimeRequest, HelloRequest, TestRequest};
 use deribit::Deribit;
-use failure::Error;
 use fehler::throws;
 use tokio::runtime::Runtime;
 

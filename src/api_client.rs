@@ -1,7 +1,7 @@
 use crate::errors::{DeribitError, Result};
 use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
 use crate::WSStream;
-use failure::Error;
+use anyhow::Error;
 use fehler::throws;
 use futures::{
     channel::{mpsc, oneshot},

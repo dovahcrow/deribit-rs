@@ -1,3 +1,4 @@
+use anyhow::Error;
 use deribit::models::subscription::{PrivateSubscribeRequest, PublicSubscribeRequest};
 use deribit::models::{
     AuthRequest, BuyRequest, CancelRequest, SellRequest, SubscriptionData, SubscriptionMessage,
@@ -5,7 +6,6 @@ use deribit::models::{
 };
 use deribit::{Deribit, DeribitBuilder, DeribitError};
 use dotenv::dotenv;
-use failure::Error;
 use fehler::throws;
 use futures::StreamExt;
 use std::env::var;

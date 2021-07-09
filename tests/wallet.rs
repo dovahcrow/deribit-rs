@@ -1,7 +1,7 @@
+use anyhow::Error;
 use deribit::models::{AuthRequest, Currency, GetTransfersRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
-use failure::Error;
 use fehler::throws;
 use std::env::var;
 use tokio::runtime::Runtime;

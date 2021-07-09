@@ -1,8 +1,8 @@
+use anyhow::Error;
 use deribit::models::{AuthRequest, Currency, GetPositionsRequest, PrivateSubscribeRequest};
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
-use failure::Error;
 use futures::StreamExt;
 use std::env::var;
 

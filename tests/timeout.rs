@@ -1,5 +1,5 @@
+use anyhow::Error;
 use deribit::{models::HelloRequest, Deribit};
-use failure::Error;
 use std::time::Duration;
 use tokio::runtime::Runtime;
 

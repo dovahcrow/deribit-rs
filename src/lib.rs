@@ -9,8 +9,8 @@ pub use crate::api_client::{DeribitAPICallRawResult, DeribitAPICallResult, Derib
 pub use crate::errors::{DeribitError, Result};
 pub use crate::subscription_client::{DeribitSubscriptionClient, DeribitSubscriptionLimitedClient};
 
+use anyhow::Error;
 use derive_builder::Builder;
-use failure::Error;
 use fehler::throws;
 use futures::channel::{mpsc, oneshot};
 use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryStreamExt};

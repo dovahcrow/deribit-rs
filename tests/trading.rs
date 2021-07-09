@@ -1,3 +1,4 @@
+use anyhow::Error;
 use deribit::models::{
     AuthRequest, BuyRequest, CancelByLabelRequest, CancelRequest, Currency, EditRequest,
     GetOpenOrdersByCurrencyRequest, GetOpenOrdersByInstrumentRequest, GetOrderStateRequest,
@@ -5,7 +6,6 @@ use deribit::models::{
 };
 use deribit::DeribitBuilder;
 use dotenv::dotenv;
-use failure::Error;
 use fehler::throws;
 use std::env::var;
 use std::time::Duration;
