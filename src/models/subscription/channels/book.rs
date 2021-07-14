@@ -26,7 +26,7 @@ pub struct BookData {
 }
 
 #[derive(Debug, Clone)]
-pub struct BookChannel(String, String);
+pub struct BookChannel(pub String, pub String);
 impl<'de> Deserialize<'de> for BookChannel {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
