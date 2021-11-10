@@ -8,13 +8,14 @@ use serde::{
 pub struct DeribitPriceRankingData {
     pub enabled: bool,
     pub identifier: String,
+    pub original_price: f64,
     pub price: f64,
     pub timestamp: u64,
     pub weight: f64,
 }
 
 #[derive(Debug, Clone)]
-pub struct DeribitPriceRankingChannel(String);
+pub struct DeribitPriceRankingChannel(pub String);
 impl<'de> Deserialize<'de> for DeribitPriceRankingChannel {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
