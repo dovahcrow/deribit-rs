@@ -24,7 +24,7 @@ pub use jsonrpc::{JSONRPCRequest, JSONRPCResponse, JSONRPCVersion};
 pub use market_data::{
     GetBookSummaryByCurrencyRequest, GetBookSummaryByCurrencyResponse, GetFundingRateValueRequest,
     GetFundingRateValueResponse, GetIndexRequest, GetIndexResponse, GetInstrumentsRequest,
-    GetInstrumentsResponse, GetOrderBookRequest, GetOrderBookResponse
+    GetInstrumentsResponse, GetOrderBookRequest, GetOrderBookResponse,
 };
 pub use session_management::{
     CancelOnDisconnectScope, DisableCancelOnDisconnectRequest, DisableCancelOnDisconnectResponse,
@@ -182,6 +182,13 @@ pub enum OrderState {
     Cancelled,
     Untriggered,
     Archive,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum OrderBookState {
+    Open,
+    Closed,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
