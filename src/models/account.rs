@@ -164,9 +164,11 @@ pub struct GetSubaccountsResponse {
     pub portfolio: HashMap<Currency, Portfolio>,
     pub receive_notifications: bool,
     pub system_name: String,
-    pub tfa_enabled: bool,
+    pub tfa_enabled: Option<bool>,
     pub r#type: String,
     pub username: String,
+    pub referrals_count: u64,
+    pub security_keys_enabled: bool,
 }
 
 impl Request for GetSubaccountsRequest {
