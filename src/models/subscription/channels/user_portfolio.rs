@@ -13,6 +13,7 @@ pub struct UserPortfolioData {
     pub currency: Currency,
     pub delta_total: f64,
     pub equity: f64,
+    pub estimated_liquidation_ratio: f64,
     pub futures_pl: f64,
     pub futures_session_rpl: f64,
     pub futures_session_upl: f64,
