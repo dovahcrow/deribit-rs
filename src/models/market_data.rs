@@ -229,7 +229,7 @@ pub struct GetOrderBookResponse {
     state: State,
     stats: Stats,
     timestamp: u64,
-    underlying_index: Option<f64>,
+    underlying_index: Option<String>,
     underlying_price: Option<f64>
 }
 
