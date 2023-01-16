@@ -101,8 +101,12 @@ impl std::str::FromStr for Currency {
 pub enum AssetKind {
     #[serde(alias = "future")]
     Future,
+    #[serde(alias = "future_combo")]
+    FutureCombo,
     #[serde(alias = "option")]
     Option,
+    #[serde(alias = "option_combo")]
+    OptionCombo,
 }
 
 impl std::str::FromStr for AssetKind {
