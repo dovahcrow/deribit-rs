@@ -1,5 +1,5 @@
 use crate::errors::{DeribitError, Result};
-use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
+use crate::models::{JSONRPCRequest, JSONRPCResponse, Request, WithPagination};
 use crate::WSStream;
 use anyhow::Error;
 use fehler::throws;

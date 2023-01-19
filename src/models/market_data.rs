@@ -1,4 +1,4 @@
-use crate::models::{AssetKind, Currency, Request};
+use crate::models::{AssetKind, Currency, Direction, Request, Sorting};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -245,4 +245,75 @@ pub enum State {
     Open,
     #[serde(alias = "closed")]
     Closed,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
+pub struct GetLastTradesByCurrencyRequest {
+    pub currency: Currency,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub kind: Option<AssetKind>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub end_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub count: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_old: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sorting: Option<Sorting>,
+}
+
+impl GetLastTradesByCurrencyRequest {
+    pub fn new(currency: Currency) -> Self {
+        Self {
+            currency,
+            ..Default::default()
+        }
+    }
+
+    pub fn include_old(currency: Currency) -> Self {
+        Self {
+            currency,
+            include_old: Some(true),
+            ..Default::default()
+        }
+    }
+
+    pub fn futures(currency: Currency) -> Self {
+        Self::with_kind(currency, AssetKind::Future)
+    }
+
+    pub fn options(currency: Currency) -> Self {
+        Self::with_kind(currency, AssetKind::Option)
+    }
+
+    pub fn with_kind(currency: Currency, kind: AssetKind) -> Self {
+        Self {
+            currency,
+            kind: Some(kind),
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct GetLastTradesByCurrencyResponse {
+    pub amount: Option<f64>,
+    pub block_trade_id: Option<String>,
+    pub direction: Direction,
+    pub index_price: f64,
+    pub instrument_name: String,
+    pub iv: Option<f64>,
+    pub mark_price: f64,
+    pub price: f64,
+    pub trade_id: String,
+    pub timestamp: u64,
+    pub trade_seq: u64,
+    pub tick_direction: i64,
+}
+
+impl Request for GetLastTradesByCurrencyRequest {
+    const METHOD: &'static str = "public/get_last_trades_by_currency";
+    type Response = Vec<GetLastTradesByCurrencyResponse>;
 }
