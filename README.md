@@ -150,7 +150,7 @@ while let Some(message) = subscription.next().await {
     - [x] /public/get_instruments
     - [ ] /public/get_last_settlements_by_currency
     - [ ] /public/get_last_settlements_by_instrument
-    - [ ] /public/get_last_trades_by_currency
+    - [X] /public/get_last_trades_by_currency
     - [ ] /public/get_last_trades_by_currency_and_time
     - [ ] /public/get_last_trades_by_instrument
     - [ ] /public/get_last_trades_by_instrument_and_time

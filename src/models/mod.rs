@@ -362,6 +362,22 @@ impl<L, R> Either<L, R> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WithPagination<L, R> {
+    #[serde(alias = "trades")]
+    pub values: Either<L, R>,
+    pub has_more: bool,
+}
+
+impl<L, R> WithPagination<L, R> {
+    pub fn left_result(self) -> StdResult<L, R> {
+        match self.values {
+            Either::Left(l) => Ok(l),
+            Either::Right(r) => Err(r),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Any3<O1, O2, O3> {
     First(O1),
@@ -484,4 +500,29 @@ pub enum Any12<O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11, O12> {
     Tenth(O10),
     Eleventh(O11),
     Twelfth(O12),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Sorting {
+    #[serde(rename = "asc")]
+    Asc,
+    #[serde(rename = "default")]
+    Default,
+    #[serde(rename = "desc")]
+    Desc,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum EitherWrapper<L, R> {
+    with_pagination(WithPagination<L, R>),
+    no_pagination(Either<L, R>),
+}
+impl<L, R> EitherWrapper<L, R> {
+    pub fn left_result(self) -> StdResult<L, R> {
+        match self {
+            EitherWrapper::with_pagination(l) => l.left_result(),
+            EitherWrapper::no_pagination(r) => r.left_result(),
+        }
+    }
 }

@@ -1,4 +1,4 @@
-use crate::models::{Either, Request};
+use crate::models::{Either, EitherWrapper, Request};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
@@ -16,7 +16,7 @@ pub struct JSONRPCResponse<R> {
     pub id: i64,
     pub testnet: bool,
     #[serde(alias = "error")]
-    pub result: Either<R, ErrorDetail>,
+    pub result: EitherWrapper<R, ErrorDetail>,
     pub us_in: u64,
     pub us_out: u64,
     pub us_diff: u64,
