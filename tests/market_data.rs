@@ -1,5 +1,6 @@
 use anyhow::Error;
 use chrono::{Duration, Utc};
+use deribit::models::market_data::GetHistoricalVolatilityRequest;
 use deribit::models::{
     Currency, GetBookSummaryByCurrencyRequest, GetFundingRateValueRequest, GetIndexRequest,
     GetInstrumentsRequest, GetOrderBookRequest,
@@ -126,8 +127,37 @@ fn get_order_book() {
         let req = GetOrderBookRequest::new("BTC-PERPETUAL");
         let ret = client.call(req).await?.await?;
         println!("{:#?}", ret);
+
         Ok::<_, Error>(())
     };
+    let resp = rt.block_on(fut);
+    if let Err(err) = resp {
+        println!("{:?}", err);
+        throw!(err);
+    }
+}
+
+#[test]
+#[throws(Error)]
+fn get_historical_volatility() {
+    let _ = dotenv();
+    let _ = env_logger::try_init();
+
+    let drb = DeribitBuilder::default().build().unwrap();
+    let rt = Runtime::new().expect("cannot create tokio runtime");
+
+    let fut = async move {
+        let (mut client, _) = drb.connect().await?;
+        let req = GetHistoricalVolatilityRequest::new(Currency::BTC);
+        let ret = client.call(req).await?.await?;
+        println!("{:#?}", ret);
+
+        let first_vol = ret.first().unwrap();
+        assert!(first_vol.0 > 0 && first_vol.1 > 0_f64);
+
+        Ok::<_, Error>(())
+    };
+
     let resp = rt.block_on(fut);
     if let Err(err) = resp {
         println!("{:?}", err);

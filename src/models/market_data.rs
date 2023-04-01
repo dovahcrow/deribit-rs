@@ -246,3 +246,22 @@ pub enum State {
     #[serde(alias = "closed")]
     Closed,
 }
+
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
+pub struct GetHistoricalVolatilityRequest {
+    currency: Currency,
+}
+
+impl GetHistoricalVolatilityRequest {
+    pub fn new(currency: Currency) -> Self {
+        Self { currency }
+    }
+}
+
+impl Request for GetHistoricalVolatilityRequest {
+    const METHOD: &'static str = "public/get_historical_volatility";
+    type Response = Vec<GetHistoricalVolatilityResponse>;
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct GetHistoricalVolatilityResponse(pub u64, pub f64);
