@@ -230,14 +230,14 @@ pub struct GetOrderBookResponse {
     pub stats: Stats,
     pub timestamp: u64,
     pub underlying_index: Option<String>,
-    pub underlying_price: Option<f64>
+    pub underlying_price: Option<f64>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct Ask(f64, f64);
+pub struct Ask(pub f64, pub f64);
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct Bid(f64, f64);
+pub struct Bid(pub f64, pub f64);
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum State {
@@ -246,3 +246,22 @@ pub enum State {
     #[serde(alias = "closed")]
     Closed,
 }
+
+#[derive(Deserialize, Serialize, Clone, Debug, Default)]
+pub struct GetHistoricalVolatilityRequest {
+    currency: Currency,
+}
+
+impl GetHistoricalVolatilityRequest {
+    pub fn new(currency: Currency) -> Self {
+        Self { currency }
+    }
+}
+
+impl Request for GetHistoricalVolatilityRequest {
+    const METHOD: &'static str = "public/get_historical_volatility";
+    type Response = Vec<GetHistoricalVolatilityResponse>;
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct GetHistoricalVolatilityResponse(pub u64, pub f64);
