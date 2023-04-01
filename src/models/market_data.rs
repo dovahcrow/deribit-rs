@@ -230,14 +230,14 @@ pub struct GetOrderBookResponse {
     pub stats: Stats,
     pub timestamp: u64,
     pub underlying_index: Option<String>,
-    pub underlying_price: Option<f64>
+    pub underlying_price: Option<f64>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct Ask(f64, f64);
+pub struct Ask(pub f64, pub f64);
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct Bid(f64, f64);
+pub struct Bid(pub f64, pub f64);
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum State {
