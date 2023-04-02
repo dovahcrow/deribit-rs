@@ -1,12 +1,16 @@
-use crate::models::{AssetKind, Currency, Direction, Request};
+use crate::models::{AssetKind, Currency, Direction};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Deserialize, Serialize, Debug, Clone, Default)]
-pub struct GetPositionsRequest {
-    pub currency: Currency,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub kind: Option<AssetKind>,
+crate::define_request! {
+    Name => GetPositions;
+    Method => "private/get_positions";
+    Request => {
+        pub currency: Currency,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub kind: Option<AssetKind>,
+    };
+    Response => Vec<GetPositionsResponse>;
 }
 
 impl GetPositionsRequest {
@@ -55,16 +59,51 @@ pub struct GetPositionsResponse {
     pub total_profit_loss: f64,
 }
 
-impl Request for GetPositionsRequest {
-    const METHOD: &'static str = "private/get_positions";
-    type Response = Vec<GetPositionsResponse>;
+crate::define_request! {
+    Name => GetAccountSummary;
+    Method => "private/get_account_summary";
+    Request => {
+        pub currency: Currency,
+        pub extended: bool,
+    };
+    Response => {
+        pub options_gamma: f64,
+        pub projected_maintenance_margin: Option<f64>,
+        pub system_name: Option<String>,
+        pub margin_balance: f64,
+        pub tfa_enabled: Option<bool>,
+        pub username: Option<String>,
+        pub equity: f64,
+        pub futures_pl: f64,
+        pub options_session_upl: f64,
+        pub id: Option<u64>,
+        pub options_vega: f64,
+        pub session_funding: Option<f64>,
+        pub currency: Currency,
+        pub r#type: Option<String>,
+        pub futures_session_rpl: f64,
+        pub options_theta: f64,
+        pub portfolio_margin_enabled: Option<bool>,
+        pub session_rpl: f64,
+        pub delta_total: f64,
+        pub options_pl: f64,
+        pub available_withdrawal_funds: f64,
+        pub maintenance_margin: f64,
+        pub initial_margin: f64,
+        pub futures_session_upl: f64,
+        pub options_session_rpl: f64,
+        pub available_funds: f64,
+        pub email: Option<String>,
+        pub session_upl: f64,
+        pub total_pl: f64,
+        pub options_delta: f64,
+        pub balance: f64,
+        pub projected_initial_margin: Option<f64>,
+        pub deposit_address: Option<String>,
+        pub referrer_id: Option<String>,
+    };
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, Default)]
-pub struct GetAccountSummaryRequest {
-    pub currency: Currency,
-    pub extended: bool,
-}
 impl GetAccountSummaryRequest {
     pub fn abridged(currency: Currency) -> Self {
         Self {
@@ -80,52 +119,13 @@ impl GetAccountSummaryRequest {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct GetAccountSummaryResponse {
-    pub options_gamma: f64,
-    pub projected_maintenance_margin: Option<f64>,
-    pub system_name: Option<String>,
-    pub margin_balance: f64,
-    pub tfa_enabled: Option<bool>,
-    pub username: Option<String>,
-    pub equity: f64,
-    pub futures_pl: f64,
-    pub options_session_upl: f64,
-    pub id: Option<u64>,
-    pub options_vega: f64,
-    pub session_funding: Option<f64>,
-    pub currency: Currency,
-    pub r#type: Option<String>,
-    pub futures_session_rpl: f64,
-    pub options_theta: f64,
-    pub portfolio_margin_enabled: Option<bool>,
-    pub session_rpl: f64,
-    pub delta_total: f64,
-    pub options_pl: f64,
-    pub available_withdrawal_funds: f64,
-    pub maintenance_margin: f64,
-    pub initial_margin: f64,
-    pub futures_session_upl: f64,
-    pub options_session_rpl: f64,
-    pub available_funds: f64,
-    pub email: Option<String>,
-    pub session_upl: f64,
-    pub total_pl: f64,
-    pub options_delta: f64,
-    pub balance: f64,
-    pub projected_initial_margin: Option<f64>,
-    pub deposit_address: Option<String>,
-    pub referrer_id: Option<String>,
-}
-
-impl Request for GetAccountSummaryRequest {
-    const METHOD: &'static str = "private/get_account_summary";
-    type Response = GetAccountSummaryResponse;
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct GetSubaccountsRequest {
-    pub with_portfolio: bool,
+crate::define_request! {
+    Name => GetSubaccounts;
+    Method => "private/get_subaccounts";
+    Request => {
+        pub with_portfolio: bool,
+    };
+    Response => Vec<GetSubaccountsResponse>;
 }
 
 impl GetSubaccountsRequest {
@@ -169,9 +169,4 @@ pub struct GetSubaccountsResponse {
     pub username: String,
     pub referrals_count: u64,
     pub security_keys_enabled: bool,
-}
-
-impl Request for GetSubaccountsRequest {
-    const METHOD: &'static str = "private/get_subaccounts";
-    type Response = Vec<GetSubaccountsResponse>;
 }

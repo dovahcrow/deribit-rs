@@ -2,6 +2,7 @@
 
 mod api_client;
 pub mod errors;
+mod macros;
 pub mod models;
 mod subscription_client;
 

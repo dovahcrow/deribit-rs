@@ -1,4 +1,7 @@
-use crate::models::{AssetKind, Currency, Request};
+use crate::{
+    define_request,
+    models::{AssetKind, Currency, Request},
+};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -247,20 +250,19 @@ pub enum State {
     Closed,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug, Default)]
-pub struct GetHistoricalVolatilityRequest {
-    currency: Currency,
+define_request! {
+    Name => GetHistoricalVolatility;
+    Method => "public/get_historical_volatility";
+    Request => {
+        pub currency: Currency,
+    };
+    Response => Vec<GetHistoricalVolatilityResponse>;
 }
 
 impl GetHistoricalVolatilityRequest {
     pub fn new(currency: Currency) -> Self {
         Self { currency }
     }
-}
-
-impl Request for GetHistoricalVolatilityRequest {
-    const METHOD: &'static str = "public/get_historical_volatility";
-    type Response = Vec<GetHistoricalVolatilityResponse>;
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
