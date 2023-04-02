@@ -1,16 +1,19 @@
 use anyhow::Error;
-use deribit::models::subscription::{PrivateSubscribeRequest, PublicSubscribeRequest};
-use deribit::models::{
-    AuthRequest, BuyRequest, CancelRequest, SellRequest, SubscriptionData, SubscriptionMessage,
-    SubscriptionParams,
+use deribit::{
+    models::{
+        subscription::{PrivateSubscribeRequest, PublicSubscribeRequest},
+        AuthRequest, BuyRequest, CancelRequest, SellRequest, SubscriptionData, SubscriptionMessage,
+        SubscriptionParams,
+    },
+    Deribit, DeribitBuilder, DeribitError,
 };
-use deribit::{Deribit, DeribitBuilder, DeribitError};
-use dotenv::dotenv;
 use fehler::throws;
 use futures::StreamExt;
 use std::env::var;
-use tokio::runtime::Runtime;
-use tokio::time::{sleep, Duration};
+use tokio::{
+    runtime::Runtime,
+    time::{sleep, Duration},
+};
 
 struct SubscriptionTest {
     rt: Runtime,
@@ -21,7 +24,6 @@ struct SubscriptionTest {
 
 impl Default for SubscriptionTest {
     fn default() -> Self {
-        let _ = dotenv();
         let _ = env_logger::try_init();
         Self {
             key: var("DERIBIT_KEY").unwrap(),

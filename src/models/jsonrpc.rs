@@ -22,6 +22,18 @@ pub struct JSONRPCResponse<R> {
     pub us_diff: u64,
 }
 
+#[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct JSONRPCSuccessResponse<R> {
+    pub jsonrpc: JSONRPCVersion,
+    pub id: i64,
+    pub testnet: bool,
+    pub result: R,
+    pub us_in: u64,
+    pub us_out: u64,
+    pub us_diff: u64,
+}
+
 #[derive(Deserialize, Serialize, Clone, Debug, Copy)]
 pub enum JSONRPCVersion {
     #[serde(rename = "2.0")]

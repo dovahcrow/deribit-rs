@@ -1,14 +1,14 @@
 [package]
-authors = ["Weiyuan Wu <youngw@sfu.ca>"]
+authors = ["Weiyuan Wu <weiyuan@crows.land>"]
 categories = ["api-bindings"]
-description = "Rust client for deribit. Please look at tests/examples for detail usage at current stage."
+description = "Rust client for deribit. Please look at tests/examples for detailed usages."
 documentation = "https://docs.rs/deribit"
 edition = "2018"
 license = "MIT"
 name = "deribit"
 readme = "README.md"
 repository = "https://github.com/dovahcrow/deribit-rs"
-version = "0.3.2"
+version = "0.3.3"
 
 [badges]
 travis-ci = {repository = "dovahcrow/deribit-rs", branch = "master"}
@@ -16,7 +16,7 @@ travis-ci = {repository = "dovahcrow/deribit-rs", branch = "master"}
 [dependencies]
 anyhow = "1"
 chrono = "0.4"
-derive_builder = "0.10"
+derive_builder = "0.12"
 fehler = "1"
 futures = {version = "0.3", features = ["async-await"]}
 lazy_static = "1"
@@ -29,13 +29,12 @@ serde_json = "1"
 shrinkwraprs = "0.3"
 thiserror = "1"
 tokio = {version = "1", features = ["time", "macros", "rt", "net"]}
-tokio-tungstenite = {features = ["rustls-tls"], version = "0.14"}
-tungstenite = {version = "0.13", features = ["rustls-tls"], default-features = false}
+tokio-tungstenite = {features = ["rustls-tls-native-roots"], version = "0.18"}
+tungstenite = {version = "0.18", features = ["rustls-tls-native-roots"], default-features = false}
 url = "2"
 
 [dev-dependencies]
-dotenv = "0.15"
-env_logger = "0.8"
+env_logger = "0.10"
 
 [dev-dependencies.tokio]
 features = ["time", "macros", "rt-multi-thread", "net"]

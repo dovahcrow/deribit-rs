@@ -1,24 +1,17 @@
 mod channels;
 
-use crate::models::jsonrpc::JSONRPCVersion;
-use crate::models::Request;
-pub use channels::{AnnouncementsChannel, AnnouncementsData};
+use crate::models::{jsonrpc::JSONRPCVersion, Request};
 pub use channels::{
-    BookChannel, BookData, Delta, GroupedBookChannel, GroupedBookData, OrderBookDelta,
+    AnnouncementsChannel, AnnouncementsData, BookChannel, BookData, Delta,
+    DeribitPriceIndexChannel, DeribitPriceIndexData, DeribitPriceRankingChannel,
+    DeribitPriceRankingData, EstimatedExpirationPriceChannel, EstimatedExpirationPriceData, Greeks,
+    GroupedBookChannel, GroupedBookData, InstrumentState, InstrumentStateChannel,
+    InstrumentStateData, MarkPriceOptionChannel, MarkPriceOptionData, OrderBookDelta,
+    PerpetualChannel, PerpetualData, QuoteChannel, QuoteData, Stats, TickerChannel, TickerData,
+    TradesChannel, TradesData, UserChangesChannel, UserChangesData, UserOrdersChannel,
+    UserOrdersData, UserPortfolioChannel, UserPortfolioData, UserPositionsData, UserTradesChannel,
+    UserTradesData,
 };
-pub use channels::{DeribitPriceIndexChannel, DeribitPriceIndexData};
-pub use channels::{DeribitPriceRankingChannel, DeribitPriceRankingData};
-pub use channels::{EstimatedExpirationPriceChannel, EstimatedExpirationPriceData};
-pub use channels::{Greeks, Stats, TickerChannel, TickerData};
-pub use channels::{InstrumentState, InstrumentStateChannel, InstrumentStateData};
-pub use channels::{MarkPriceOptionChannel, MarkPriceOptionData};
-pub use channels::{PerpetualChannel, PerpetualData};
-pub use channels::{QuoteChannel, QuoteData};
-pub use channels::{TradesChannel, TradesData};
-pub use channels::{UserChangesChannel, UserChangesData};
-pub use channels::{UserOrdersChannel, UserOrdersData, UserPositionsData};
-pub use channels::{UserPortfolioChannel, UserPortfolioData};
-pub use channels::{UserTradesChannel, UserTradesData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

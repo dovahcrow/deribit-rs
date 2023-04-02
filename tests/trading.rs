@@ -1,21 +1,19 @@
 use anyhow::Error;
-use deribit::models::{
-    AuthRequest, BuyRequest, CancelByLabelRequest, CancelRequest, Currency, EditRequest,
-    GetOpenOrdersByCurrencyRequest, GetOpenOrdersByInstrumentRequest, GetOrderStateRequest,
-    SellRequest,
+use deribit::{
+    models::{
+        AuthRequest, BuyRequest, CancelByLabelRequest, CancelRequest, Currency, EditRequest,
+        GetOpenOrdersByCurrencyRequest, GetOpenOrdersByInstrumentRequest, GetOrderStateRequest,
+        SellRequest,
+    },
+    DeribitBuilder,
 };
-use deribit::DeribitBuilder;
-use dotenv::dotenv;
 use fehler::throws;
-use std::env::var;
-use std::time::Duration;
-use tokio::runtime::Runtime;
-use tokio::time::sleep;
+use std::{env::var, time::Duration};
+use tokio::{runtime::Runtime, time::sleep};
 
 #[test]
 #[throws(Error)]
 fn get_order_state() {
-    let _ = dotenv();
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
 
@@ -36,8 +34,6 @@ fn get_order_state() {
 #[test]
 #[throws(Error)]
 fn buy_and_sell() {
-    let _ = dotenv();
-
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
@@ -66,8 +62,6 @@ fn buy_and_sell() {
 #[test]
 #[throws(Error)]
 fn buy_and_edit_and_inspect_and_cancel() {
-    let _ = dotenv();
-
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
@@ -109,8 +103,6 @@ fn buy_and_edit_and_inspect_and_cancel() {
 #[test]
 #[throws(Error)]
 fn buy_and_cancel_by_label() {
-    let _ = dotenv();
-
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();

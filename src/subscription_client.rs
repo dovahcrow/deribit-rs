@@ -1,14 +1,14 @@
-use crate::errors::Result;
-use crate::models::SubscriptionMessage;
-use futures::channel::mpsc;
-use futures::task::{Context, Poll};
-use futures::Stream;
+use crate::{errors::Result, models::SubscriptionMessage};
+use futures::{
+    channel::mpsc,
+    task::{Context, Poll},
+    Stream,
+};
 use log::warn;
 use pin_project::pin_project;
 use serde::de::DeserializeOwned;
 use serde_json::from_str;
-use std::marker::PhantomData;
-use std::pin::Pin;
+use std::{marker::PhantomData, pin::Pin};
 
 pub struct DeribitSubscriptionClient {
     rx: mpsc::Receiver<String>,

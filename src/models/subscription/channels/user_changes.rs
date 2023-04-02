@@ -1,5 +1,7 @@
-use crate::models::subscription::{UserOrdersData, UserTradesData};
-use crate::models::{AssetKind, Direction};
+use crate::models::{
+    subscription::{UserOrdersData, UserTradesData},
+    AssetKind, Direction,
+};
 
 use fehler::throw;
 use serde::{

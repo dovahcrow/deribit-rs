@@ -2,8 +2,7 @@ use crate::models::{
     AdvanceOption, AssetKind, Currency, Direction, Either, LiquidityType, OrderState, OrderType,
     Request, TimeInForce, Trigger,
 };
-use serde::Deserializer;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use shrinkwraprs::Shrinkwrap;
 
 #[derive(Deserialize, Serialize, Debug, Clone, Shrinkwrap)]

@@ -1,9 +1,9 @@
 use anyhow::Error;
-use deribit::models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubaccountsRequest};
-use deribit::{Deribit, DeribitBuilder};
-use dotenv::dotenv;
-use fehler::throw;
-use fehler::throws;
+use deribit::{
+    models::{AuthRequest, Currency, GetAccountSummaryRequest, GetSubaccountsRequest},
+    Deribit, DeribitBuilder,
+};
+use fehler::{throw, throws};
 use std::env::var;
 use tokio::runtime::Runtime;
 
@@ -16,7 +16,6 @@ pub struct AccountTest {
 
 impl Default for AccountTest {
     fn default() -> Self {
-        let _ = dotenv();
         let _ = env_logger::try_init();
         Self {
             key: var("DERIBIT_KEY").unwrap(),

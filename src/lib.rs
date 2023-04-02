@@ -6,22 +6,24 @@ mod macros;
 pub mod models;
 mod subscription_client;
 
-pub use crate::api_client::{DeribitAPICallRawResult, DeribitAPICallResult, DeribitAPIClient};
-pub use crate::errors::{DeribitError, Result};
-pub use crate::subscription_client::{DeribitSubscriptionClient, DeribitSubscriptionLimitedClient};
+pub use crate::{
+    api_client::{DeribitAPICallRawResult, DeribitAPICallResult, DeribitAPIClient},
+    errors::{DeribitError, Result},
+    subscription_client::{DeribitSubscriptionClient, DeribitSubscriptionLimitedClient},
+};
 
 use anyhow::Error;
 use derive_builder::Builder;
 use fehler::throws;
-use futures::channel::{mpsc, oneshot};
-use futures::{select, FutureExt, SinkExt, Stream, StreamExt, TryStreamExt};
+use futures::{
+    channel::{mpsc, oneshot},
+    select, FutureExt, SinkExt, Stream, StreamExt, TryStreamExt,
+};
 use lazy_static::lazy_static;
-use log::warn;
-use log::{info, trace};
+use log::{info, trace, warn};
 use regex::Regex;
 use std::{collections::HashMap, time::Duration};
-use tokio::net::TcpStream;
-use tokio::time::timeout;
+use tokio::{net::TcpStream, time::timeout};
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
@@ -141,6 +143,9 @@ impl Deribit {
                         }
                         Message::Binary(_) => {
                             trace!("[Servo] Received Binary");
+                        }
+                        Message::Frame(_) => {
+                            trace!("[Servo] Received Frame");
                         }
                         Message::Close(_) => {
                             trace!("[Servo] Received Close");

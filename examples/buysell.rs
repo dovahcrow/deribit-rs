@@ -1,6 +1,8 @@
 use anyhow::Error;
-use deribit::models::{AuthRequest, BuyRequest, SellRequest};
-use deribit::DeribitBuilder;
+use deribit::{
+    models::{AuthRequest, BuyRequest, SellRequest},
+    DeribitBuilder,
+};
 use dotenv::dotenv;
 use fehler::throws;
 use std::env::var;

@@ -24,13 +24,11 @@ macro_rules! define_request {
     ) => {
         paste::paste! {
             #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-            #[serde(rename_all = "camelCase")]
             pub struct [<$name Request>] {
                 $($req_def)*
             }
 
             #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-            #[serde(rename_all = "camelCase")]
             pub struct [<$name Response>] {
                 $($resp_def)*
             }
@@ -67,7 +65,6 @@ macro_rules! define_request {
     ) => {
         paste::paste! {
             #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-            #[serde(rename_all = "camelCase")]
             pub struct [<$name Request>] {
                 $($req_def)*
             }

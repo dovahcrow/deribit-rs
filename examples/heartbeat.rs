@@ -1,6 +1,8 @@
 use anyhow::Error;
-use deribit::models::{HeartbeatType, SetHeartbeatRequest, SubscriptionParams, TestRequest};
-use deribit::DeribitBuilder;
+use deribit::{
+    models::{HeartbeatType, SetHeartbeatRequest, SubscriptionParams, TestRequest},
+    DeribitBuilder,
+};
 use dotenv::dotenv;
 use env_logger::init;
 use futures::StreamExt;

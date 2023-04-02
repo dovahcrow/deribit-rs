@@ -1,7 +1,8 @@
 use anyhow::Error;
-use deribit::models::{AuthRequest, Currency, GetTransfersRequest};
-use deribit::DeribitBuilder;
-use dotenv::dotenv;
+use deribit::{
+    models::{AuthRequest, Currency, GetTransfersRequest},
+    DeribitBuilder,
+};
 use fehler::throws;
 use std::env::var;
 use tokio::runtime::Runtime;
@@ -9,7 +10,6 @@ use tokio::runtime::Runtime;
 #[test]
 #[throws(Error)]
 fn get_transfers() {
-    let _ = dotenv();
     let key = var("DERIBIT_KEY").unwrap();
     let secret = var("DERIBIT_SECRET").unwrap();
 

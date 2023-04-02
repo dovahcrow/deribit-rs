@@ -1,8 +1,10 @@
 use anyhow::Error;
-use deribit::models::{
-    HeartbeatType, PublicSubscribeRequest, SetHeartbeatRequest, SubscriptionParams, TestRequest,
+use deribit::{
+    models::{
+        HeartbeatType, PublicSubscribeRequest, SetHeartbeatRequest, SubscriptionParams, TestRequest,
+    },
+    DeribitBuilder,
 };
-use deribit::DeribitBuilder;
 use dotenv::dotenv;
 use env_logger::init;
 use fehler::throws;

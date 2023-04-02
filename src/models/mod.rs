@@ -12,8 +12,10 @@ use crate::errors::DeribitError;
 use fehler::throws;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
-use std::fmt::{Display, Error as FmtError, Formatter};
-use std::result::Result as StdResult;
+use std::{
+    fmt::{Display, Error as FmtError, Formatter},
+    result::Result as StdResult,
+};
 
 pub use account::{
     GetAccountSummaryRequest, GetAccountSummaryResponse, GetPositionsRequest, GetPositionsResponse,

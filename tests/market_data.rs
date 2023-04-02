@@ -1,19 +1,18 @@
 use anyhow::Error;
 use chrono::{Duration, Utc};
-use deribit::models::market_data::GetHistoricalVolatilityRequest;
-use deribit::models::{
-    Currency, GetBookSummaryByCurrencyRequest, GetFundingRateValueRequest, GetIndexRequest,
-    GetInstrumentsRequest, GetOrderBookRequest,
+use deribit::{
+    models::{
+        market_data::GetHistoricalVolatilityRequest, Currency, GetBookSummaryByCurrencyRequest,
+        GetFundingRateValueRequest, GetIndexRequest, GetInstrumentsRequest, GetOrderBookRequest,
+    },
+    DeribitBuilder,
 };
-use deribit::DeribitBuilder;
-use dotenv::dotenv;
 use fehler::{throw, throws};
 use tokio::runtime::Runtime;
 
 #[test]
 #[throws(Error)]
 fn get_index() {
-    let _ = dotenv();
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().testnet(true).build().unwrap();
@@ -38,7 +37,6 @@ fn get_index() {
 #[test]
 #[throws(Error)]
 fn get_instruments() {
-    let _ = dotenv();
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();
@@ -63,7 +61,6 @@ fn get_instruments() {
 #[test]
 #[throws(Error)]
 fn get_book_summary_by_currency() {
-    let _ = dotenv();
     let _ = env_logger::try_init();
     let drb = DeribitBuilder::default().build().unwrap();
     let rt = Runtime::new().expect("cannot create tokio runtime");
@@ -89,7 +86,6 @@ fn get_book_summary_by_currency() {
 #[test]
 #[throws(Error)]
 fn get_funding_rate_value() {
-    let _ = dotenv();
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();
@@ -116,7 +112,6 @@ fn get_funding_rate_value() {
 #[test]
 #[throws(Error)]
 fn get_order_book() {
-    let _ = dotenv();
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();
@@ -140,7 +135,6 @@ fn get_order_book() {
 #[test]
 #[throws(Error)]
 fn get_historical_volatility() {
-    let _ = dotenv();
     let _ = env_logger::try_init();
 
     let drb = DeribitBuilder::default().build().unwrap();

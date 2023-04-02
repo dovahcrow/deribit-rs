@@ -1,13 +1,15 @@
-use crate::errors::{DeribitError, Result};
-use crate::models::{JSONRPCRequest, JSONRPCResponse, Request};
-use crate::WSStream;
+use crate::{
+    errors::{DeribitError, Result},
+    models::{JSONRPCRequest, JSONRPCResponse, Request},
+    WSStream,
+};
 use anyhow::Error;
 use fehler::throws;
 use futures::{
     channel::{mpsc, oneshot},
     stream::SplitSink,
     task::{Context, Poll},
-    {Future, SinkExt},
+    Future, SinkExt,
 };
 use log::{error, trace};
 use pin_project::pin_project;
